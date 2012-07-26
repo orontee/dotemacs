@@ -1,0 +1,55 @@
+body {
+    font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin: 2em auto; 
+    width: 95%;
+    background-color: #dda
+}
+
+div#content { 
+    background-image: none; 
+    background-color: #ffffff; 
+    padding: 1em 3em; 
+    border-style: none;
+    border-radius: 1.5em;
+}
+
+p {
+  line-height: 140%;
+}
+
+pre.src, pre.example {
+    font-family: "Consolas","Courier New",Courier,mono;
+    background-color: #2e3434; 
+    color: #eeeeec;
+    width: 90ex;
+}
+
+div#postamble { 
+    font-size: 75% 
+}
+
+:link { 
+    color: #4f5959; 
+    background: transparent;
+    text-decoration: none;
+}
+
+@media screen {
+    a[href]:hover {
+	background: #a6a6a6
+    }
+}
+
+:visited { 
+    color: #4f5959; 
+    background: transparent; 
+    text-decoration: none
+}
+
+
+img {
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    /* transform: scale(0.5,0.5); */
+}

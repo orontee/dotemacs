@@ -8,6 +8,12 @@
 
 * Configuration file
 
+** TODO Add introduction
+
+** TODO Add notice on source snippet 
+
+gnu.emacs.help
+
 #+begin_src emacs-lisp :tangle .emacs
 ;;; -*- coding: utf-8; -*-
 ;;; GNU Emacs Startup file
@@ -165,7 +171,6 @@ frame geometrically.
 #+end_src
 
 #+begin_src emacs-lisp :tangle .emacs
-;; Francisation du calendrier et du journal.
 (setq european-calendar-style t
       calendar-time-display-form 
       '(24-hours ":" minutes
@@ -188,17 +193,31 @@ frame geometrically.
       hebrew-holidays nil
       all-christian-calendar-holidays t
       islamic-holidays nil
-      oriental-holidays nil
-      other-holidays '((holiday-fixed 5 8 "Victory")
-		       (holiday-fixed 7 14 "National Day")
-		       (holiday-fixed 11 11 "World War One Armistice")
-		       (holiday-fixed 5 1 "Work Day")
-		       (holiday-float 11 1 1 "Soul's Day")))
+      oriental-holidays nil)
 
 (add-hook 'today-visible-calendar-hook 'calendar-mark-today)
 
 (add-hook 'diary-display-hook 'fancy-diary-display)
 #+end_src
+
+French holidays must be added to the calendar. Note that Christian
+holidays are already present into the calendar since we have set
+=all-christian-calendar-holidays= to =t=.
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq french-holiday
+      '((holiday-fixed 1 1 "Jour de l'an")
+        (holiday-fixed 5 1 "Fête du travail")
+        (holiday-fixed 5 8 "Victoire 1945")
+        (holiday-fixed 7 14 "Fête nationale")
+        (holiday-fixed 11 1 "Toussaint")
+        (holiday-fixed 11 11 "Armistice 1918")))
+
+(setq holiday-other-holidays 
+      (append french-holiday holiday-other-holidays))
+#+end_src
+
+*** TODO Configure Org-mode calendar
 
 ** Time stamps
 
@@ -303,7 +322,7 @@ acronyms not recognized by the spell checker).
 	     (define-key tex-shell-map "\C-c\C-p" 'comint-previous-prompt)))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs-lisp
+#+begin_src emacs-lisp :tangle .emacs
 (defun alt-auto-insert-latex ()
   "Ask the user for a LaTeX class and a language name, then
 insert the corresponding template file in current buffer.
@@ -565,12 +584,16 @@ Here are some abbreviation definitions for preprocessor directives.
       "Insert a C preprocessor include directive"
       "Header name: " "#include " str _)
 
-    (define-abbrev c++-mode-abbrev-table "ppif" "" 'cc-preprocessor-conditional-group)
-    (define-abbrev c++-mode-abbrev-table "ppnif" "" 'cc-preprocessor-not-conditional-group)
-    (define-abbrev c++-mode-abbrev-table "ppd" "" 'cc-preprocessor-create-macro)
-    (define-abbrev c++-mode-abbrev-table "ppi" "" 'cc-preprocessor-include-directive)
+    ;; (define-abbrev c++-mode-abbrev-table "ppif" "" 'cc-preprocessor-conditional-group)
+    ;; (define-abbrev c++-mode-abbrev-table "ppnif" "" 'cc-preprocessor-not-conditional-group)
+    ;; (define-abbrev c++-mode-abbrev-table "ppd" "" 'cc-preprocessor-create-macro)
+    ;; (define-abbrev c++-mode-abbrev-table "ppi" "" 'cc-preprocessor-include-directiv
+      e)
     t))
+
 #+end_src
+
+*** TODO Fix C++ abbrevs
 
 #+begin_src emacs-lisp :tangle .emacs
 (require 'hideshow)
@@ -623,6 +646,8 @@ Here are some abbreviation definitions for preprocessor directives.
 	     (define-key comint-mode-map "\C-c\C-k" 'comint-kill-subjob)
 	     (when (eq system-type 'windows-nt)
 	       (setq comint-process-echoes 'on))))
+
+(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 #+end_src
 
 ** Compilation							   :noexport:
@@ -667,6 +692,9 @@ Here are some abbreviation definitions for preprocessor directives.
 
 ** Time display
 
+When working in a console, it is sometime usefull (really?) to display
+the time in the modeline. 
+
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'display-time-mode-hook
 	  '(lambda ()
@@ -687,6 +715,24 @@ Here are some abbreviation definitions for preprocessor directives.
 	     (outline-minor-mode t)
 	     (define-key emacs-lisp-mode-map "\C-c\C-f" 
 	       'emacs-lisp-byte-compile)))
+#+end_src
+
+To speedup emacs lisp execution, code can be compiled. The following
+will compile a buffer on save if and only if an associated
+byte-compiled file already exists.
+
+#+begin_src emacs-lisp :tangle .emacs
+(defun byte-compile-current-buffer ()
+  "Compile the current buffer if its major mode is
+`emacs-lisp-mode' and an associated compiled file already
+exists."
+  (interactive) 
+  (when
+      (and (eq major-mode 'emacs-lisp-mode)
+           (file-exists-p (byte-compile-dest-file buffer-file-name)))
+    (byte-compile-file buffer-file-name)))
+
+(add-hook 'after-save-hook 'byte-compile-current-buffer)
 #+end_src
 
 ** Visual interface to diff and patch
@@ -1039,9 +1085,11 @@ Sample =dir-locals.el=.
 (global-set-key [f11] 'alt-fullscreen-both)
 #+end_src
 
+There are three input methods I use quite often: two prefix methods
+for latin characters and the TeX method. Key sequences are defined to
+set any of those input methods.
+
 #+begin_src emacs-lisp :tangle .emacs
-;; Définit des raccourcis clavier permettant de sélectionner les
-;; méthodes de saisie qui me sont utiles.
 (dolist (elt '(("1" . "latin-1-prefix")
 	       ("9" . "latin-9-prefix")
 	       ("u" . "TeX")))
@@ -1328,21 +1376,6 @@ function returns non-`nil', then the line won't be broken there."
 #+end_src
 
 #+begin_src emacs-lisp :tangle .emacs
-(defun scratch ()
-  "Switch to the *scratch* buffer."
-  (interactive)
-  (let* ((name "*scratch*")
-	 (buffer (get-buffer name)))
-    (unless buffer
-      (get-buffer-create name)
-      (save-excursion
-	(set-buffer name)
-	(if (not (eq major-mode 'initial-major-mode))
-	    (funcall initial-major-mode))))
-    (pop-to-buffer buffer)))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
 (defun alt-valgrind (file)
   (interactive "fEnter file: ")
   (shell-command (concat
@@ -1352,10 +1385,6 @@ function returns non-`nil', then the line won't be broken there."
 #+end_src
 
 ** Various
-
-#+begin_src emacs-lisp :tangle .emacs
-(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
-#+end_src
 
 #+begin_src emacs-lisp :tangle .emacs
 (autoload 'dired-jump "dired" "\
@@ -1383,15 +1412,12 @@ function returns non-`nil', then the line won't be broken there."
 (put 'scroll-left 'disabled nil)
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
-(add-to-list 'auto-mode-alist '("\\.gnus$" . emacs-lisp-mode))
-#+end_src
+Linux distributions like Arch Linux ship with both Python 2.x and 3.x,
+thus the list of interpreters must be expanded accordingly for file
+mode determination.
 
 #+begin_src emacs-lisp :tangle .emacs
-;; Le mode `foldout' étend le mode `outline' en offrant la possibilité
-;; de zoomer sur des portions de tampon. Il ajoute d'indispensables
-;; combinaisons de touche et boutons de souris.
-(eval-after-load "outline" '(require 'foldout))
+(add-to-list 'interpreter-mode-alist '("python2" . python-mode))
 #+end_src
 
 ** Desktop
@@ -1424,6 +1450,7 @@ function returns non-`nil', then the line won't be broken there."
 ;; Customization
 (require 'cus-edit)
 (setq custom-file (expand-file-name 
-		   (concat  "~/.emacs.d/" system-name "-custom.el")))
-(load custom-file)
+                   (concat  "~/.emacs.d/" system-name "-custom.el")))
+(when (file-exists-p custom-file)
+  (load custom-file))
 #+end_src

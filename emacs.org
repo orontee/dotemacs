@@ -614,10 +614,8 @@ Here are some abbreviation definitions for preprocessor directives.
     ;; (define-abbrev c++-mode-abbrev-table "ppif" "" 'cc-preprocessor-conditional-group)
     ;; (define-abbrev c++-mode-abbrev-table "ppnif" "" 'cc-preprocessor-not-conditional-group)
     ;; (define-abbrev c++-mode-abbrev-table "ppd" "" 'cc-preprocessor-create-macro)
-    ;; (define-abbrev c++-mode-abbrev-table "ppi" "" 'cc-preprocessor-include-directiv
-      e)
+    ;; (define-abbrev c++-mode-abbrev-table "ppi" "" 'cc-preprocessor-include-directive)
     t))
-
 #+end_src
 
 *** TODO Fix C++ abbrevs

@@ -4,13 +4,13 @@
 #+filetags: emacs
 #+todo: TODO | DONE CANCELED
 #+style: <link rel="stylesheet" type="text/css" href="css/clean.css" />
-#+options: H:4 toc:2 todo:nil email:t ^:nil
+#+options: H:4 toc:2 todo:t email:t ^:nil
 
 * Configuration file
 
-** TODO Add introduction
+** TODO Add introduction					   :noexport:
 
-** TODO Add notice on source snippet 
+** TODO Add notice on source snippet				   :noexport:
 
 gnu.emacs.help
 
@@ -19,6 +19,8 @@ gnu.emacs.help
 ;;; GNU Emacs Startup file
 #+end_src
 
+
+** TODO Check emacs version					   :noexport:
 ** Extending emacs, packages 
 
 The easiest way to extend Emacs features is to use =list-package= and
@@ -95,16 +97,19 @@ the text scale.
                 compilation-mode-hook
                 vc-dir-mode-hook
                 occur-mode-hook
-                prog-mode-hook
                 apropos-mode-hook
                 grep-mode-hook))
   (add-hook hook
             '(lambda ()
                (setq truncate-lines t)
                (alt-set-small-text-scale))))
+
+(add-hook 'prog-mode-hook
+          '(lambda ()
+             (setq truncate-lines t)))
 #+end_src
 
-*** TODO Improve =menu-bar-open=
+*** TODO Improve =menu-bar-open=				   :noexport:
 
 Automatically turn =menu-bar-mode= on for graphic displays. The
 main problem seems to be that =menu-bar-mode= is a global mode, not a
@@ -129,7 +134,7 @@ The file =generic-x.el= contains a collection of generic modes.
                  (flyspell-mode 1)))))
 #+end_src
 
-*** TODO Associate generic mode to vc tmp files
+*** TODO Associate generic mode to vc tmp files			   :noexport:
 
 ** Auto insertion at file creation
 
@@ -244,7 +249,7 @@ holidays are already present into the calendar since we have set
       (append french-holiday holiday-other-holidays))
 #+end_src
 
-*** TODO Configure Org-mode calendar
+*** TODO Configure Org-mode calendar				   :noexport:
 
 ** Time stamps
 
@@ -434,7 +439,7 @@ inserted."
 	 (add-to-list 'reftex-default-bibliography name)))))
 #+end_src
 
-*** TODO Move skeletons outside hook
+*** TODO Move skeletons outside hook				   :noexport:
 
 ** PostScript printing 						   :noexport:
 
@@ -522,7 +527,7 @@ significant while searching for expansions.
 (setq dabbrev-case-fold-search nil)
 #+end_src
 
-*** TODO Add link to the info manual
+*** TODO Add link to the info manual				   :noexport:
 
 ** Final new line
 
@@ -618,7 +623,7 @@ Here are some abbreviation definitions for preprocessor directives.
     t))
 #+end_src
 
-*** TODO Fix C++ abbrevs
+*** TODO Fix C++ abbrevs					   :noexport:
 
 #+begin_src emacs-lisp :tangle .emacs
 (require 'hideshow)
@@ -839,7 +844,7 @@ want to generate them by yourself...). The =info-look= setting for
     :doc-spec '(("(python)Index" nil ""))))
 #+end_src
 
-**** TODO Customize semantic include path
+**** TODO Customize semantic include path			   :noexport:
 
 Python mode hook must be enhanced with a dynamic customization of the
 semantic include path.
@@ -852,7 +857,7 @@ semantic include path.
      (setq semantic-python-dependency-system-include-path path)))
 #+end_src
 
-**** TODO A word about virtualenv
+**** TODO A word about virtualenv				   :noexport:
 
 Sample =dir-locals.el=.
 

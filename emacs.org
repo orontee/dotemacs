@@ -80,19 +80,35 @@ indicates the percentage of the buffer above the top of the window.
 And the column number is available from the output  of =C-x\== (bind
 to =what-cursor-position=).
 
+Another way to widen the screen is to truncate long lines and change
+the text scale.
+
+#+begin_src emacs-lisp :tangle .emacs
+;; (when (locate-library "face-remap")
+;;   (load-library "face-remap"))
+(dolist (hook '(gdb-breakpoints-mode-hook
+                gdb-inferior-io-mode-hook
+                gdb-mode-hook
+                gdb-locals-mode-hook
+                gdb-frames-mode-hook
+                speedbar-mode
+                compilation-mode-hook
+                vc-dir-mode-hook
+                occur-mode-hook
+                prog-mode-hook
+                apropos-mode-hook
+                grep-mode-hook))
+  (add-hook hook
+            '(lambda ()
+               (setq truncate-lines t)
+               (alt-set-small-text-scale))))
+#+end_src
+
 *** TODO Improve =menu-bar-open=
 
 Automatically turn =menu-bar-mode= on for graphic displays. The
 main problem seems to be that =menu-bar-mode= is a global mode, not a
 per frame mode (doesn't make sense).
-
-** Truncating long lines
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'prog-mode 
-          '(lambda ()
-             (setq truncate-lines t)))
-#+end_src
 
 ** Generic modes
 
@@ -128,9 +144,20 @@ location where templates are searched is defined.
 
 Visited buffers will always be parsed for their semantic content and a
 list of most recently used tags is maintained.
+
 #+begin_src emacs-lisp :tangle .emacs
 (add-to-list 'semantic-default-submodes 'global-semantic-mru-bookmark-mode)
 (semantic-mode 1)
+#+end_src
+
+
+** Speedbar
+
+I found that the speedbar is a nice way to browse files, tags and
+documentation using the mouse. It deserves a key binding.
+
+#+begin_src emacs-lisp :tangle .emacs
+(define-key global-map "\M-0" 'speedbar)  
 #+end_src
 
 ** Revert buffers on file changes
@@ -1009,25 +1036,6 @@ Sample =dir-locals.el=.
 ;;; 		  (let ((skeleton-end-newline nil))
 ;;; 		    (skeleton-insert '(nil (alt-dbw) & ? ?:)))))
 	     ))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-;; (when (locate-library "face-remap")
-;;   (load-library "face-remap"))
-(dolist (hook '(gdb-breakpoints-mode-hook
-		gdb-inferior-io-mode-hook
-		gdb-mode-hook
-		gdb-locals-mode-hook
-		gdb-frames-mode-hook
-		compilation-mode-hook
-		vc-dir-mode-hook
-		occur-mode-hook
-		apropos-mode-hook
-		grep-mode-hook))
-  (add-hook hook
-	    '(lambda ()
-	       (setq truncate-lines t)
-	       (alt-set-small-text-scale))))
 #+end_src
 
 #+begin_src emacs-lisp

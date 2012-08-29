@@ -165,6 +165,20 @@ documentation using the mouse. It deserves a key binding.
 (define-key global-map "\M-0" 'speedbar)  
 #+end_src
 
+** Buffer indexes
+
+Another way to browse tags found in the current buffer is to use the
+index menu. A key binding is addded to programming modes to present to
+the user the buffer indexes.
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq imenu-auto-rescan t
+      imenu-max-items 35)
+(add-hook 'prog-mode-hook
+          '(lambda ()
+             (local-set-key "\C-ci" 'imenu)))
+#+end_src
+
 ** Revert buffers on file changes
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -275,19 +289,6 @@ Enable pairing to insert pairs of matching characters.
 (define-key global-map "{" 'skeleton-pair-insert-maybe)
 (define-key global-map "(" 'skeleton-pair-insert-maybe)
 (define-key global-map "\"" 'skeleton-pair-insert-maybe)
-#+end_src
-
-** Buffer indexes
-
-A key binding is addded to programming modes to present to the user
-mode-specific buffer indexes.
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq imenu-auto-rescan t
-      imenu-max-items 35)
-(add-hook 'prog-mode-hook
-          '(lambda ()
-             (define-key prog-mode-map "\C-ci" 'imenu)))
 #+end_src
 
 ** Support for TeX and LaTeX languages

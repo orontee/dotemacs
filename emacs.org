@@ -29,7 +29,7 @@ new and not all libraries are available in the form of packages. When
 I must install a library by hand, I always put it in =~/.emacs.d=. The
 load path must be extended accordingly.
 
-#+begin_src emacs_lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle .emacs
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/"))
 #+end_src
 
@@ -49,7 +49,7 @@ like [[http://tromey.com/elpa/][ELPA]] and [[http://marmalade-repo.org/][Marmala
 I use Gnus for Usenet forums, RSS feeds and electronic mail. All
 configuration files goes into =~/.emacs.d=.
 
-#+begin_src emacs_lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle .emacs
 (setq read-mail-command 'gnus
       mail-user-agent 'gnus-user-agent
       message-directory (expand-file-name "~/.emacs.d/Mail")
@@ -1055,18 +1055,6 @@ Sample =dir-locals.el=.
 (defalias 'man 'woman)
 #+end_src
 
-** Settings depending on host
-
-#+begin_src emacs-lisp :tangle .emacs
-;; Emacs lit un fichier dont le nom est basé sur celui de la machine
-;; hôte. On y place les réglages spécifiques à la machine : le chemin
-;; des librairies, l'adresse de courrier électronique... 
-(let ((file (locate-library (concat (system-name) ".el"))))
-  (if file
-      (load file t)
-    (message "No machine specific initialization")))
-#+end_src
-
 ** Key bindings
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1465,4 +1453,11 @@ mode determination.
                    (concat  "~/.emacs.d/" system-name "-custom.el")))
 (when (file-exists-p custom-file)
   (load custom-file))
+#+end_src
+   
+#+begin_src emacs-lisp :tangle .emacs
+(let ((file (locate-library (concat (system-name) ".el"))))
+  (if file
+      (load file t)
+    (message "No machine specific initialization")))
 #+end_src

@@ -1,4 +1,5 @@
-An Emacs configuration tour
+
+		     An Emacs configuration tour
 
 #+startup: overview
 #+language: en
@@ -6,7 +7,7 @@ An Emacs configuration tour
 #+filetags: emacs
 #+todo: TODO | DONE CANCELED
 #+style: <link rel="stylesheet" type="text/css" href="css/clean.css" />
-#+options: H:4 toc:2 todo:t email:t ^:nil
+#+options: H:2 toc:1 todo:t email:t ^:nil
 
 * Introduction
 
@@ -40,24 +41,25 @@ copied from the [[https://lists.gnu.org/mailman/listinfo/help-gnu-emacs][gnu.ema
 
 * General use
 
+** Header							   :noexport:
+
+#+begin_src emacs-lisp :tangle .emacs :noweb tangle
+<<.emacs_header>>
+#+end_src
+
 ** Checking emacs version
 
 Despite a common misconception, GNU Emacs is actively maintained and
 last versions were greatly improved. A recent version is required. It
 can be downloaded from http://ftp.gnu.org/pub/gnu/emacs/.
 
-#+begin_src emacs-lisp :tangle .emacs
-;;; -*- coding: utf-8; -*-
-;;; GNU Emacs Startup file
-
-;;; WARNING This file was automatically generated: Do not edit
-
+#+begin_src  emacs-lisp :tangle .emacs
 (when (< emacs-major-version 24)
   (error "Wrong Emacs version, update or remove the configuration
   file"))
 #+end_src
 
-** Extending emacs, packages repositories 
+** Extending emacs, packages repositories, etc
 
 The easiest way to extend Emacs features is to use =list-package= and
 install packages from remote repositories. But =package.el= is rather
@@ -81,10 +83,48 @@ like [[http://tromey.com/elpa/][ELPA]] and [[http://marmalade-repo.org/][Marmala
      (add-to-list 'package-archives '("marmalade". "http://marmalade-repo.org/packages/"))))  
 #+end_src
 
+At the time of writing, I have activated the following packages:
+
+#+begin_src emacs-lisp :exports results :results value raw
+(let ((descriptions "|Package|Description|\n|---|\n"))
+  (dolist (package package-alist descriptions)
+    (let ((name (car package))
+	  (desc (aref (cdr package) 2)))
+    (setq descriptions 
+	  (concat descriptions (format "|%s|%s|\n" name desc))))))
+#+end_src
+
+#+RESULTS:
+| Package           | Description                                       |
+|-------------------+---------------------------------------------------|
+| symbols-mode      | List symbols of object files                      |
+| php-mode          | major mode for editing PHP code                   |
+| org               | Outline-based notes management and organizer      |
+| nsis-mode         | NSIS-mode                                         |
+| minimap           | Sidebar showing a "mini-map" of a buffer          |
+| htmlize           | Convert buffer text and decorations to HTML.      |
+| graphviz-dot-mode | Mode for the dot-language used by graphviz (att). |
+| ascii             | ASCII code display.                               |
+
+All settings written using the customize library goes to a dedicated
+file that is loaded when the loading of the file file:.emacs ends.
+
+#+begin_src emacs-lisp :noweb yes
+<<.emacs_custom-file_loading>>
+#+end_src
+
+When the custom settings are loaded, a machine specific file is
+loaded. The file name comes from the host name of the machine Emacs is
+running on.
+
+#+begin_src emacs-lisp :noweb yes
+<<.emacs_system-name_loading>>
+#+end_src
+
 ** Widening the screen
 
 You feel like the computer screen is too narrow, don't you? So menu
-bars, scroll bars and tool bars must be disabled. Whatsmore disabling
+bars, scroll bars and tool bars must be disabled. Whats more disabling
 the eyecandy may improve responsiveness when Emacs run on a remote
 computer forwarding X11. Note that the content of the menu bar is
 still available by pressing =f10= or the contextual menu bind to
@@ -113,17 +153,10 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
   (when (fboundp 'text-scale-set)
     (text-scale-set -1)))
 
-(dolist (hook '(gdb-breakpoints-mode-hook
-                gdb-inferior-io-mode-hook
-                gdb-mode-hook
-                gdb-locals-mode-hook
-                gdb-frames-mode-hook
-                speedbar-mode
-                compilation-mode-hook
-                vc-dir-mode-hook
-                occur-mode-hook
-                apropos-mode-hook
-                grep-mode-hook))
+(dolist (hook '(gdb-breakpoints-mode-hook gdb-inferior-io-mode-hook
+                gdb-mode-hook gdb-locals-mode-hook gdb-frames-mode-hook
+                speedbar-mode compilation-mode-hook vc-dir-mode-hook
+                occur-mode-hook apropos-mode-hook grep-mode-hook))
   (add-hook hook
             '(lambda ()
                (setq truncate-lines t)
@@ -167,7 +200,9 @@ Auto insertion of templates at file creation is enabled and the
 location where templates are searched is defined.
 #+begin_src emacs-lisp :tangle .emacs
 (auto-insert-mode 1)
-(setq auto-insert-directory (expand-file-name "~/Mod�les/"))
+(let ((file (expand-file-name "~/Mod�les")))
+  (when (file-exists-p file)
+    (setq auto-insert-directory file)))
 #+end_src
 
 ** Revert buffers on file changes
@@ -213,9 +248,16 @@ buffer ring with =C-<tab>= and =C-S-<iso-lefttab>=.
 
 ** Diary and calendar customization
 
+A diary file is automatically created.
+
 #+begin_src emacs-lisp :tangle .emacs
-(setq diary-file (expand-file-name "~/.emacs.d/diary"))
+(let ((file (expand-file-name "~/.emacs.d/diary")))
+  (when (not (file-exists-p file))
+    (write-region "" nil file))
+  (setq diary-file file))
 #+end_src
+
+The calendar is configured to match the french standards.
 
 #+begin_src emacs-lisp :tangle .emacs
 (setq european-calendar-style t
@@ -247,16 +289,16 @@ buffer ring with =C-<tab>= and =C-S-<iso-lefttab>=.
 (add-hook 'diary-display-hook 'fancy-diary-display)
 #+end_src
 
-French holidays must be added to the calendar. Note that Christian
+French holidays are be added to the calendar. Note that Christian
 holidays are already present into the calendar since we have set
 =all-christian-calendar-holidays= to =t=.
 
 #+begin_src emacs-lisp :tangle .emacs
 (setq french-holiday
       '((holiday-fixed 1 1 "Jour de l'an")
-        (holiday-fixed 5 1 "Fête du travail")
+        (holiday-fixed 5 1 "F�te du travail")
         (holiday-fixed 5 8 "Victoire 1945")
-        (holiday-fixed 7 14 "Fête nationale")
+        (holiday-fixed 7 14 "F�te nationale")
         (holiday-fixed 11 1 "Toussaint")
         (holiday-fixed 11 11 "Armistice 1918")))
 
@@ -292,15 +334,11 @@ holidays are already present into the calendar since we have set
 ** PostScript printing 						   :noexport:
 
 #+begin_src emacs-lisp :tangle .emacs
-;; Toutes les impressions sont faites sur du papier au format a4 et à
-;; l'encre noire.
 (setq ps-paper-type 'a4
-      ps-print-color-p 'black-white
       ps-font-size '(8 . 9.5))
 #+end_src
 
 #+begin_src emacs-lisp :tangle .emacs
-;; En-tête et pieds-de-page. 
 (setq ps-print-header t
       ps-print-header-frame t
       ps-header-lines 2
@@ -381,21 +419,23 @@ All files will have a newline at their end.
 
 ** Language environment
 
+When using the =Latin-1= or =UTF-8= language environment, the
+preferred input method use prefix modifiers (use =C-hI= to get a
+description of any input method).
+
 #+begin_src emacs-lisp :tangle .emacs
-(add-hook 'set-language-environment-hook
-	  '(lambda ()
-	     (let ((language-name current-language-environment))
-	       (cond 
-		((string= language-name "Latin-1")
-		 (setq default-input-method 'latin-1-prefix))
-		((string= language-name "UTF-8")
-		 (setq default-input-method 'latin-1-prefix))
-		(t nil)))))
+  (add-hook 'set-language-environment-hook
+            '(lambda ()
+               (let ((language-name current-language-environment))
+                 (when 
+                     (or (string= language-name "Latin-1")
+                         (string= language-name "UTF-8"))
+                   (setq default-input-method 'latin-1-prefix))
+                  (t nil))))
 #+end_src
 
-There are three input methods I use quite often: two prefix methods
-for latin characters and the TeX method. Key sequences are defined to
-set any of those input methods.
+But there are other input methods I use: For example the TeX method.
+Key sequences are defined to easily set the input methods I need.
 
 #+begin_src emacs-lisp :tangle .emacs
 (dolist (elt '(("1" . "latin-1-prefix")
@@ -406,6 +446,89 @@ set any of those input methods.
        (interactive)
        (set-input-method ,(cdr elt)))))
 #+end_src
+
+** Frame customization definitions
+
+#+begin_src emacs-lisp :tangle .emacs
+(when (or (eq frame-type 'x)
+          (eq frame-type 'w32))
+  (global-set-key [f11] 'alt-fullscreen-both)
+
+  (defun alt-fullscreen-both ()
+    """Toggle fullscreen parameter."""
+    (interactive)
+    (let* ((frame (selected-frame))
+           (value (frame-parameter frame 'fullscreen)))
+      (cond 
+       ((eq value 'fullboth) 
+        (set-frame-parameter frame 'fullscreen nil)
+        (when (eq system-type 'windows-nt)
+          (w32-send-sys-command 61728)))
+       ((eq value nil) 
+        (set-frame-parameter frame 'fullscreen 'fullboth)
+        (when (eq system-type 'windows-nt)
+          (w32-send-sys-command 61488)))
+       (t nil)))))  
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'after-make-frame-functions 'alt-frame-customization)
+
+(defun alt-frame-customization (frame)
+  "To be run after frame creation."
+ (let ((frame-type (framep frame)))
+   (cond ((or (eq frame-type 'x)
+	      (eq frame-type 'w32))
+	  (setq x-select-enable-clipboard t
+		x-stretch-cursor t)
+	  (setq-default indicate-empty-lines t)
+	  (mouse-avoidance-mode 'banish)
+	  (add-hook 'gdb-mode-hook
+		    '(lambda ()
+		       (setq gdb-many-windows t
+			     gdb-speedbar-auto-raise nil))))
+	 ((eq frame-type 't)
+	  (let ((terminal-type (getenv "TERM"))
+		(lang current-language-environment))
+	    (cond ((string-match "^xterm" terminal-type)
+		   (xterm-mouse-mode 1)
+		   (setq minor-mode-alist 
+			 (remove '(xterm-mouse-mode (" Mouse")) 
+				 minor-mode-alist)))
+		  ((equal terminal-type "linux")
+		   (setq browse-url-browser-function 'browse-url-lynx-emacs)
+		   (when (equal lang "UTF-8") 
+		     (set-keyboard-coding-system 'utf-8)))
+		  (t nil)))))))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(defun alt-fill-nobreak-predicate ()
+  "Disable the breaking of current line.
+
+This function is to be called during filling, with no arguments and with
+point located at the place where a break is being considered. If the
+function returns non-`nil', then the line won't be broken there."
+  (save-match-data                 
+    (or (looking-at "[ \t]*[])}»!?;:]")
+	(save-excursion
+	  (skip-chars-backward "« \t")
+	  (backward-char 1)
+	  (looking-at "[([{]")))))
+;; See fill-nobreak-predicate
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(defun alt-skip-dedicated-windows ()
+  "Select a non dedicated window."
+  (let ((list nil))
+    (while (window-dedicated-p (selected-window))
+      (push (selected-window) list)
+      (select-window (next-window nil 1 'visible))
+      (if (member (selected-window) list)
+	  (error "All windows are dedicated windows")))))
+#+end_src
+
 
 ** Documentation reader
 
@@ -655,6 +778,78 @@ inserted."
 	 (add-to-list 'reftex-default-bibliography name)))))
 #+end_src
 
+#+begin_src emacs-lisp :tangle .emacs
+(defcustom latex-outline-max-level 4
+  "Maximum level of outline headings used by imenu."
+  :type 'integer
+  :group 'tex)
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(defadvice latex-imenu-create-index (before cut-section-alist activate)
+  "Cut `latex-section-alist' to have max `latex-outline-max-level' in
+`imenu' menu."
+  (setq temp-latex-section-alist latex-section-alist)
+  (set (make-local-variable 'latex-section-alist)
+       (let (list)
+	 (dolist (elt (default-value 'latex-section-alist))
+	   (if (<= (cdr elt) latex-outline-max-level)
+	       (push elt list)))
+	 list)))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(defadvice latex-imenu-create-index (before cut-metasection-list activate)
+  "Cut `latex-metasection-alist' to get rid of \\end{document} entries
+in `imenu' menu."
+  (setq temp-latex-metasection-list latex-metasection-list)
+  (set (make-local-variable 'latex-metasection-list)
+       (remove "end{document}" latex-metasection-list)))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(defadvice latex-imenu-create-index 
+  (after restore-latex-metasection-list activate)
+  "Restore `latex-metasection-list' default value."
+  (setq latex-metasection-list temp-latex-metasection-list))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(defadvice latex-imenu-create-index 
+  (after restore-latex-section-alist activate)
+  "Restore `latex-section-alist' default value."
+  (setq latex-section-alist temp-latex-section-alist))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(defvar tex-alt-dvi-view-command nil)
+
+(defun alt-tex-view (&optional alt)
+  "Like \\[tex-view] but allows use of alternative command.
+
+If prefix argument is provided, use the alternative command,
+`tex-alt-dvi-view-command'."
+  (interactive "P")
+  (or tex-dvi-view-command
+      (error "You must set `tex-dvi-view-command'"))
+  (let ((tex-dvi-print-command
+	 (if alt tex-alt-dvi-view-command
+	   tex-dvi-view-command)))
+    (tex-print)))
+
+(defvar alt-latex-section-default "paragraph")
+
+(define-skeleton alt-latex-section
+  "Create a sectionning command \\SECTION{TITLE} at point."
+  (let ((section (completing-read 
+		  (format "LaTeX section name [%s]: " 
+			  alt-latex-section-default)
+		  latex-section-alist nil nil nil nil 
+		  alt-latex-section-default)))
+    (setq alt-latex-section-default section))
+  \n "\\" str ?\{ (skeleton-read "Title: ") ?\} \n \n)
+#+end_src
+
 *** TODO Move skeletons outside hook				   :noexport:
 
 ** Completion
@@ -707,8 +902,6 @@ significant while searching for expansions.
 (setq dabbrev-case-fold-search nil)
 #+end_src
 
-*** TODO Add link to the info manual				   :noexport:
-
 ** Version control
 
 I sometimes have directories both under [[http://subversion.apache.org/][Subversion]] and [[http://gitscm.org/][Git]]. As my
@@ -751,17 +944,15 @@ select a buffer.
     t))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'after-make-frame-functions 'alt-frame-customization)
-#+end_src
-
 ** Support for C++ language
 
 It is common for C++ developpers and C developpers to name their
 header files with the common =.h= extension. As I am more interested
 in C++, the default is to visit such files in C++ mode. Whats more,
 candidate extensions for the source file associated to a =.h= file are
-reordered to privilege C++ usual extensions rather than C ones.
+reordered to privilege C++ usual extensions rather than C ones (see
+=ff-find-other-file=  binded to =C-co= for a way to switch between
+implementation and declaration on a file name basis).
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
@@ -771,7 +962,7 @@ reordered to privilege C++ usual extensions rather than C ones.
 	(list (list ".cpp" ".cc" ".C" ".CC" ".cxx" ".c")))
 #+end_src
 
-Here are some abbreviation definitions for preprocessor directives.
+Some abbreviation definitions for preprocessor directives are added.
 
 #+begin_src emacs-lisp :tangle .emacs
 (eval-after-load "cc-mode"
@@ -791,15 +982,15 @@ Here are some abbreviation definitions for preprocessor directives.
     (define-skeleton cc-preprocessor-include-directive
       "Insert a C preprocessor include directive"
       "Header name: " "#include " str _)
-
-    ;; (define-abbrev c++-mode-abbrev-table "ppif" "" 'cc-preprocessor-conditional-group)
-    ;; (define-abbrev c++-mode-abbrev-table "ppnif" "" 'cc-preprocessor-not-conditional-group)
-    ;; (define-abbrev c++-mode-abbrev-table "ppd" "" 'cc-preprocessor-create-macro)
-    ;; (define-abbrev c++-mode-abbrev-table "ppi" "" 'cc-preprocessor-include-directive)
     t))
-#+end_src
 
-*** TODO Fix C++ abbrevs					   :noexport:
+(add-hook 'c++-mode-hook
+          '(lambda ()
+             (define-abbrev c++-mode-abbrev-table "ppif" "" 'cc-preprocessor-conditional-group)
+             (define-abbrev c++-mode-abbrev-table "ppnif" "" 'cc-preprocessor-not-conditional-group)
+             (define-abbrev c++-mode-abbrev-table "ppd" "" 'cc-preprocessor-create-macro)
+             (define-abbrev c++-mode-abbrev-table "ppi" "" 'cc-preprocessor-include-directive)))
+#+end_src
 
 #+begin_src emacs-lisp :tangle .emacs
 (require 'hideshow)
@@ -832,10 +1023,7 @@ Here are some abbreviation definitions for preprocessor directives.
 
 	     (define-key c++-mode-map "\C-co" 'ff-find-other-file)
 	     (define-key c++-mode-map "\C-ck" 'tags-apropos)
-	     (define-key c-mode-base-map "\C-m" 'c-context-line-break)
-	     ;; REMARK Consider using c-mode-base-map because
-	     ;; c-mode-map, c++-mode-map, and so on, inherit from it
-	     ))
+	     (define-key c++-mode-map "\C-m" 'c-context-line-break)))
 #+end_src
 
 ** Command interpreter
@@ -863,6 +1051,41 @@ Here are some abbreviation definitions for preprocessor directives.
 	  '(lambda ()
 	     (setq truncate-partial-width-windows nil)))
 #+end_src
+
+I use the single key binding =f8= to compile, display the compilation
+buffer, recompile and delete the window displaying the compilation
+buffer (in case it is the selected window).
+
+#+begin_src emacs-lisp :tangle .emacs
+(global-set-key [f8] 'alt-compile-dwim)
+
+(defun alt-compile-dwim (arg)
+  "A wrapper around both commands `compile' and `recompile'. 
+
+When there is no buffer named *compilation* or when called with
+an argument, run `compile'.
+
+If a buffer named *compilation* exists but is not visible, it is
+displayed. In case the *compilation* buffer exists and is
+displayed in the selected window, the window is deleted. If the
+,*compilation* buffer exists and it is displayed in a visible
+window different than the selected window, run `recompile'."
+  (interactive "P")
+  (if arg 
+      (call-interactively 'compile arg)
+    (let* ((buff (get-buffer "*compilation*"))
+           (win (get-buffer-window buff 'visible)))
+      (cond
+       ((and (bufferp buff) (not (windowp win)))
+        (display-buffer buff))
+       ((eq (window-buffer) buff)
+        (delete-window win))
+       ((bufferp buff) 
+        (call-interactively 'recompile))
+       (t
+        (call-interactively 'compile))))))
+#+end_src
+
 ** Make
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -911,13 +1134,15 @@ that frame vertically or horizontally according to the frame geometry.
 (add-hook 'ediff-mode-hook
           '(lambda ()
              (setq ediff-window-setup-function 'ediff-setup-windows-plain)
-             (when (< (* 2 frame-height) (frame-width))
+             (when (< (* 2 (frame-height)) (frame-width))
                (setq ediff-split-window-function 'split-window-horizontally))))
 #+end_src
 
 ** Debugger, GDB
 
 #+begin_src emacs-lisp :tangle .emacs
+(global-set-key [S-f8] 'gdb)
+
 (add-hook 'gdb-mode-hook
 	  '(lambda ()
 	     (setq gdb-show-changed-values t
@@ -928,6 +1153,15 @@ that frame vertically or horizontally according to the frame geometry.
 	  '(lambda ()
 	     (setq gud-tooltip-mode nil
 		   gud-gdb-command-name "gdb --silent --annotate=3")))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(defun alt-valgrind (file)
+  (interactive "fEnter file: ")
+  (shell-command (concat
+		  "valgrind --leak-check=full  " file))
+  (switch-to-buffer-other-window "*Shell Command Output*")
+  (compilation-shell-minor-mode t))
 #+end_src
 
 ** Support for HTML language
@@ -1022,6 +1256,34 @@ Sample =dir-locals.el=.
 	     (define-key sh-mode-map "'" 'self-insert-command)))
 #+end_src
 
+#+begin_src emacs-lisp :tangle .emacs
+(defadvice shell (before skip-dedicated-windows activate)
+  "Like `shell' but select a non dedicated window."
+  (interactive)
+  (alt-skip-dedicated-windows))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(global-set-key [f9] 'alt-shell-dwim)
+
+(defun alt-shell-dwim (arg)
+  "Run an inferior shell like `shell'. If an inferior shell as its I/O
+through the current buffer, then pop the next buffer in `buffer-list'
+whose name is generated from the string \"*shell*\". When called with
+an argument, start a new inferior shell whose I/O will go to a buffer
+named after the string \"*shell*\" using `generate-new-buffer-name'."
+  (interactive "p")
+  (let* ((shell-buffer-list
+	  (let (blist)
+	    (dolist (buff (buffer-list) blist)
+	      (when (string-match "^\\*shell\\*" (buffer-name buff))
+		(setq blist (cons buff blist))))))
+	 (name (if current-prefix-arg 
+		   (generate-new-buffer-name "*shell*")
+		 (car shell-buffer-list))))
+    (shell name)))
+#+end_src
+
 ** Terminal emulation
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1108,6 +1370,8 @@ Sample =dir-locals.el=.
 (define-key ctl-x-5-map "c" 'alt-clone-indirect-buffer-other-frame)
 #+end_src
 
+** Enhancing file manager
+
 #+begin_src emacs-lisp :tangle .emacs
 (require 'dired-x)
 (add-hook 'dired-load-hook
@@ -1136,335 +1400,6 @@ Sample =dir-locals.el=.
 		   truncate-lines t)
 	     (set (make-local-variable 'transient-mark-mode) nil)
 	     (define-key dired-mode-map "w" 'dired-copy-filename-as-kill)))
-#+end_src
-
-** Key bindings
-
-#+begin_src emacs-lisp :tangle .emacs
-(global-set-key [f8] 'alt-compile-dwim)
-(global-set-key [C-f8] 'recompile)
-(global-set-key [S-f8] 'gdb)
-(global-set-key [f9] 'alt-shell-dwim)
-(global-set-key [f11] 'alt-fullscreen-both)
-#+end_src
-
-** Function definitions
-
-#+begin_src emacs-lisp :tangle .emacs
-(defcustom latex-outline-max-level 4
-  "Maximum level of outline headings used by imenu."
-  :type 'integer
-  :group 'tex)
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defadvice latex-imenu-create-index (before cut-section-alist activate)
-  "Cut `latex-section-alist' to have max `latex-outline-max-level' in
-`imenu' menu."
-  (setq temp-latex-section-alist latex-section-alist)
-  (set (make-local-variable 'latex-section-alist)
-       (let (list)
-	 (dolist (elt (default-value 'latex-section-alist))
-	   (if (<= (cdr elt) latex-outline-max-level)
-	       (push elt list)))
-	 list)))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defadvice latex-imenu-create-index (before cut-metasection-list activate)
-  "Cut `latex-metasection-alist' to get rid of \\end{document} entries
-in `imenu' menu."
-  (setq temp-latex-metasection-list latex-metasection-list)
-  (set (make-local-variable 'latex-metasection-list)
-       (remove "end{document}" latex-metasection-list)))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defadvice latex-imenu-create-index 
-  (after restore-latex-metasection-list activate)
-  "Restore `latex-metasection-list' default value."
-  (setq latex-metasection-list temp-latex-metasection-list))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defadvice latex-imenu-create-index 
-  (after restore-latex-section-alist activate)
-  "Restore `latex-section-alist' default value."
-  (setq latex-section-alist temp-latex-section-alist))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defadvice shell (before skip-dedicated-windows activate)
-  "Like `shell' but select a non dedicated window."
-  (interactive)
-  (alt-skip-dedicated-windows))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defadvice shell-quote-argument (after windows-nt-special-quote (argument) activate)
-  "Add special quotes to ARGUMENT in case the system type is 'windows-nt."
-  (when
-      (and (eq system-type 'windows-nt) (w32-shell-dos-semantics))
-    (if (string-match "[\\.~]" ad-return-value)
-	(setq ad-return-value 
-	      (replace-regexp-in-string
-	       "\\([\\.~]\\)" 
-	       "\\\\\\1"
-	       ad-return-value)))))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-find-BROWSE-file ()
-  "Visit `BROWSE' file silently when it exists: A class tree
-buffer is created, and all functionalities of `ebrowse-tree-mode'
-and all are available."
-  (interactive)
-  (let ((file (expand-file-name "BROWSE")))
-    (if (file-readable-p file)
-	(save-excursion
-	  (save-window-excursion
-	    (find-file file)))
-      (message "No readable BROWSE file in path"))))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-compile-dwim (arg)
-  "When called with an argument, run `compile' with that
-argument. Without argument, displays buffer '*compilation*' in
-other window, if that buffer exists but is not visible; Delete
-the current window, if it displays the '*compilation*' buffer. Otherwise
-run `recompile'."
-  (interactive "P")
-  (if arg 
-      (call-interactively 'compile arg)
-    (let* ((buff (get-buffer "*compilation*"))
-           (win (get-buffer-window buff 'visible)))
-      (cond
-       ((eq (window-buffer (selected-window)) buff)
-        (delete-window win))
-       ((and (bufferp buff) (not (windowp win)))
-	(display-buffer buff))
-       ((bufferp buff) 
-	(call-interactively 'recompile))
-       (t
-	(call-interactively 'compile))))))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-fullscreen-both ()
-  (interactive)
-  (let* ((frame (selected-frame))
-	 (value (frame-parameter frame 'fullscreen)))
-    (cond 
-     ((eq value 'fullboth) 
-      (set-frame-parameter frame 'fullscreen nil)
-      (when (eq system-type 'windows-nt)
-	(w32-send-sys-command 61728)))
-     ((eq value nil) 
-      (set-frame-parameter frame 'fullscreen 'fullboth)
-      (when (eq system-type 'windows-nt)
-	(w32-send-sys-command 61488)))
-     (t nil))))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-fullscreen-height ()
-  (interactive)
-  (let* ((frame (selected-frame))
-	 (value (frame-parameter frame 'fullscreen)))
-    (cond 
-     ((eq value 'fullheight) 
-      (set-frame-parameter frame 'fullscreen nil))
-     ((eq value nil) 
-      (set-frame-parameter frame 'fullscreen 'fullheight))
-     (t nil))))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-shell-dwim (arg)
-  "Run an inferior shell like `shell'. If an inferior shell as its I/O
-through the current buffer, then pop the next buffer in `buffer-list'
-whose name is generated from the string \"*shell*\". When called with
-an argument, start a new inferior shell whose I/O will go to a buffer
-named after the string \"*shell*\" using `generate-new-buffer-name'."
-  (interactive "p")
-  (let* ((shell-buffer-list
-	  (let (blist)
-	    (dolist (buff (buffer-list) blist)
-	      (when (string-match "^\\*shell\\*" (buffer-name buff))
-		(setq blist (cons buff blist))))))
-	 (name (if current-prefix-arg 
-		   (generate-new-buffer-name "*shell*")
-		 (car shell-buffer-list))))
-    (shell name)))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-;; (defadvice shell-command (after insert-command-comment activate)
-;;   "Insert COMMAND as a comment at the top of the output buffer."
-;;   ;; Alternatives to truncating multi-line commands:
-;;   ;; 1. Replace each newline with a semicolon.
-;;   ;; 2. Truncate, but append an ellipsis.
-;;   (save-excursion
-;;     ;; (ad-get-arg 0) == COMMAND
-;;     ;; (ad-get-arg 1) == OUTPUT-BUFFER
-;;     (set-buffer (or (ad-get-arg 1)
-;; 		    "*Shell Command Output*"))
-;;     (setq header-line-format
-;; 	  (replace-regexp-in-string "%" "%%"
-;; 				    (substring (ad-get-arg 0)
-;; 					       0
-;; 					       (string-match "\n"
-;; 							     (ad-get-arg 0)))
-;; 				    nil t))))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-frame-customization (frame)
-  "To be run after frame creation."
- (let ((frame-type (framep frame)))
-   (cond ((or (eq frame-type 'x)
-	      (eq frame-type 'w32))
-	  (setq x-select-enable-clipboard t
-		x-stretch-cursor t)
-	  (setq-default indicate-empty-lines t)
-	  (mouse-avoidance-mode 'banish)
-	  (add-hook 'gdb-mode-hook
-		    '(lambda ()
-		       (setq gdb-many-windows t
-			     gdb-speedbar-auto-raise nil))))
-	 ((eq frame-type 't)		; Le cadre est affiché dans un
-					; terminal texte
-					; (éventuellement sous X)
-	  (let ((terminal-type (getenv "TERM"))
-		(lang current-language-environment))
-	    (cond ((string-match "^xterm" terminal-type)
-		   (xterm-mouse-mode 1)
-		   (setq minor-mode-alist 
-			 (remove '(xterm-mouse-mode (" Mouse")) 
-				 minor-mode-alist)))
-		  ((equal terminal-type "linux")
-		   (setq browse-url-browser-function 'browse-url-lynx-emacs)
-		   (when (equal lang "UTF-8") 
-		     (set-keyboard-coding-system 'utf-8)))
-		  (t nil)))))))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-mode-add-keywords (mode)
-  (font-lock-add-keywords 
-   mode
-   '(("\t+" (0 'my-tab-face append))
-     ("^.\\{81\\}\\(.+\\)$" (1 'my-long-line-face append)))))
-
-;(alt-mode-add-keywords 'c++-mode)
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defvar tex-alt-dvi-view-command nil)
-
-(defun alt-tex-view (&optional alt)
-  "Like \\[tex-view] but allows use of alternative command.
-
-If prefix argument is provided, use the alternative command,
-`tex-alt-dvi-view-command'."
-  (interactive "P")
-  (or tex-dvi-view-command
-      (error "You must set `tex-dvi-view-command'"))
-  (let ((tex-dvi-print-command
-	 (if alt tex-alt-dvi-view-command
-	   tex-dvi-view-command)))
-    (tex-print)))
-
-(defvar alt-latex-section-default "paragraph")
-
-(define-skeleton alt-latex-section
-  "Create a sectionning command \\SECTION{TITLE} at point."
-  (let ((section (completing-read 
-		  (format "LaTeX section name [%s]: " 
-			  alt-latex-section-default)
-		  latex-section-alist nil nil nil nil 
-		  alt-latex-section-default)))
-    (setq alt-latex-section-default section))
-  \n "\\" str ?\{ (skeleton-read "Title: ") ?\} \n \n)
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-fill-nobreak-predicate ()
-  "Disable the breaking of current line.
-
-This function is to be called during filling, with no arguments and with
-point located at the place where a break is being considered. If the
-function returns non-`nil', then the line won't be broken there."
-  (save-match-data                 
-    (or (looking-at "[ \t]*[])}»!?;:]")
-	(save-excursion
-	  (skip-chars-backward "« \t")
-	  (backward-char 1)
-	  (looking-at "[([{]")))))
-;; See fill-nobreak-predicate
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-skip-dedicated-windows ()
-  "Select a non dedicated window."
-  (let ((list nil))
-    (while (window-dedicated-p (selected-window))
-      (push (selected-window) list)
-      (select-window (next-window nil 1 'visible))
-      (if (member (selected-window) list)
-	  (error "All windows are dedicated windows")))))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-valgrind (file)
-  (interactive "fEnter file: ")
-  (shell-command (concat
-		  "valgrind --leak-check=full  " file))
-  (switch-to-buffer-other-window "*Shell Command Output*")
-  (compilation-shell-minor-mode t))
-#+end_src
-
-** Desktop
-
-#+begin_src emacs-lisp :tangle .emacs
-;; (alt-frame-customization (selected-frame))
-;; (run-hooks 'set-language-environment-hook)
-
-;; Pour démarrer une session dans le «même» état que la précédente :
-;; mêmes tampons, modes et positions. Possibilité de restaurer la
-;; disposition des cadres et l'agencement de leurs fenêtres.
-;; (desktop-load-default)
-;; (add-to-list 'desktop-modes-not-to-save 'dired-mode)
-;; (add-to-list 'desktop-modes-not-to-save 'Info-mode)
-;; (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
-;; (add-to-list 'desktop-modes-not-to-save 'fundamental-mode)
-;; (add-to-list 'desktop-modes-not-to-save 'message-mode)
-;; (add-to-list 'desktop-locals-to-save 'default-directory)
-;; (setq desktop-buffers-not-to-save
-;;       (concat "\\(" "^nn\\.a[0-9]+\\|\\.log\\|(ftp)\\|^tags\\|^TAGS"
-;; 	      "\\|\\.emacs.*\\|\\.diary\\|\\.newsrc-dribble\\|\\.bbdb" 
-;; 	      "\\)$")
-;;       desktop-save 'ask-if-exists)
-;; (add-to-list 'desktop-minor-mode-handlers '(hs-minor-mode . nil))
-;; (add-to-list 'desktop-minor-mode-handlers '(flyspell-mode . nil))
-;; (when (fboundp 'desktop-save-mode) (desktop-save-mode 1))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-;; Customization
-(require 'cus-edit)
-(setq custom-file (expand-file-name 
-                   (concat  "~/.emacs.d/" system-name "-custom.el")))
-(when (file-exists-p custom-file)
-  (load custom-file))
-#+end_src
-   
-#+begin_src emacs-lisp :tangle .emacs
-(let ((file (locate-library (concat (system-name) ".el"))))
-  (if file
-      (load file t)
-    (message "No machine specific initialization")))
 #+end_src
 
 * Mail, newsgroup, RSS
@@ -1505,3 +1440,29 @@ configuration files goes into =~/.emacs.d=.
 		     ("^Newsgroups:[ \t]*[^f]" . "english")))))
 #+end_src
 
+* Code sources 							   :noexport:
+
+#+name: .emacs_header
+#+begin_src emacs-lisp
+;;; -*- coding: utf-8; -*-
+;;; GNU Emacs Startup file
+
+;;; WARNING This file was automatically generated: Do not edit
+#+end_src
+
+#+name: .emacs_custom-file_loading
+#+begin_src emacs-lisp :tangle .emacs
+(require 'cus-edit)
+(setq custom-file (expand-file-name 
+                   (concat  "~/.emacs.d/" system-name "-custom.el")))
+(when (file-exists-p custom-file)
+  (load custom-file))
+#+end_src
+   
+#+name: .emacs_system-name_loading
+#+begin_src emacs-lisp :tangle .emacs
+(let ((file (locate-library (concat (system-name) ".el"))))
+  (if file
+      (load file t)
+    (message "No machine specific initialization")))
+#+end_src

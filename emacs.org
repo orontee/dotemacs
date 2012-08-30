@@ -1,3 +1,5 @@
+An Emacs configuration tour
+
 #+startup: overview
 #+language: en
 #+drawers: PROPERTIES FEEDSTATUS
@@ -6,28 +8,63 @@
 #+style: <link rel="stylesheet" type="text/css" href="css/clean.css" />
 #+options: H:4 toc:2 todo:t email:t ^:nil
 
-* Configuration file
+* Introduction
 
-** TODO Add introduction					   :noexport:
+I am using [[http://www.gnu.org/software/emacs/][GNU Emacs]] since the late '90 on various environments, both
+at home or at work. At the beginning, I used it to write LaTeX files:
+I found that tool more or less randomly sitting in front of one of the
+X Window terminals of my university. Today, whatever I have to do with
+a computer, it ends in an Emacs buffer... In my current use, Emacs has
+become a kind of interface over the computer's operating system
+(whatever it is: Arch Linux, Ubuntu, Windows XP and Vista). But
+suprisingly I feel like it has adapt to my needs rather than I have
+limited myself to its features.
 
-** TODO Add notice on source snippet				   :noexport:
+As a intensive Emacs user I had various needs related to Emacs
+customization: Centralize all customization to be able to deploy
+efficiently on multiple targets; Organize emacs customization in the
+order demanded by the flow of my needs rather than the one imposed by
+the computer; Share emacs customization; Gather links to external
+tools; etc. Thus I have written an Org file whose code blocks could be
+converted to the source file I use to customize emacs to my needs and
+that can be converted to the documentation you are reading.
 
-gnu.emacs.help
+*Downloads*
+
+You can download both the [[file:emacs.org][Org file]] or the generated file:.emacs.
+
+*References*
+
+Most of the following code snippets I have written myself. Some were
+copied from the [[https://lists.gnu.org/mailman/listinfo/help-gnu-emacs][gnu.emacs.help newsgroup]] or the [[http://www.emacswiki.org/][Emacs wiki]].
+
+* General use
+
+** Checking emacs version
+
+Despite a common misconception, GNU Emacs is actively maintained and
+last versions were greatly improved. A recent version is required. It
+can be downloaded from http://ftp.gnu.org/pub/gnu/emacs/.
 
 #+begin_src emacs-lisp :tangle .emacs
 ;;; -*- coding: utf-8; -*-
 ;;; GNU Emacs Startup file
+
+;;; WARNING This file was automatically generated: Do not edit
+
+(when (< emacs-major-version 24)
+  (error "Wrong Emacs version, update or remove the configuration
+  file"))
 #+end_src
 
-
-** TODO Check emacs version					   :noexport:
-** Extending emacs, packages 
+** Extending emacs, packages repositories 
 
 The easiest way to extend Emacs features is to use =list-package= and
 install packages from remote repositories. But =package.el= is rather
 new and not all libraries are available in the form of packages. When
-I must install a library by hand, I always put it in =~/.emacs.d=. The
-load path must be extended accordingly.
+a library must be installed by hand, a good practice is to always put
+it in the directory =~/.emacs.d=. The load path is extended
+accordingly.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/"))
@@ -44,30 +81,14 @@ like [[http://tromey.com/elpa/][ELPA]] and [[http://marmalade-repo.org/][Marmala
      (add-to-list 'package-archives '("marmalade". "http://marmalade-repo.org/packages/"))))  
 #+end_src
 
-** Usenet, RSS and electronic mail
-
-I use Gnus for Usenet forums, RSS feeds and electronic mail. All
-configuration files goes into =~/.emacs.d=.
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq read-mail-command 'gnus
-      mail-user-agent 'gnus-user-agent
-      message-directory (expand-file-name "~/.emacs.d/Mail")
-      gnus-home-directory (expand-file-name "~/.emacs.d/"))
-
-(add-hook 'kill-emacs-hook
-	  '(lambda ()
-	     (when (and (fboundp 'gnus-alive-p) (gnus-alive-p))
-	       (gnus-group-exit))))
-#+end_src
-
 ** Widening the screen
 
-I feel like my screen is always too narrow; So menu bars, scroll bars
-and tool bars are disabled. Whatsmore this may improve responsiveness
-when Emacs run on a remote computer forwarding X11. Note that the
-content of the menu bar is still available by pressing =f10= or the
-contextual menu bind to =C-mouse-1=.
+You feel like the computer screen is too narrow, don't you? So menu
+bars, scroll bars and tool bars must be disabled. Whatsmore disabling
+the eyecandy may improve responsiveness when Emacs run on a remote
+computer forwarding X11. Note that the content of the menu bar is
+still available by pressing =f10= or the contextual menu bind to
+=C-mouse-1=.
 
 #+begin_src emacs-lisp :tangle .emacs
 (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
@@ -75,19 +96,23 @@ contextual menu bind to =C-mouse-1=.
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 #+end_src
 
-Don't know how to scroll? Read the descriptions of the following key
-bindings: =M-v=, =C-v=, =M-C-v=, =S-M-C-v=, =C-l=, =C-M-l=, =<prior>=,
-=<next>=, etc. Why should we add scrollbars? By the way, the mode line
-indicates the percentage of the buffer above the top of the window.
-And the column number is available from the output  of =C-x\== (bind
-to =what-cursor-position=).
+Don't know how to scroll buffers now that the scrollbar is gone? Read
+the descriptions of the following key bindings: =M-v=, =C-v=, =M-C-v=,
+=S-M-C-v=, =C-l=, =C-M-l=, =<prior>=, =<next>=, etc. Why should we add
+scrollbars? By the way, the mode line indicates the percentage of the
+buffer above the top of the window. And the column number is available
+from the output of =C-x== (bind to =what-cursor-position=).
 
 Another way to widen the screen is to truncate long lines and change
-the text scale.
+the text scale in secondary buffers. Restoring or changing the text
+scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
 
 #+begin_src emacs-lisp :tangle .emacs
-;; (when (locate-library "face-remap")
-;;   (load-library "face-remap"))
+(defun alt-set-small-text-scale ()
+  "Display buffer text in a smaller face than usual."
+  (when (fboundp 'text-scale-set)
+    (text-scale-set -1)))
+
 (dolist (hook '(gdb-breakpoints-mode-hook
                 gdb-inferior-io-mode-hook
                 gdb-mode-hook
@@ -142,41 +167,7 @@ Auto insertion of templates at file creation is enabled and the
 location where templates are searched is defined.
 #+begin_src emacs-lisp :tangle .emacs
 (auto-insert-mode 1)
-(setq auto-insert-directory (expand-file-name "~/Modèles/"))
-#+end_src
-
-** Enable parser features
-
-Visited buffers will always be parsed for their semantic content and a
-list of most recently used tags is maintained.
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-to-list 'semantic-default-submodes 'global-semantic-mru-bookmark-mode)
-(semantic-mode 1)
-#+end_src
-
-
-** Speedbar
-
-I found that the speedbar is a nice way to browse files, tags and
-documentation using the mouse. It deserves a key binding.
-
-#+begin_src emacs-lisp :tangle .emacs
-(define-key global-map "\M-0" 'speedbar)  
-#+end_src
-
-** Buffer indexes
-
-Another way to browse tags found in the current buffer is to use the
-index menu. A key binding is addded to programming modes to present to
-the user the buffer indexes.
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq imenu-auto-rescan t
-      imenu-max-items 35)
-(add-hook 'prog-mode-hook
-          '(lambda ()
-             (local-set-key "\C-ci" 'imenu)))
+(setq auto-insert-directory (expand-file-name "~/Mod�les/"))
 #+end_src
 
 ** Revert buffers on file changes
@@ -191,7 +182,7 @@ the user the buffer indexes.
 (setq delete-by-moving-to-trash t)
 #+end_src
 
-** Moving between windows
+** Moving between windows and selecting buffers
 
 Usually the frame is split at most twice. I find =C-xo= sufficient to
 change the selected window along the three candidates. When there are
@@ -202,6 +193,16 @@ frame geometrically.
 #+begin_src emacs-lisp :tangle .emacs
 (windmove-default-keybindings)
 (setq windmove-wrap-around t)
+#+end_src
+
+To select a buffer I often use =C-xb= and completion. When my brain
+can't remember the buffer name, I use the default buffer menu
+(accessible from =C-xC-b= and =C-uC-xC-b=) or I cycle through the
+buffer ring with =C-<tab>= and =C-S-<iso-lefttab>=.
+
+#+begin_src emacs-lisp :tangle .emacs
+(global-set-key (kbd "C-<tab>") 'next-buffer)
+(global-set-key (kbd "C-S-<iso-lefttab>") 'previous-buffer)
 #+end_src
 
 ** Empty scratch buffer
@@ -265,17 +266,54 @@ holidays are already present into the calendar since we have set
 
 *** TODO Configure Org-mode calendar				   :noexport:
 
-** Time stamps
-
-The command =time-stamp= updates the time stamp string in the buffer.
-The default format of the time stamp does not include the system name.
-I found it usefull when working on a given file from different
-computers.
+** Org mode
 
 #+begin_src emacs-lisp :tangle .emacs
-(setq-default time-stamp-format "%:y-%02m-%02d %02H:%02M:%02S %u@%s")
+(setq org-hide-leading-stars t
+      org-log-done 'time
+      org-directory (expand-file-name "~/.emacs.d/org")
+      org-default-notes-file (expand-file-name "notes.org" org-directory))
+(org-remember-insinuate)
+#+end_src
 
-(add-hook 'write-file-hooks '(lambda () (time-stamp)))
+#+begin_src emacs-lisp :tangle .emacs
+(when (featurep 'windmove)
+  (add-hook 'org-shiftup-final-hook 'windmove-up)
+  (add-hook 'org-shiftleft-final-hook 'windmove-left)
+  (add-hook 'org-shiftdown-final-hook 'windmove-down)
+  (add-hook 'org-shiftright-final-hook 'windmove-right))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(define-key global-map "\C-cr" 'org-remember)
+(define-key global-map "\C-ca" 'org-agenda)
+#+end_src
+
+** PostScript printing 						   :noexport:
+
+#+begin_src emacs-lisp :tangle .emacs
+;; Toutes les impressions sont faites sur du papier au format a4 et à
+;; l'encre noire.
+(setq ps-paper-type 'a4
+      ps-print-color-p 'black-white
+      ps-font-size '(8 . 9.5))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+;; En-tête et pieds-de-page. 
+(setq ps-print-header t
+      ps-print-header-frame t
+      ps-header-lines 2
+      ps-left-header '(ps-get-buffer-name ps-header-dirpart)
+      ps-right-header 
+      '(ps-time-stamp-locale-default ps-time-stamp-hh:mm:ss)
+      ps-print-footer t
+      ps-print-footer-frame nil
+      ps-footer-lines 1
+      ps-right-footer nil
+      ps-left-footer
+      (list (concat "{pagenumberstring dup stringwidth pop"
+		    " 2 div PrintWidth 2 div exch sub 0 rmoveto}")))
 #+end_src
 
 ** Skeleton pairs
@@ -289,6 +327,183 @@ Enable pairing to insert pairs of matching characters.
 (define-key global-map "{" 'skeleton-pair-insert-maybe)
 (define-key global-map "(" 'skeleton-pair-insert-maybe)
 (define-key global-map "\"" 'skeleton-pair-insert-maybe)
+#+end_src
+
+** Save place
+
+Automatically save place of cursor in each file.
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq-default save-place t)
+(require 'saveplace)
+#+end_src
+
+** Archives display
+
+#+begin_src emacs-lisp :tangle .emacs
+(require 'tar-mode)
+(setq tar-mode-show-date t)
+#+end_src
+
+** Time display
+
+When working in a console, it is sometime usefull (really?) to display
+the time in the modeline. 
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'display-time-mode-hook
+	  '(lambda ()
+	     (setq display-time-day-and-date nil
+		   display-time-24hr-format t 
+		   display-time-use-mail-icon t
+		   display-time-format "%A,%e %B %Y %R")))
+#+end_src
+
+** Syntax highlighting
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'font-lock-mode-hook
+	  '(lambda ()
+	     (show-paren-mode 1)))
+
+(add-hook 'show-paren-mode-hook
+	  '(lambda ()
+	     (setq show-paren-style 'parenthesis)))
+#+end_src
+
+** Final new line
+
+All files will have a newline at their end.
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq require-final-newline t)
+#+end_src
+
+** Language environment
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'set-language-environment-hook
+	  '(lambda ()
+	     (let ((language-name current-language-environment))
+	       (cond 
+		((string= language-name "Latin-1")
+		 (setq default-input-method 'latin-1-prefix))
+		((string= language-name "UTF-8")
+		 (setq default-input-method 'latin-1-prefix))
+		(t nil)))))
+#+end_src
+
+There are three input methods I use quite often: two prefix methods
+for latin characters and the TeX method. Key sequences are defined to
+set any of those input methods.
+
+#+begin_src emacs-lisp :tangle .emacs
+(dolist (elt '(("1" . "latin-1-prefix")
+	       ("9" . "latin-9-prefix")
+	       ("u" . "TeX")))
+  (define-key mule-keymap (car elt)
+    `(lambda ()
+       (interactive)
+       (set-input-method ,(cdr elt)))))
+#+end_src
+
+** Documentation reader
+
+#+begin_src emacs-lisp :tangle .emacs
+(require 'info)
+(define-key ctl-x-4-map "i" 'info-other-window)
+
+(add-hook 'Info-mode-hook
+	  '(lambda ()
+	     (setq indicate-empty-lines nil
+		   truncate-lines t)))
+#+end_src
+
+I prefer to read manual pages with the =woman= command than the legacy
+=man= command. It is configured to use the whole frame.
+
+#+begin_src emacs-lisp :tangle .emacs
+(require 'woman)
+(defalias 'man 'woman)
+
+(setq woman-fill-frame t
+      woman-use-own-frame nil)
+
+(define-key Info-mode-map "W" 'woman)
+#+end_src
+
+When using Emacs as a daemon, the default value of =woman-fontify=
+will be =nil= because the daemon may open frames on displays that do
+not support colors or different fonts.
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq woman-fontify t)
+#+end_src
+
+** Server, daemon
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'server-switch-hook 'raise-frame)
+#+end_src
+
+** Various
+
+#+begin_src emacs-lisp :tangle .emacs
+(fset 'yes-or-no-p 'y-or-n-p)
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
+(put 'scroll-left 'disabled nil)
+#+end_src
+
+* Programming
+
+** File parser
+
+Visited buffers will always be parsed for their semantic content and a
+list of most recently used tags is maintained.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-to-list 'semantic-default-submodes 'global-semantic-mru-bookmark-mode)
+(semantic-mode 1)
+#+end_src
+
+** Speedbar
+
+I found that the speedbar is a nice way to browse files, tags and
+documentation using the mouse. It deserves a key binding.
+
+#+begin_src emacs-lisp :tangle .emacs
+(define-key global-map "\M-0" 'speedbar)  
+#+end_src
+
+** Buffer indexes
+
+Another way to browse tags found in the current buffer is to use the
+index menu. A key binding is addded to programming modes to present to
+the user the buffer indexes.
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq imenu-auto-rescan t
+      imenu-max-items 35)
+(add-hook 'prog-mode-hook
+          '(lambda ()
+             (local-set-key "\C-ci" 'imenu)))
+#+end_src
+
+** Time stamps
+
+The command =time-stamp= updates the time stamp string in the buffer.
+The default format of the time stamp does not include the system name.
+I found it usefull when working on a given file from different
+computers.
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq-default time-stamp-format "%:y-%02m-%02d %02H:%02M:%02S %u@%s")
+
+(add-hook 'write-file-hooks '(lambda () (time-stamp)))
 #+end_src
 
 ** Support for TeX and LaTeX languages
@@ -442,42 +657,6 @@ inserted."
 
 *** TODO Move skeletons outside hook				   :noexport:
 
-** PostScript printing 						   :noexport:
-
-#+begin_src emacs-lisp :tangle .emacs
-;; Toutes les impressions sont faites sur du papier au format a4 et à
-;; l'encre noire.
-(setq ps-paper-type 'a4
-      ps-print-color-p 'black-white
-      ps-font-size '(8 . 9.5))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-;; En-tête et pieds-de-page. 
-(setq ps-print-header t
-      ps-print-header-frame t
-      ps-header-lines 2
-      ps-left-header '(ps-get-buffer-name ps-header-dirpart)
-      ps-right-header 
-      '(ps-time-stamp-locale-default ps-time-stamp-hh:mm:ss)
-      ps-print-footer t
-      ps-print-footer-frame nil
-      ps-footer-lines 1
-      ps-right-footer nil
-      ps-left-footer
-      (list (concat "{pagenumberstring dup stringwidth pop"
-		    " 2 div PrintWidth 2 div exch sub 0 rmoveto}")))
-#+end_src
-
-** Save place
-
-Automatically save place of cursor in each file.
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq-default save-place t)
-(require 'saveplace)
-#+end_src
-
 ** Completion
 
 The typical Emacs behavior when completing is preferred: `Typical Emacs
@@ -530,14 +709,6 @@ significant while searching for expansions.
 
 *** TODO Add link to the info manual				   :noexport:
 
-** Final new line
-
-All files will have a newline at their end.
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq require-final-newline t)
-#+end_src
-
 ** Version control
 
 I sometimes have directories both under [[http://subversion.apache.org/][Subversion]] and [[http://gitscm.org/][Git]]. As my
@@ -546,6 +717,10 @@ backends must be reordered.
 
 #+begin_src emacs-lisp :tangle .emacs
 (setq vc-handled-backends (cons 'Git (remove 'Git vc-handled-backends)))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(global-set-key "\C-xv=" 'ediff-revision)
 #+end_src
 
 ** Display settings
@@ -688,51 +863,12 @@ Here are some abbreviation definitions for preprocessor directives.
 	  '(lambda ()
 	     (setq truncate-partial-width-windows nil)))
 #+end_src
-
-** Directory listings
-
-#+begin_src emacs-lisp :tangle .emacs
-(require 'dired-x)
-(add-hook 'dired-load-hook
-	  '(lambda ()
-             (load-library "dired-x")
-	     (setq dired-x-hands-off-my-keys nil)
-             (dired-bind-find-file)
-	     (setq dired-free-space-args "-Pk"
-		   dired-listing-switches "-al")
-	     (setq dired-isearch-filenames t)))
-#+end_src
+** Make
 
 #+begin_src emacs-lisp :tangle .emacs
-(when (locate-library "gnus-dired")
-  (require 'gnus-dired))
-(setq dired-omit-files
-      (concat dired-omit-files
-	      "\\|^\\..+\\|^CVS$\\|^lost\\+found")
-      dired-omit-extensions (delete ".pdf" dired-omit-extensions))
-(add-hook 'dired-mode-hook
+(add-hook 'makefile-gmake-mode-hook
 	  '(lambda ()
-	     (when (fboundp 'gnus-dired-mode)
-	       (gnus-dired-mode 1))
-	     (setq dired-omit-files-p t
-		   dired-omit-size-limit nil
-		   truncate-lines t)
-	     (set (make-local-variable 'transient-mark-mode) nil)
-	     (define-key dired-mode-map "w" 'dired-copy-filename-as-kill)))
-#+end_src
-
-** Time display
-
-When working in a console, it is sometime usefull (really?) to display
-the time in the modeline. 
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'display-time-mode-hook
-	  '(lambda ()
-	     (setq display-time-day-and-date nil
-		   display-time-24hr-format t 
-		   display-time-use-mail-icon t
-		   display-time-format "%A,%e %B %Y %R")))
+	     (setq tab-width 3)))
 #+end_src
 
 ** Support for Emacs lisp language
@@ -768,23 +904,15 @@ exists."
 
 ** Visual interface to diff and patch
 
+Prefer to run the visual interface to diff in a single frame and split
+that frame vertically or horizontally according to the frame geometry.
+
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'ediff-mode-hook
-	  '(lambda ()
-	     (setq ediff-split-window-function 'split-window-horizontally
-		   ediff-window-setup-function 'ediff-setup-windows-plain)))
-#+end_src
-
-** Syntax highlighting
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'font-lock-mode-hook
-	  '(lambda ()
-	     (show-paren-mode 1)))
-
-(add-hook 'show-paren-mode-hook
-	  '(lambda ()
-	     (setq show-paren-style 'parenthesis)))
+          '(lambda ()
+             (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+             (when (< (* 2 frame-height) (frame-width))
+               (setq ediff-split-window-function 'split-window-horizontally))))
 #+end_src
 
 ** Debugger, GDB
@@ -813,15 +941,6 @@ exists."
 		   time-stamp-end "[ \t]*\n")))
 #+end_src
 
-** Documentation reader
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'Info-mode-hook
-	  '(lambda ()
-	     (setq indicate-empty-lines nil
-		   truncate-lines t)))
-#+end_src
-
 ** Support for Python language
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -845,6 +964,14 @@ want to generate them by yourself...). The =info-look= setting for
     :doc-spec '(("(python)Index" nil ""))))
 #+end_src
 
+Linux distributions like Arch Linux ship with both Python 2.x and 3.x,
+thus the list of interpreters must be expanded accordingly for file
+mode determination.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-to-list 'interpreter-mode-alist '("python2" . python-mode))
+#+end_src
+
 **** TODO Customize semantic include path			   :noexport:
 
 Python mode hook must be enhanced with a dynamic customization of the
@@ -862,90 +989,12 @@ semantic include path.
 
 Sample =dir-locals.el=.
 
-** Manual pages reader
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'Man-mode-hook
-	  '(lambda ()
-	     (setq Man-notify-method 'pushy
-		   Man-switches "-a")))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'makefile-gmake-mode-hook
-	  '(lambda ()
-	     (setq tab-width 3)))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-;; Pour les messages de la hierarchie .fr la correction orthographique
-;; utilise le dictionnaire français. Sinon c'est le dictionnaire
-;; anglais qui est utilisé. Ne corrige pas l'orthographe des extensions
-;; de courrier.
-(require 'message)
-(add-hook 'message-mode-hook
-	  '(lambda ()
-	     (setq message-elide-ellipsis "\n> (...)\n"
-		   message-signature t) 
-	     (setq message-completion-alist
-		   '(("^\\(Newsgroups\\|Followup-To\\|Posted-To\\|Gcc\\):" . message-expand-group)
-		     ("^\\(Resent-\\)?\\(To\\|B?Cc\\):" . eudc-expand-inline)
-		     ("^\\(Reply-To\\|From\\|Mail-Followup-To\\|Mail-Copies-To\\):" . eudc-expand-inline)
-		     ("^\\(Disposition-Notification-To\\|Return-Receipt-To\\):" . message-expand-name)))
-					;	     (define-key message-mode-map [?\C-\M-$] 'ispell-message)
-	     (setq ispell-message-dictionary-alist
-		   '(("^To:[^\n,]+\\.fr[ \t\n,>]" . "francais")
-		     ("^Newsgroups:[ \t]*fr\\." . "francais")
-		     ("^Newsgroups:[ \t]*[^f]" . "english")))))
-#+end_src
-
-** Org mode
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq org-hide-leading-stars t
-      org-log-done 'time
-      org-directory (expand-file-name "~/.emacs.d/org")
-      org-default-notes-file (expand-file-name "notes.org" org-directory))
-(org-remember-insinuate)
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(when (featurep 'windmove)
-  (add-hook 'org-shiftup-final-hook 'windmove-up)
-  (add-hook 'org-shiftleft-final-hook 'windmove-left)
-  (add-hook 'org-shiftdown-final-hook 'windmove-down)
-  (add-hook 'org-shiftright-final-hook 'windmove-right))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(define-key global-map "\C-cr" 'org-remember)
-(define-key global-map "\C-ca" 'org-agenda)
-#+end_src
-
 ** Support for the Scheme language
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'scheme-mode-hook
 	  '(lambda ()
 	     (setq scheme-program-name "umb-scheme")))
-#+end_src
-
-** Language environment
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'set-language-environment-hook
-	  '(lambda ()
-	     (let ((language-name current-language-environment))
-	       (cond 
-		((string= language-name "Latin-1")
-		 (setq default-input-method 'latin-1-prefix))
-		((string= language-name "UTF-8")
-		 (setq default-input-method 'latin-1-prefix))
-		(t nil)))))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'server-switch-hook 'raise-frame)
 #+end_src
 
 ** Interactive shell
@@ -971,13 +1020,6 @@ Sample =dir-locals.el=.
 (add-hook 'sh-mode-hook
 	  '(lambda ()
 	     (define-key sh-mode-map "'" 'self-insert-command)))
-#+end_src
-
-** Archives display
-
-#+begin_src emacs-lisp :tangle .emacs
-(require 'tar-mode)
-(setq tar-mode-show-date t)
 #+end_src
 
 ** Terminal emulation
@@ -1042,61 +1084,68 @@ Sample =dir-locals.el=.
 	     ))
 #+end_src
 
-#+begin_src emacs-lisp
-;; Pour consulter les pages de manuel. Le réglage de `woman-fontify'
-;; est nécessaire lorsqu'on utilise le démon.
-(setq woman-fill-frame t
-      woman-use-own-frame nil
-      woman-fontify t)
-(require 'info)
-(define-key Info-mode-map "W" 'woman)
-(require 'woman)
+* File management
 
-(defalias 'man 'woman)
+** Jumping and viewing
+
+#+begin_src emacs-lisp :tangle .emacs
+(autoload 'dired-jump "dired" "\
+     Jump to Dired buffer corresponding to current buffer.
+     If in a file, Dired the current directory and move to file's line.
+     If in Dired already, pop up a level and goto old directory's line.
+     In case the proper Dired file line cannot be found, refresh the Dired
+     buffer and try again." t nil)
+
+(autoload 'dired-jump-other-window "dired" "\
+     Like \\[dired-jump] (dired-jump) but in other window." t nil) 
+
+(define-key ctl-x-map "\C-j" 'dired-jump)
+
+(define-key ctl-x-4-map "\C-j" 'dired-jump-other-window)
+(define-key ctl-x-4-map "v" 'view-file-other-window)
+
+(define-key ctl-x-5-map "v" 'view-file-other-frame)
+(define-key ctl-x-5-map "c" 'alt-clone-indirect-buffer-other-frame)
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(require 'dired-x)
+(add-hook 'dired-load-hook
+	  '(lambda ()
+             (load-library "dired-x")
+	     (setq dired-x-hands-off-my-keys nil)
+             (dired-bind-find-file)
+	     (setq dired-free-space-args "-Pk"
+		   dired-listing-switches "-al")
+	     (setq dired-isearch-filenames t)))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(when (locate-library "gnus-dired")
+  (require 'gnus-dired))
+(setq dired-omit-files
+      (concat dired-omit-files
+	      "\\|^\\..+\\|^CVS$\\|^lost\\+found")
+      dired-omit-extensions (delete ".pdf" dired-omit-extensions))
+(add-hook 'dired-mode-hook
+	  '(lambda ()
+	     (when (fboundp 'gnus-dired-mode)
+	       (gnus-dired-mode 1))
+	     (setq dired-omit-files-p t
+		   dired-omit-size-limit nil
+		   truncate-lines t)
+	     (set (make-local-variable 'transient-mark-mode) nil)
+	     (define-key dired-mode-map "w" 'dired-copy-filename-as-kill)))
 #+end_src
 
 ** Key bindings
 
 #+begin_src emacs-lisp :tangle .emacs
-(define-key ctl-x-map "\C-j" 'dired-jump)
-
-(define-key ctl-x-4-map "\C-j" 'dired-jump-other-window)
-(define-key ctl-x-4-map "v" 'view-file-other-window)
-(define-key ctl-x-4-map "i" 'info-other-window)
-
-(define-key ctl-x-5-map "v" 'view-file-other-frame)
-(define-key ctl-x-5-map "c" 'alt-clone-indirect-buffer-other-frame)
-
-(global-set-key "\C-xv=" 'ediff-revision)
-
-(global-set-key "\C-c\C-z." 'browse-url-at-point)
-(global-set-key "\C-c\C-zb" 'browse-url-of-buffer)
-(global-set-key "\C-c\C-zr" 'browse-url-of-region)
-(global-set-key "\C-c\C-zu" 'browse-url)
-(global-set-key "\C-c\C-zv" 'browse-url-of-file)
-
-(global-set-key (kbd "C-<tab>") 'next-buffer)
-(global-set-key (kbd "C-S-<iso-lefttab>") 'previous-buffer)
-
 (global-set-key [f8] 'alt-compile-dwim)
 (global-set-key [C-f8] 'recompile)
 (global-set-key [S-f8] 'gdb)
 (global-set-key [f9] 'alt-shell-dwim)
 (global-set-key [f11] 'alt-fullscreen-both)
-#+end_src
-
-There are three input methods I use quite often: two prefix methods
-for latin characters and the TeX method. Key sequences are defined to
-set any of those input methods.
-
-#+begin_src emacs-lisp :tangle .emacs
-(dolist (elt '(("1" . "latin-1-prefix")
-	       ("9" . "latin-9-prefix")
-	       ("u" . "TeX")))
-  (define-key mule-keymap (car elt)
-    `(lambda ()
-       (interactive)
-       (set-input-method ,(cdr elt)))))
 #+end_src
 
 ** Function definitions
@@ -1176,14 +1225,6 @@ and all are available."
 	  (save-window-excursion
 	    (find-file file)))
       (message "No readable BROWSE file in path"))))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-set-small-text-scale ()
-  "Display buffer text in a smaller face than usual."
-  (interactive)
-  (when (fboundp 'text-scale-set)
-    (text-scale-set -1)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1384,42 +1425,6 @@ function returns non-`nil', then the line won't be broken there."
   (compilation-shell-minor-mode t))
 #+end_src
 
-** Various
-
-#+begin_src emacs-lisp :tangle .emacs
-(autoload 'dired-jump "dired" "\
-     Jump to Dired buffer corresponding to current buffer.
-     If in a file, Dired the current directory and move to file's line.
-     If in Dired already, pop up a level and goto old directory's line.
-     In case the proper Dired file line cannot be found, refresh the Dired
-     buffer and try again." t nil)
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(autoload 'dired-jump-other-window "dired" "\
-     Like \\[dired-jump] (dired-jump) but in other window." t nil) 
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(fset 'yes-or-no-p 'y-or-n-p)
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-;; Autorise l'utilisation de commandes qui peuvent dérouter
-;; l'utilisateur novice.
-(put 'narrow-to-region 'disabled nil)
-(put 'narrow-to-page 'disabled nil)
-(put 'scroll-left 'disabled nil)
-#+end_src
-
-Linux distributions like Arch Linux ship with both Python 2.x and 3.x,
-thus the list of interpreters must be expanded accordingly for file
-mode determination.
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-to-list 'interpreter-mode-alist '("python2" . python-mode))
-#+end_src
-
 ** Desktop
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1461,3 +1466,42 @@ mode determination.
       (load file t)
     (message "No machine specific initialization")))
 #+end_src
+
+* Mail, newsgroup, RSS
+
+** Usenet, RSS and electronic mail
+
+I use Gnus for Usenet forums, RSS feeds and electronic mail. All
+configuration files goes into =~/.emacs.d=.
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq read-mail-command 'gnus
+      mail-user-agent 'gnus-user-agent
+      message-directory (expand-file-name "~/.emacs.d/Mail")
+      gnus-home-directory (expand-file-name "~/.emacs.d/"))
+
+(add-hook 'kill-emacs-hook
+	  '(lambda ()
+	     (when (and (fboundp 'gnus-alive-p) (gnus-alive-p))
+	       (gnus-group-exit))))
+#+end_src
+
+** Message writing
+
+#+begin_src emacs-lisp :tangle .emacs
+(require 'message)
+(add-hook 'message-mode-hook
+	  '(lambda ()
+	     (setq message-elide-ellipsis "\n> (...)\n"
+		   message-signature t) 
+	     (setq message-completion-alist
+		   '(("^\\(Newsgroups\\|Followup-To\\|Posted-To\\|Gcc\\):" . message-expand-group)
+		     ("^\\(Resent-\\)?\\(To\\|B?Cc\\):" . eudc-expand-inline)
+		     ("^\\(Reply-To\\|From\\|Mail-Followup-To\\|Mail-Copies-To\\):" . eudc-expand-inline)
+		     ("^\\(Disposition-Notification-To\\|Return-Receipt-To\\):" . message-expand-name)))
+	     (setq ispell-message-dictionary-alist
+		   '(("^To:[^\n,]+\\.fr[ \t\n,>]" . "francais")
+		     ("^Newsgroups:[ \t]*fr\\." . "francais")
+		     ("^Newsgroups:[ \t]*[^f]" . "english")))))
+#+end_src
+

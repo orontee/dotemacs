@@ -565,8 +565,15 @@ not support colors or different fonts.
 
 ** Server, daemon
 
+A server is started if and only if the running process is not a daemon
+and there is not already a server started. In that way the Emacs
+client will always find someone to talk to.
+
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'server-switch-hook 'raise-frame)
+
+(when (not (or (server-running-p) (daemonp)))
+  (server-start))
 #+end_src
 
 ** Various

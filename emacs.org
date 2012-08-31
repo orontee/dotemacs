@@ -210,12 +210,6 @@ location where templates are searched is defined.
 (global-auto-revert-mode 1)
 #+end_src
 
-** Replace deletion by move to trash
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq delete-by-moving-to-trash t)
-#+end_src
-
 ** Moving between windows and selecting buffers
 
 Usually the frame is split at most twice. I find =C-xo= sufficient to
@@ -899,7 +893,7 @@ that frame vertically or horizontally according to the frame geometry.
   (compilation-shell-minor-mode t))
 #+end_src
 
-** Support for C++ language
+** Support for C++
 
 It is common for C++ developpers and C developpers to name their
 header files with the common =.h= extension. As I am more interested
@@ -981,7 +975,7 @@ Some abbreviation definitions for preprocessor directives are added.
 	     (define-key c++-mode-map "\C-m" 'c-context-line-break)))
 #+end_src
 
-** Support for Emacs lisp language
+** Support for Emacs Lisp
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'emacs-lisp-mode-hook
@@ -1012,7 +1006,7 @@ exists."
 (add-hook 'after-save-hook 'byte-compile-current-buffer)
 #+end_src
 
-** Support for HTML language
+** Support for HTML
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'html-mode-hook
@@ -1023,7 +1017,7 @@ exists."
 		   time-stamp-end "[ \t]*\n")))
 #+end_src
 
-** Support for Python language
+** Support for Python
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'python-mode-hook
@@ -1071,7 +1065,7 @@ semantic include path.
 
 Sample =dir-locals.el=.
 
-** Support for the Scheme language
+** Support for Scheme
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'scheme-mode-hook
@@ -1079,7 +1073,7 @@ Sample =dir-locals.el=.
 	     (setq scheme-program-name "umb-scheme")))
 #+end_src
 
-** Support for TeX and LaTeX languages
+** Support for TeX and LaTeX
 
 When a file with =.tex= extension is opened, it is parsed to identify
 if it is a TeX or a LaTeX file. The latter will be the default if the
@@ -1300,8 +1294,6 @@ If prefix argument is provided, use the alternative command,
   \n "\\" str ?\{ (skeleton-read "Title: ") ?\} \n \n)
 #+end_src
 
-*** TODO Move skeletons outside hook				   :noexport:
-
 * Text edition
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1365,6 +1357,12 @@ function returns non-`nil', then the line won't be broken there."
 #+end_src
 
 * File management
+
+** Replace deletion by move to trash
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq delete-by-moving-to-trash t)
+#+end_src
 
 ** Jumping and viewing
 

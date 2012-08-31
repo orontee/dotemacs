@@ -7,7 +7,7 @@
 #+filetags: emacs
 #+todo: TODO | DONE CANCELED
 #+style: <link rel="stylesheet" type="text/css" href="css/clean.css" />
-#+options: H:2 toc:1 todo:t email:t ^:nil
+#+options: H:2 toc:nil todo:t email:t ^:nil
 
 * Introduction
 
@@ -40,7 +40,6 @@ Most of the following code snippets I have written myself. Some were
 copied from the [[https://lists.gnu.org/mailman/listinfo/help-gnu-emacs][gnu.emacs.help newsgroup]] or the [[http://www.emacswiki.org/][Emacs wiki]].
 
 * General use
-
 ** Header							   :noexport:
 
 #+begin_src emacs-lisp :tangle .emacs :noweb tangle
@@ -447,29 +446,65 @@ Key sequences are defined to easily set the input methods I need.
        (set-input-method ,(cdr elt)))))
 #+end_src
 
-** Frame customization definitions
+** Display settings
+
+If the display can display images, image files are rendered as images.
 
 #+begin_src emacs-lisp :tangle .emacs
-(when (or (eq frame-type 'x)
-          (eq frame-type 'w32))
-  (global-set-key [f11] 'alt-fullscreen-both)
-
-  (defun alt-fullscreen-both ()
-    """Toggle fullscreen parameter."""
-    (interactive)
-    (let* ((frame (selected-frame))
-           (value (frame-parameter frame 'fullscreen)))
-      (cond 
-       ((eq value 'fullboth) 
-        (set-frame-parameter frame 'fullscreen nil)
-        (when (eq system-type 'windows-nt)
-          (w32-send-sys-command 61728)))
-       ((eq value nil) 
-        (set-frame-parameter frame 'fullscreen 'fullboth)
-        (when (eq system-type 'windows-nt)
-          (w32-send-sys-command 61488)))
-       (t nil)))))  
+(when (display-images-p)
+  (auto-image-file-mode 1))
 #+end_src
+
+When a buffer is already displayed, its frame is raised when the
+default is to create a new window displaying that buffer.
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq display-buffer-reuse-frames t)
+#+end_src
+
+Group buffers by their major modes when using the contextual menu to
+select a buffer.
+
+#+begin_src emacs-lisp :tangle .emacs
+(eval-after-load "mouse"
+  (progn
+    (setq mouse-buffer-menu-mode-mult 2)
+    (add-to-list 'mouse-buffer-menu-mode-groups '("Dired" . "Dired"))
+    (add-to-list 'mouse-buffer-menu-mode-groups '("tex" . "TeX/LaTeX"))
+    t))
+#+end_src
+
+** Frame customization definitions
+
+A function (binded to =f11=) is defined to maximize/restore the
+selected frame.
+
+#+begin_src emacs-lisp :tangle .emacs
+(global-set-key [f11] 'alt-fullscreen-both)
+
+(defun alt-fullscreen-both ()
+  """Toggle fullscreen parameter for selected frame."""
+  (interactive)
+  (let ((frame-type (framep (selected-frame))))
+    (when (or (eq frame-type 'x)
+              (eq frame-type 'w32))
+      (let* ((frame (selected-frame))
+             (value (frame-parameter frame 'fullscreen)))
+        (cond 
+         ((eq value 'fullboth) 
+          (set-frame-parameter frame 'fullscreen nil)
+          (when (eq system-type 'windows-nt)
+            (w32-send-sys-command 61728)))
+         ((eq value nil) 
+          (set-frame-parameter frame 'fullscreen 'fullboth)
+          (when (eq system-type 'windows-nt)
+            (w32-send-sys-command 61488)))
+         (t nil))))))
+#+end_src
+
+Various customizations are done for each frame depending on the frame
+type: An X Window frame, a frame on MS-Windows display or a termcap
+frame.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'after-make-frame-functions 'alt-frame-customization)
@@ -502,33 +537,20 @@ Key sequences are defined to easily set the input methods I need.
 		  (t nil)))))))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-fill-nobreak-predicate ()
-  "Disable the breaking of current line.
-
-This function is to be called during filling, with no arguments and with
-point located at the place where a break is being considered. If the
-function returns non-`nil', then the line won't be broken there."
-  (save-match-data                 
-    (or (looking-at "[ \t]*[])}»!?;:]")
-	(save-excursion
-	  (skip-chars-backward "« \t")
-	  (backward-char 1)
-	  (looking-at "[([{]")))))
-;; See fill-nobreak-predicate
+#+begin_src emacs-lisp
+(setq default-frame-alist
+      '((height . 40)
+	(width . 80)
+	(menu-bar-lines . nil)
+	(tool-bar-lines . nil)
+	(vertical-scroll-bars . nil)
+	(background-color . "#2e3434")
+	(background-mode . dark)
+	(foreground-color . "#eeeeec")
+	(mouse-color . "#8ae234")
+	(font . "Consolas-12")
+	(cursor-color . "#fce94f")))
 #+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-skip-dedicated-windows ()
-  "Select a non dedicated window."
-  (let ((list nil))
-    (while (window-dedicated-p (selected-window))
-      (push (selected-window) list)
-      (select-window (next-window nil 1 'visible))
-      (if (member (selected-window) list)
-	  (error "All windows are dedicated windows")))))
-#+end_src
-
 
 ** Documentation reader
 
@@ -634,6 +656,427 @@ computers.
 (setq-default time-stamp-format "%:y-%02m-%02d %02H:%02M:%02S %u@%s")
 
 (add-hook 'write-file-hooks '(lambda () (time-stamp)))
+#+end_src
+
+** Completion
+
+The typical Emacs behavior when completing is preferred: `Typical Emacs
+behavior is to complete as much as possible, then pause waiting for
+further input. Then if TAB is hit again, show a list of possible
+completions.'
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq pcomplete-cycle-completions nil)
+#+end_src
+
+By the way when reading file or buffer names the case will be ignored.
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq read-file-name-completion-ignore-case t
+      read-buffer-completion-ignore-case t)
+#+end_src
+
+** Abbreviations
+
+The file =~/.emacs.d/abbrev_defs= (or whatever the value of
+=abbrev-file-name= is) defines abbreviations and their expansions. It
+is read quietly.
+
+#+begin_src emacs-lisp :tangle .emacs
+(let ((file abbrev-file-name))
+  (when (file-readable-p file)
+    (read-abbrev-file file t)))
+#+end_src
+
+While editing buffers in programming modes, insertion of an
+abbreviation is automatically expanded and replaced by its expansion.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'prog-mode-hook
+          '(lambda ()
+             (abbrev-mode 1)))
+#+end_src
+
+An other way to use abbreviations is to expand letters in the buffer
+before point by looking for other words that start with those letters
+in buffers. Expansion is performed dynamically. I am hooked to this.
+To limit the number of dynamic expansions when editing files using
+naming conventions mixing uppercase and lowercase letters, case is
+significant while searching for expansions.
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq dabbrev-case-fold-search nil)
+#+end_src
+
+** Version control
+
+I sometimes have directories both under [[http://subversion.apache.org/][Subversion]] and [[http://gitscm.org/][Git]]. As my
+preferred version control backend is Git, the list of version control
+backends must be reordered.
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq vc-handled-backends (cons 'Git (remove 'Git vc-handled-backends)))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(global-set-key "\C-xv=" 'ediff-revision)
+#+end_src
+
+** Command interpreter
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'comint-mode-hook
+	  '(lambda ()
+	     (if (fboundp 'ansi-color-for-comint-mode-on)
+		 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t))
+	     (setq comint-scroll-show-maximum-output t
+		   indicate-empty-lines nil
+		   comint-password-prompt-regexp 
+		   "\\(\\([Ee]nter \\(?:same \\|the \\)?\\|[Oo]ld \\|[Nn]ew \\|'s \\|login \\|Kerberos \\|CVS \\|UNIX \\| SMB \\|LDAP \\|\\[sudo] \\|^\\)[Pp]assword\\( (again)\\)?\\|pass phrase\\|Mot de passe \\|\\(Enter \\|Repeat \\|Bad \\)?[Pp]assphrase\\)\\(?:, try again\\)?\\(?: for [^:]+\\)?:\\s *\\'")
+	     (define-key comint-mode-map "\C-c\C-k" 'comint-kill-subjob)
+	     (when (eq system-type 'windows-nt)
+	       (setq comint-process-echoes 'on))))
+
+(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
+#+end_src
+
+** Interactive shell
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'shell-mode-hook 
+	  '(lambda ()
+	     (ansi-color-for-comint-mode-on)
+	     (setq truncate-lines t
+		   shell-prompt-pattern "^\[[^$#\n]*\][$#] *"
+		   shell-font-lock-keywords
+		   '(("[ \t]\\([+-][^ \t\n]+\\)" 1 font-lock-comment-face)
+		     ("^\\[[1-9][0-9]*\\]" . font-lock-string-face))
+		   comint-password-prompt-regexp
+		   "\\(\\([Ee]nter \\(?:same \\|the \\)?\\|[Oo]ld \\|[Nn]ew \\|'s \\|login \\|Kerberos \\|CVS \\|UNIX \\| SMB \\|LDAP \\|\\[sudo] \\|^\\)[Pp]assword\\( (again)\\)?\\|pass phrase\\|Mot de passe \\|\\(Enter \\|Repeat \\|Bad \\)?[Pp]assphrase\\)\\(?:, try again\\)?\\(?: for [^:]+\\)?:\\s *\\'")
+	     (define-abbrev shell-mode-abbrev-table "null" "&> /dev/null")
+	     (compilation-shell-minor-mode)
+	     (pcomplete-shell-setup)
+	     (setq pcomplete-arg-quote-list comint-file-name-quote-list)))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'sh-mode-hook
+	  '(lambda ()
+	     (define-key sh-mode-map "'" 'self-insert-command)))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(defun alt-skip-dedicated-windows ()
+  "Select a non dedicated window."
+  (let ((list nil))
+    (while (window-dedicated-p (selected-window))
+      (push (selected-window) list)
+      (select-window (next-window nil 1 'visible))
+      (if (member (selected-window) list)
+	  (error "All windows are dedicated windows")))))
+
+(defadvice shell (before skip-dedicated-windows activate)
+  "Like `shell' but select a non dedicated window."
+  (interactive)
+  (alt-skip-dedicated-windows))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(global-set-key [f9] 'alt-shell-dwim)
+
+(defun alt-shell-dwim (arg)
+  "Run an inferior shell like `shell'. If an inferior shell as its I/O
+through the current buffer, then pop the next buffer in `buffer-list'
+whose name is generated from the string \"*shell*\". When called with
+an argument, start a new inferior shell whose I/O will go to a buffer
+named after the string \"*shell*\" using `generate-new-buffer-name'."
+  (interactive "p")
+  (let* ((shell-buffer-list
+	  (let (blist)
+	    (dolist (buff (buffer-list) blist)
+	      (when (string-match "^\\*shell\\*" (buffer-name buff))
+		(setq blist (cons buff blist))))))
+	 (name (if current-prefix-arg 
+		   (generate-new-buffer-name "*shell*")
+		 (car shell-buffer-list))))
+    (shell name)))
+#+end_src
+
+** Terminal emulation
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'term-mode-hook
+	  '(lambda ()
+	     (term-pager-toggle)))
+#+end_src
+
+** Compilation							   :noexport:
+
+#+begin_src emacs-lisp
+(add-hook 'compilation-mode-hook
+	  '(lambda ()
+	     (setq truncate-partial-width-windows nil)))
+#+end_src
+
+I use the single key binding =f8= to compile, display the compilation
+buffer, recompile and delete the window displaying the compilation
+buffer (in case it is the selected window).
+
+#+begin_src emacs-lisp :tangle .emacs
+(global-set-key [f8] 'alt-compile-dwim)
+
+(defun alt-compile-dwim (arg)
+  "A wrapper around both commands `compile' and `recompile'. 
+
+When there is no buffer named *compilation* or when called with
+an argument, run `compile'.
+
+If a buffer named *compilation* exists but is not visible, it is
+displayed. In case the *compilation* buffer exists and is
+displayed in the selected window, the window is deleted. If the
+,*compilation* buffer exists and it is displayed in a visible
+window different than the selected window, run `recompile'."
+  (interactive "P")
+  (if arg 
+      (call-interactively 'compile arg)
+    (let* ((buff (get-buffer "*compilation*"))
+           (win (get-buffer-window buff 'visible)))
+      (cond
+       ((and (bufferp buff) (not (windowp win)))
+        (display-buffer buff))
+       ((eq (window-buffer) buff)
+        (delete-window win))
+       ((bufferp buff) 
+        (call-interactively 'recompile))
+       (t
+        (call-interactively 'compile))))))
+#+end_src
+
+** Make
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'makefile-gmake-mode-hook
+	  '(lambda ()
+	     (setq tab-width 3)))
+#+end_src
+
+** Visual interface to diff and patch
+
+Prefer to run the visual interface to diff in a single frame and split
+that frame vertically or horizontally according to the frame geometry.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'ediff-mode-hook
+          '(lambda ()
+             (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+             (when (< (* 2 (frame-height)) (frame-width))
+               (setq ediff-split-window-function 'split-window-horizontally))))
+#+end_src
+
+** Debugger, GDB
+
+#+begin_src emacs-lisp :tangle .emacs
+(global-set-key [S-f8] 'gdb)
+
+(add-hook 'gdb-mode-hook
+	  '(lambda ()
+	     (setq gdb-show-changed-values t
+		   gdb-use-colon-colon-notation nil
+		   gdb-use-separate-io-buffer t)))
+
+(add-hook 'gud-mode-hook
+	  '(lambda ()
+	     (setq gud-tooltip-mode nil
+		   gud-gdb-command-name "gdb --silent --annotate=3")))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(defun alt-valgrind (file)
+  (interactive "fEnter file: ")
+  (shell-command (concat
+		  "valgrind --leak-check=full  " file))
+  (switch-to-buffer-other-window "*Shell Command Output*")
+  (compilation-shell-minor-mode t))
+#+end_src
+
+** Support for C++ language
+
+It is common for C++ developpers and C developpers to name their
+header files with the common =.h= extension. As I am more interested
+in C++, the default is to visit such files in C++ mode. Whats more,
+candidate extensions for the source file associated to a =.h= file are
+reordered to privilege C++ usual extensions rather than C ones (see
+=ff-find-other-file=  binded to =C-co= for a way to switch between
+implementation and declaration on a file name basis).
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+
+(require 'find-file)
+(setcdr (assoc "\\.h\\'" cc-other-file-alist)
+	(list (list ".cpp" ".cc" ".C" ".CC" ".cxx" ".c")))
+#+end_src
+
+Some abbreviation definitions for preprocessor directives are added.
+
+#+begin_src emacs-lisp :tangle .emacs
+(eval-after-load "cc-mode"
+  (progn
+    (define-skeleton cc-preprocessor-conditional-group
+      "Insert a C preprocessor conditional group"
+      "Group macro: " "#ifdef " str ?\n _ ?\n"#endif // " str ?\n)
+
+    (define-skeleton cc-preprocessor-not-conditional-group
+      "Insert a C preprocessor conditional group"
+      "Group macro: " "#ifndef " str ?\n _ ?\n"#endif // " str ?\n)
+
+    (define-skeleton cc-preprocessor-create-macro
+      "Insert a C preprocessor macro creation"
+      "Macro name: " "#define " str " " (skeleton-read "Macro expansion: ") _)
+
+    (define-skeleton cc-preprocessor-include-directive
+      "Insert a C preprocessor include directive"
+      "Header name: " "#include " str _)
+    t))
+
+(add-hook 'c++-mode-hook
+          '(lambda ()
+             (define-abbrev c++-mode-abbrev-table "ppif" "" 'cc-preprocessor-conditional-group)
+             (define-abbrev c++-mode-abbrev-table "ppnif" "" 'cc-preprocessor-not-conditional-group)
+             (define-abbrev c++-mode-abbrev-table "ppd" "" 'cc-preprocessor-create-macro)
+             (define-abbrev c++-mode-abbrev-table "ppi" "" 'cc-preprocessor-include-directive)))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(require 'hideshow)
+(add-hook 'c++-mode-hook
+	  '(lambda ()
+	     (setq comment-style 'extra-line)
+	     (setq indent-tabs-mode nil)
+             (c-set-style "stroustrup")
+	     (setq c-cleanup-list '(empty-defun-braces
+				    one-liner-defun
+				    defun-close-semi
+				    scope-operator
+				    list-close-comma)
+		   c-basic-offset 3)
+	     (c-toggle-electric-state 1)
+	     (c-toggle-hungry-state 1)
+	     (c-toggle-auto-newline 1)
+	     (subword-mode 1)
+	     (hs-minor-mode 1)
+	     (cwarn-mode 1)
+
+	     (hs-hide-initial-comment-block)
+	     
+	     (require 'find-file)
+	     (add-to-list ff-search-directories ".")
+
+	     (setq ispell-local-dictionary "english"
+		   flyspell-persistent-highlight nil)
+	     (flyspell-prog-mode)
+
+	     (define-key c++-mode-map "\C-co" 'ff-find-other-file)
+	     (define-key c++-mode-map "\C-ck" 'tags-apropos)
+	     (define-key c++-mode-map "\C-m" 'c-context-line-break)))
+#+end_src
+
+** Support for Emacs lisp language
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'emacs-lisp-mode-hook
+	  '(lambda ()
+	     (set (make-local-variable 'comment-auto-fill-only-comments) t)
+	     (set (make-local-variable 'imenu-sort-function) 
+		  'imenu--sort-by-name)
+	     (outline-minor-mode t)
+	     (define-key emacs-lisp-mode-map "\C-c\C-f" 
+	       'emacs-lisp-byte-compile)))
+#+end_src
+
+To speedup emacs lisp execution, code can be compiled. The following
+will compile a buffer on save if and only if an associated
+byte-compiled file already exists.
+
+#+begin_src emacs-lisp :tangle .emacs
+(defun byte-compile-current-buffer ()
+  "Compile the current buffer if its major mode is
+`emacs-lisp-mode' and an associated compiled file already
+exists."
+  (interactive) 
+  (when
+      (and (eq major-mode 'emacs-lisp-mode)
+           (file-exists-p (byte-compile-dest-file buffer-file-name)))
+    (byte-compile-file buffer-file-name)))
+
+(add-hook 'after-save-hook 'byte-compile-current-buffer)
+#+end_src
+
+** Support for HTML language
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'html-mode-hook
+	  '(lambda ()
+	     (setq time-stamp-start
+		   (concat "[ \t]*" comment-start "TIMESTAMP" comment-end)
+		   time-stamp-format "%:a %02d %:b %:y" 
+		   time-stamp-end "[ \t]*\n")))
+#+end_src
+
+** Support for Python language
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'python-mode-hook
+          '(lambda ()
+             (setq tab-width 3)))
+#+end_src
+
+The Python documentation used to be distributed in texinfo format. It
+is not the case anymore since the documentation is handled by the
+Sphinx framework. But it is still possible to generate texinfo files
+using Sphinx; Such files are easy to find on the web (if you don't
+want to generate them by yourself...). The =info-look= setting for
+=python-mode= must be updated to those new files.
+
+#+begin_src emacs-lisp :tangle .emacs
+(eval-after-load "info-look" 
+  '(info-lookup-add-help
+    :mode 'python-mode
+    :regexp "[[:alnum:]_]+"
+    :doc-spec '(("(python)Index" nil ""))))
+#+end_src
+
+Linux distributions like Arch Linux ship with both Python 2.x and 3.x,
+thus the list of interpreters must be expanded accordingly for file
+mode determination.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-to-list 'interpreter-mode-alist '("python2" . python-mode))
+#+end_src
+
+**** TODO Customize semantic include path			   :noexport:
+
+Python mode hook must be enhanced with a dynamic customization of the
+semantic include path.
+
+#+begin_src emacs-lisp
+(let* ((version ...)
+       (os ...)
+       (path ....))	; depends on version and os type
+  (eval-after-load "wisent/python"
+     (setq semantic-python-dependency-system-include-path path)))
+#+end_src
+
+**** TODO A word about virtualenv				   :noexport:
+
+Sample =dir-locals.el=.
+
+** Support for the Scheme language
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'scheme-mode-hook
+	  '(lambda ()
+	     (setq scheme-program-name "umb-scheme")))
 #+end_src
 
 ** Support for TeX and LaTeX languages
@@ -859,456 +1302,9 @@ If prefix argument is provided, use the alternative command,
 
 *** TODO Move skeletons outside hook				   :noexport:
 
-** Completion
-
-The typical Emacs behavior when completing is preferred: `Typical Emacs
-behavior is to complete as much as possible, then pause waiting for
-further input. Then if TAB is hit again, show a list of possible
-completions.'
+* Text edition
 
 #+begin_src emacs-lisp :tangle .emacs
-(setq pcomplete-cycle-completions nil)
-#+end_src
-
-By the way when reading file or buffer names the case will be ignored.
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq read-file-name-completion-ignore-case t
-      read-buffer-completion-ignore-case t)
-#+end_src
-
-** Abbreviations facilities
-
-The file =~/.emacs.d/abbrev_defs= (or whatever the value of
-=abbrev-file-name= is) defines abbreviations and their expansions. It
-is read quietly.
-
-#+begin_src emacs-lisp :tangle .emacs
-(let ((file abbrev-file-name))
-  (when (file-readable-p file)
-    (read-abbrev-file file t)))
-#+end_src
-
-While editing buffers in programming modes, insertion of an
-abbreviation is automatically expanded and replaced by its expansion.
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'prog-mode-hook
-          '(lambda ()
-             (abbrev-mode 1)))
-#+end_src
-
-An other way to use abbreviations is to expand letters in the buffer
-before point by looking for other words that start with those letters
-in buffers. Expansion is performed dynamically. I am hooked to this.
-To limit the number of dynamic expansions when editing files using
-naming conventions mixing uppercase and lowercase letters, case is
-significant while searching for expansions.
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq dabbrev-case-fold-search nil)
-#+end_src
-
-** Version control
-
-I sometimes have directories both under [[http://subversion.apache.org/][Subversion]] and [[http://gitscm.org/][Git]]. As my
-preferred version control backend is Git, the list of version control
-backends must be reordered.
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq vc-handled-backends (cons 'Git (remove 'Git vc-handled-backends)))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(global-set-key "\C-xv=" 'ediff-revision)
-#+end_src
-
-** Display settings
-
-If the display can display images, image files are rendered as images.
-
-#+begin_src emacs-lisp :tangle .emacs
-(when (display-images-p)
-  (auto-image-file-mode 1))
-#+end_src
-
-When a buffer is already displayed, its frame is raised when the
-default is to create a new window displaying that buffer.
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq display-buffer-reuse-frames t)
-#+end_src
-
-Group buffers by their major modes when using the contextual menu to
-select a buffer.
-
-#+begin_src emacs-lisp :tangle .emacs
-(eval-after-load "mouse"
-  (progn
-    (setq mouse-buffer-menu-mode-mult 2)
-    (add-to-list 'mouse-buffer-menu-mode-groups '("Dired" . "Dired"))
-    (add-to-list 'mouse-buffer-menu-mode-groups '("tex" . "TeX/LaTeX"))
-    t))
-#+end_src
-
-** Support for C++ language
-
-It is common for C++ developpers and C developpers to name their
-header files with the common =.h= extension. As I am more interested
-in C++, the default is to visit such files in C++ mode. Whats more,
-candidate extensions for the source file associated to a =.h= file are
-reordered to privilege C++ usual extensions rather than C ones (see
-=ff-find-other-file=  binded to =C-co= for a way to switch between
-implementation and declaration on a file name basis).
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
-
-(require 'find-file)
-(setcdr (assoc "\\.h\\'" cc-other-file-alist)
-	(list (list ".cpp" ".cc" ".C" ".CC" ".cxx" ".c")))
-#+end_src
-
-Some abbreviation definitions for preprocessor directives are added.
-
-#+begin_src emacs-lisp :tangle .emacs
-(eval-after-load "cc-mode"
-  (progn
-    (define-skeleton cc-preprocessor-conditional-group
-      "Insert a C preprocessor conditional group"
-      "Group macro: " "#ifdef " str ?\n _ ?\n"#endif // " str ?\n)
-
-    (define-skeleton cc-preprocessor-not-conditional-group
-      "Insert a C preprocessor conditional group"
-      "Group macro: " "#ifndef " str ?\n _ ?\n"#endif // " str ?\n)
-
-    (define-skeleton cc-preprocessor-create-macro
-      "Insert a C preprocessor macro creation"
-      "Macro name: " "#define " str " " (skeleton-read "Macro expansion: ") _)
-
-    (define-skeleton cc-preprocessor-include-directive
-      "Insert a C preprocessor include directive"
-      "Header name: " "#include " str _)
-    t))
-
-(add-hook 'c++-mode-hook
-          '(lambda ()
-             (define-abbrev c++-mode-abbrev-table "ppif" "" 'cc-preprocessor-conditional-group)
-             (define-abbrev c++-mode-abbrev-table "ppnif" "" 'cc-preprocessor-not-conditional-group)
-             (define-abbrev c++-mode-abbrev-table "ppd" "" 'cc-preprocessor-create-macro)
-             (define-abbrev c++-mode-abbrev-table "ppi" "" 'cc-preprocessor-include-directive)))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(require 'hideshow)
-(add-hook 'c++-mode-hook
-	  '(lambda ()
-	     (setq comment-style 'extra-line)
-	     (setq indent-tabs-mode nil)
-             (c-set-style "stroustrup")
-	     (setq c-cleanup-list '(empty-defun-braces
-				    one-liner-defun
-				    defun-close-semi
-				    scope-operator
-				    list-close-comma)
-		   c-basic-offset 3)
-	     (c-toggle-electric-state 1)
-	     (c-toggle-hungry-state 1)
-	     (c-toggle-auto-newline 1)
-	     (subword-mode 1)
-	     (hs-minor-mode 1)
-	     (cwarn-mode 1)
-
-	     (hs-hide-initial-comment-block)
-	     
-	     (require 'find-file)
-	     (add-to-list ff-search-directories ".")
-
-	     (setq ispell-local-dictionary "english"
-		   flyspell-persistent-highlight nil)
-	     (flyspell-prog-mode)
-
-	     (define-key c++-mode-map "\C-co" 'ff-find-other-file)
-	     (define-key c++-mode-map "\C-ck" 'tags-apropos)
-	     (define-key c++-mode-map "\C-m" 'c-context-line-break)))
-#+end_src
-
-** Command interpreter
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'comint-mode-hook
-	  '(lambda ()
-	     (if (fboundp 'ansi-color-for-comint-mode-on)
-		 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t))
-	     (setq comint-scroll-show-maximum-output t
-		   indicate-empty-lines nil
-		   comint-password-prompt-regexp 
-		   "\\(\\([Ee]nter \\(?:same \\|the \\)?\\|[Oo]ld \\|[Nn]ew \\|'s \\|login \\|Kerberos \\|CVS \\|UNIX \\| SMB \\|LDAP \\|\\[sudo] \\|^\\)[Pp]assword\\( (again)\\)?\\|pass phrase\\|Mot de passe \\|\\(Enter \\|Repeat \\|Bad \\)?[Pp]assphrase\\)\\(?:, try again\\)?\\(?: for [^:]+\\)?:\\s *\\'")
-	     (define-key comint-mode-map "\C-c\C-k" 'comint-kill-subjob)
-	     (when (eq system-type 'windows-nt)
-	       (setq comint-process-echoes 'on))))
-
-(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
-#+end_src
-
-** Compilation							   :noexport:
-
-#+begin_src emacs-lisp
-(add-hook 'compilation-mode-hook
-	  '(lambda ()
-	     (setq truncate-partial-width-windows nil)))
-#+end_src
-
-I use the single key binding =f8= to compile, display the compilation
-buffer, recompile and delete the window displaying the compilation
-buffer (in case it is the selected window).
-
-#+begin_src emacs-lisp :tangle .emacs
-(global-set-key [f8] 'alt-compile-dwim)
-
-(defun alt-compile-dwim (arg)
-  "A wrapper around both commands `compile' and `recompile'. 
-
-When there is no buffer named *compilation* or when called with
-an argument, run `compile'.
-
-If a buffer named *compilation* exists but is not visible, it is
-displayed. In case the *compilation* buffer exists and is
-displayed in the selected window, the window is deleted. If the
-,*compilation* buffer exists and it is displayed in a visible
-window different than the selected window, run `recompile'."
-  (interactive "P")
-  (if arg 
-      (call-interactively 'compile arg)
-    (let* ((buff (get-buffer "*compilation*"))
-           (win (get-buffer-window buff 'visible)))
-      (cond
-       ((and (bufferp buff) (not (windowp win)))
-        (display-buffer buff))
-       ((eq (window-buffer) buff)
-        (delete-window win))
-       ((bufferp buff) 
-        (call-interactively 'recompile))
-       (t
-        (call-interactively 'compile))))))
-#+end_src
-
-** Make
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'makefile-gmake-mode-hook
-	  '(lambda ()
-	     (setq tab-width 3)))
-#+end_src
-
-** Support for Emacs lisp language
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'emacs-lisp-mode-hook
-	  '(lambda ()
-	     (set (make-local-variable 'comment-auto-fill-only-comments) t)
-	     (set (make-local-variable 'imenu-sort-function) 
-		  'imenu--sort-by-name)
-	     (outline-minor-mode t)
-	     (define-key emacs-lisp-mode-map "\C-c\C-f" 
-	       'emacs-lisp-byte-compile)))
-#+end_src
-
-To speedup emacs lisp execution, code can be compiled. The following
-will compile a buffer on save if and only if an associated
-byte-compiled file already exists.
-
-#+begin_src emacs-lisp :tangle .emacs
-(defun byte-compile-current-buffer ()
-  "Compile the current buffer if its major mode is
-`emacs-lisp-mode' and an associated compiled file already
-exists."
-  (interactive) 
-  (when
-      (and (eq major-mode 'emacs-lisp-mode)
-           (file-exists-p (byte-compile-dest-file buffer-file-name)))
-    (byte-compile-file buffer-file-name)))
-
-(add-hook 'after-save-hook 'byte-compile-current-buffer)
-#+end_src
-
-** Visual interface to diff and patch
-
-Prefer to run the visual interface to diff in a single frame and split
-that frame vertically or horizontally according to the frame geometry.
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'ediff-mode-hook
-          '(lambda ()
-             (setq ediff-window-setup-function 'ediff-setup-windows-plain)
-             (when (< (* 2 (frame-height)) (frame-width))
-               (setq ediff-split-window-function 'split-window-horizontally))))
-#+end_src
-
-** Debugger, GDB
-
-#+begin_src emacs-lisp :tangle .emacs
-(global-set-key [S-f8] 'gdb)
-
-(add-hook 'gdb-mode-hook
-	  '(lambda ()
-	     (setq gdb-show-changed-values t
-		   gdb-use-colon-colon-notation nil
-		   gdb-use-separate-io-buffer t)))
-
-(add-hook 'gud-mode-hook
-	  '(lambda ()
-	     (setq gud-tooltip-mode nil
-		   gud-gdb-command-name "gdb --silent --annotate=3")))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-valgrind (file)
-  (interactive "fEnter file: ")
-  (shell-command (concat
-		  "valgrind --leak-check=full  " file))
-  (switch-to-buffer-other-window "*Shell Command Output*")
-  (compilation-shell-minor-mode t))
-#+end_src
-
-** Support for HTML language
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'html-mode-hook
-	  '(lambda ()
-	     (setq time-stamp-start
-		   (concat "[ \t]*" comment-start "TIMESTAMP" comment-end)
-		   time-stamp-format "%:a %02d %:b %:y" 
-		   time-stamp-end "[ \t]*\n")))
-#+end_src
-
-** Support for Python language
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'python-mode-hook
-          '(lambda ()
-             (setq tab-width 3)))
-#+end_src
-
-The Python documentation used to be distributed in texinfo format. It
-is not the case anymore since the documentation is handled by the
-Sphinx framework. But it is still possible to generate texinfo files
-using Sphinx; Such files are easy to find on the web (if you don't
-want to generate them by yourself...). The =info-look= setting for
-=python-mode= must be updated to those new files.
-
-#+begin_src emacs-lisp :tangle .emacs
-(eval-after-load "info-look" 
-  '(info-lookup-add-help
-    :mode 'python-mode
-    :regexp "[[:alnum:]_]+"
-    :doc-spec '(("(python)Index" nil ""))))
-#+end_src
-
-Linux distributions like Arch Linux ship with both Python 2.x and 3.x,
-thus the list of interpreters must be expanded accordingly for file
-mode determination.
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-to-list 'interpreter-mode-alist '("python2" . python-mode))
-#+end_src
-
-**** TODO Customize semantic include path			   :noexport:
-
-Python mode hook must be enhanced with a dynamic customization of the
-semantic include path.
-
-#+begin_src emacs-lisp
-(let* ((version ...)
-       (os ...)
-       (path ....))	; depends on version and os type
-  (eval-after-load "wisent/python"
-     (setq semantic-python-dependency-system-include-path path)))
-#+end_src
-
-**** TODO A word about virtualenv				   :noexport:
-
-Sample =dir-locals.el=.
-
-** Support for the Scheme language
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'scheme-mode-hook
-	  '(lambda ()
-	     (setq scheme-program-name "umb-scheme")))
-#+end_src
-
-** Interactive shell
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'shell-mode-hook 
-	  '(lambda ()
-	     (ansi-color-for-comint-mode-on)
-	     (setq truncate-lines t
-		   shell-prompt-pattern "^\[[^$#\n]*\][$#] *"
-		   shell-font-lock-keywords
-		   '(("[ \t]\\([+-][^ \t\n]+\\)" 1 font-lock-comment-face)
-		     ("^\\[[1-9][0-9]*\\]" . font-lock-string-face))
-		   comint-password-prompt-regexp
-		   "\\(\\([Ee]nter \\(?:same \\|the \\)?\\|[Oo]ld \\|[Nn]ew \\|'s \\|login \\|Kerberos \\|CVS \\|UNIX \\| SMB \\|LDAP \\|\\[sudo] \\|^\\)[Pp]assword\\( (again)\\)?\\|pass phrase\\|Mot de passe \\|\\(Enter \\|Repeat \\|Bad \\)?[Pp]assphrase\\)\\(?:, try again\\)?\\(?: for [^:]+\\)?:\\s *\\'")
-	     (define-abbrev shell-mode-abbrev-table "null" "&> /dev/null")
-	     (compilation-shell-minor-mode)
-	     (pcomplete-shell-setup)
-	     (setq pcomplete-arg-quote-list comint-file-name-quote-list)))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'sh-mode-hook
-	  '(lambda ()
-	     (define-key sh-mode-map "'" 'self-insert-command)))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defadvice shell (before skip-dedicated-windows activate)
-  "Like `shell' but select a non dedicated window."
-  (interactive)
-  (alt-skip-dedicated-windows))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(global-set-key [f9] 'alt-shell-dwim)
-
-(defun alt-shell-dwim (arg)
-  "Run an inferior shell like `shell'. If an inferior shell as its I/O
-through the current buffer, then pop the next buffer in `buffer-list'
-whose name is generated from the string \"*shell*\". When called with
-an argument, start a new inferior shell whose I/O will go to a buffer
-named after the string \"*shell*\" using `generate-new-buffer-name'."
-  (interactive "p")
-  (let* ((shell-buffer-list
-	  (let (blist)
-	    (dolist (buff (buffer-list) blist)
-	      (when (string-match "^\\*shell\\*" (buffer-name buff))
-		(setq blist (cons buff blist))))))
-	 (name (if current-prefix-arg 
-		   (generate-new-buffer-name "*shell*")
-		 (car shell-buffer-list))))
-    (shell name)))
-#+end_src
-
-** Terminal emulation
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'term-mode-hook
-	  '(lambda ()
-	     (term-pager-toggle)))
-#+end_src
-
-** Text edition
-
-#+begin_src emacs-lisp :tangle .emacs
-;; Dans le mode dédié à l'édition de textes, des retours à la ligne
-;; sont insérés automatiquement lors de l'insertion d'espaces ; les
-;; paires de parenthèses sont colorées ; les lignes vides sont
-;; signalées et les lignes trop longues sont tronquées. Des espaces
-;; insécables sont insérés devant certains caractères de ponctuation.
-;; De nombreux modes sont basés sur celui ci : le mode d'édition des
-;; messages électroniques, le mode d'édition des documents latex,...
 (add-hook 'text-mode-hook
 	  '(lambda ()
 	     (setq sentence-end 
@@ -1351,6 +1347,21 @@ named after the string \"*shell*\" using `generate-new-buffer-name'."
 ;;; 		  (let ((skeleton-end-newline nil))
 ;;; 		    (skeleton-insert '(nil (alt-dbw) & ? ?:)))))
 	     ))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(defun alt-fill-nobreak-predicate ()
+  "Disable the breaking of current line.
+
+This function is to be called during filling, with no arguments and with
+point located at the place where a break is being considered. If the
+function returns non-`nil', then the line won't be broken there."
+  (save-match-data                 
+    (or (looking-at "[ \t]*[])}»!?;:]")
+	(save-excursion
+	  (skip-chars-backward "« \t")
+	  (backward-char 1)
+	  (looking-at "[([{]")))))
 #+end_src
 
 * File management
@@ -1473,3 +1484,5 @@ configuration files goes into =~/.emacs.d=.
       (load file t)
     (message "No machine specific initialization")))
 #+end_src
+
+

@@ -324,6 +324,22 @@ holidays are already present into the calendar since we have set
 (define-key global-map "\C-ca" 'org-agenda)
 #+end_src
 
+Org files have an option to set the language to use for translations
+while exporting to HTML. When this option is set, one can deduce the
+dictionary to use for spell checking. By the way I like to spell check
+Org buffers on the fly.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'org-mode-hook
+   '(lambda ()
+      (require 'ispell)
+      (ispell-set-spellchecker-params)
+      (let ((lang (plist-get (org-infile-export-plist) :language)))
+        (when (and lang (assoc lang ispell-dictionary-alist))
+          (setq ispell-local-dictionary lang)))
+      (flyspell-mode 1)))
+#+end_src
+
 ** PostScript printing 						   :noexport:
 
 #+begin_src emacs-lisp :tangle .emacs

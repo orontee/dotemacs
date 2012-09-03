@@ -376,10 +376,11 @@ Automatically save place of cursor in each file.
 (setq tar-mode-show-date t)
 #+end_src
 
-** Time display
+** Time and date
 
-When working in a console, it is sometime usefull (really?) to display
-the time in the modeline. 
+When working in a console, it is sometime usefull to get the time:
+=M-! date= is ok for this. To display the time in the modeline there
+is =display-time-mode=.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'display-time-mode-hook
@@ -588,6 +589,7 @@ client will always find someone to talk to.
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'server-switch-hook 'raise-frame)
 
+(load-library "server")
 (when (not (or (server-running-p) (daemonp)))
   (server-start))
 #+end_src
@@ -651,6 +653,8 @@ computers.
 
 (add-hook 'write-file-hooks '(lambda () (time-stamp)))
 #+end_src
+
+*** TODO How to insert a timestamp at point
 
 ** Completion
 

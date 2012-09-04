@@ -1083,9 +1083,7 @@ Python mode hook must be enhanced with a dynamic customization of the
 semantic include path.
 
 #+begin_src emacs-lisp
-(let* ((version ...)
-       (os ...)
-       (path ....))	; depends on version and os type
+(let* ((path ....))	; depends on version, os type and virtualenv
   (eval-after-load "wisent/python"
      (setq semantic-python-dependency-system-include-path path)))
 #+end_src

@@ -179,9 +179,18 @@ functionality for "generic" files. (Files which are too small to
 warrant their own mode, but have comment characters, keywords, and the
 like.)
 
-The file =generic-x.el= contains a collection of generic modes.
+The file =generic-x.el= contains a collection of generic modes. The
+default is to enable generic modes according to the host operating
+system; I prefer to always define MS Windows generic modes for I
+sometime have to work on script files for the MS Windows command
+line...
 #+begin_src emacs-lisp :tangle .emacs
-(require 'generic-x)
+(load "generic-x")
+(setq generic-extras-enable-list
+      (append generic-default-modes
+	      generic-mswindows-modes
+	      generic-unix-modes))
+(load "generic-x")
 
 (add-hook 'default-generic-mode-hook
           '(lambda ()

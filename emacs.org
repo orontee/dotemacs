@@ -94,16 +94,17 @@ At the time of writing, I have activated the following packages:
 #+end_src
 
 #+RESULTS:
-| Package           | Description                                       |
-|-------------------+---------------------------------------------------|
-| symbols-mode      | List symbols of object files                      |
-| php-mode          | major mode for editing PHP code                   |
-| org               | Outline-based notes management and organizer      |
-| nsis-mode         | NSIS-mode                                         |
-| minimap           | Sidebar showing a "mini-map" of a buffer          |
-| htmlize           | Convert buffer text and decorations to HTML.      |
-| graphviz-dot-mode | Mode for the dot-language used by graphviz (att). |
-| ascii             | ASCII code display.                               |
+| Package           | Description                                        |
+|-------------------+----------------------------------------------------|
+| org               | Outline-based notes management and organizer       |
+| symbols-mode      | List symbols of object files                       |
+| php-mode          | major mode for editing PHP code                    |
+| nsis-mode         | NSIS-mode                                          |
+| minimap           | Sidebar showing a "mini-map" of a buffer           |
+| htmlize           | Convert buffer text and decorations to HTML.       |
+| graphviz-dot-mode | Mode for the dot-language used by graphviz (att).  |
+| doctags           | Generation of tags documentation in Doxygen syntax |
+| ascii             | ASCII code display.                                |
 
 All settings written using the customize library goes to a dedicated
 file that is loaded when the loading of the file file:.emacs ends.
@@ -217,6 +218,14 @@ location where templates are searched is defined.
 
 #+begin_src emacs-lisp :tangle .emacs
 (global-auto-revert-mode 1)
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'find-file-hook
+          '(lambda()
+             (when (and (buffer-file-name)
+                        (equal (file-name-extension (buffer-file-name)) "log"))
+               (auto-revert-tail-mode 1))))
 #+end_src
 
 ** Moving between windows and selecting buffers
@@ -343,6 +352,7 @@ Org buffers on the fly.
    '(lambda ()
       (require 'ispell)
       (ispell-set-spellchecker-params)
+      (require 'org-exp)
       (let ((lang (plist-get (org-infile-export-plist) :language)))
         (when (and lang (assoc lang ispell-dictionary-alist))
           (setq ispell-local-dictionary lang)))

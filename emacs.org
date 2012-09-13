@@ -203,6 +203,16 @@ line...
 
 *** TODO Associate generic mode to vc tmp files			   :noexport:
 
+** Opening files
+
+I sometime want the finding file commands to infer the name of the
+file to find from the text under point.
+#+begin_src emacs-lisp :tangle .emacs
+(require 'ffap)
+(setq ffap-require-prefix t)
+(ffap-bindings)
+#+end_src
+
 ** Auto insertion at file creation
 
 Auto insertion of templates at file creation is enabled and the

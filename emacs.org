@@ -392,17 +392,12 @@ Org buffers on the fly.
 		    " 2 div PrintWidth 2 div exch sub 0 rmoveto}")))
 #+end_src
 
-** Skeleton pairs
+** Electric pairs
 
 Enable pairing to insert pairs of matching characters.
 
 #+begin_src emacs-lisp :tangle .emacs
-(setq skeleton-pair t
-      skeleton-autowrap t)
-(define-key global-map "[" 'skeleton-pair-insert-maybe)
-(define-key global-map "{" 'skeleton-pair-insert-maybe)
-(define-key global-map "(" 'skeleton-pair-insert-maybe)
-(define-key global-map "\"" 'skeleton-pair-insert-maybe)
+(electric-pair-mode 1)
 #+end_src
 
 ** Save place

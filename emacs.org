@@ -996,7 +996,7 @@ Some abbreviation definitions for preprocessor directives are added.
 	  '(lambda ()
 	     (setq comment-style 'extra-line)
 	     (setq indent-tabs-mode nil)
-             (c-set-style "stroustrup")
+             (c-set-style "ellemtel")
 	     (setq c-cleanup-list '(empty-defun-braces
 				    one-liner-defun
 				    defun-close-semi
@@ -1010,8 +1010,6 @@ Some abbreviation definitions for preprocessor directives are added.
 	     (hs-minor-mode 1)
 	     (cwarn-mode 1)
 
-	     (hs-hide-initial-comment-block)
-	     
 	     (require 'find-file)
 	     (add-to-list ff-search-directories ".")
 

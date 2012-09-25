@@ -397,12 +397,7 @@ Org buffers on the fly.
 Enable pairing to insert pairs of matching characters.
 
 #+begin_src emacs-lisp :tangle .emacs
-(setq skeleton-pair t
-      skeleton-autowrap t)
-(define-key global-map "[" 'skeleton-pair-insert-maybe)
-(define-key global-map "{" 'skeleton-pair-insert-maybe)
-(define-key global-map "(" 'skeleton-pair-insert-maybe)
-(define-key global-map "\"" 'skeleton-pair-insert-maybe)
+(electric-pair-mode t)
 #+end_src
 
 ** Save place

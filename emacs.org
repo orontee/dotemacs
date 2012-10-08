@@ -21,14 +21,15 @@ become a kind of interface over the computer's operating system
 suprisingly I feel like it has adapt to my needs rather than I have
 limited myself to its features.
 
-As a intensive Emacs user I had various needs related to Emacs
+As an intensive Emacs user I had various needs related to Emacs
 customization: Centralize all customization to be able to deploy
 efficiently on multiple targets; Organize emacs customization in the
 order demanded by the flow of my needs rather than the one imposed by
 the computer; Share emacs customization; Gather links to external
-tools; etc. Thus I have written an Org file whose code blocks could be
-converted to the source file I use to customize emacs to my needs and
-that can be converted to the documentation you are reading.
+tools; log my contributions; etc. Thus I have written an Org file
+whose code blocks could be converted to the source file I use to
+customize emacs to my needs and that can be converted to the
+documentation you are reading.
 
 *Downloads*
 
@@ -778,6 +779,18 @@ backends must be reordered.
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 #+end_src
 
+** Spell checking
+
+When writing code source, I like to have comments and string checked
+for right spelling.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'prog-mode-hook
+          '(lambda ()
+             (setq ispell-local-dictionary "english"
+                   flyspell-persistent-highlight nil)
+             (flyspell-prog-mode)))
+#+end_src
 ** Interactive shell
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1009,10 +1022,6 @@ Some abbreviation definitions for preprocessor directives are added.
 	     
 	     (require 'find-file)
 	     (add-to-list ff-search-directories ".")
-
-	     (setq ispell-local-dictionary "english"
-		   flyspell-persistent-highlight nil)
-	     (flyspell-prog-mode)
 
 	     (define-key c++-mode-map "\C-co" 'ff-find-other-file)
 	     (define-key c++-mode-map "\C-ck" 'tags-apropos)

@@ -23,12 +23,12 @@ limited myself to its features.
 
 As an intensive Emacs user I had various needs related to Emacs
 customization: Centralize all customization to be able to deploy
-efficiently on multiple targets; Organize emacs customization in the
+efficiently on multiple targets; Organize Emacs customization in the
 order demanded by the flow of my needs rather than the one imposed by
-the computer; Share emacs customization; Gather links to external
+the computer; Share Emacs customization; Gather links to external
 tools; log my contributions; etc. Thus I have written an Org file
 whose code blocks could be converted to the source file I use to
-customize emacs to my needs and that can be converted to the
+customize Emacs to my needs and that can be converted to the
 documentation you are reading.
 
 *Downloads*
@@ -59,7 +59,7 @@ can be downloaded from http://ftp.gnu.org/pub/gnu/emacs/.
   file"))
 #+end_src
 
-** Extending emacs, packages repositories, etc
+** Extending Emacs, packages repositories, etc
 
 The easiest way to extend Emacs features is to use =list-package= and
 install packages from remote repositories. But =package.el= is rather
@@ -1041,7 +1041,7 @@ Some abbreviation definitions for preprocessor directives are added.
 	       'emacs-lisp-byte-compile)))
 #+end_src
 
-To speedup emacs lisp execution, code can be compiled. The following
+To speedup Emacs lisp execution, code can be compiled. The following
 will compile a buffer on save if and only if an associated
 byte-compiled file already exists.
 

@@ -802,15 +802,18 @@ content match =generic-find-file-regexp= and
 (add-hook 'find-file-hook
           '(lambda ()
              (when (string-match "^svn-commit" (buffer-name))
+               (setq ispell-local-dictionary "english")
                (flyspell-mode 1))))
 
 (add-hook 'default-generic-mode-hook
           '(lambda ()
              (when (equal (buffer-name) "COMMIT_EDITMSG")
+               (setq ispell-local-dictionary "english")
                (flyspell-mode 1))))
 
 (add-hook 'log-edit-mode-hook
           '(lambda ()
+             (setq ispell-local-dictionary "english")
              (flyspell-mode 1)))
 #+end_src
 

@@ -1294,13 +1294,13 @@ inserted."
 		   reftex-label-alist
 		   (setq reftex-label-alist
 			 '(("theorem" ?h "thr:" "~\\ref{%s}" t 
-			    (regexp "th\\\(\\\(é\\\|\'e\\\)or\\\(è\\\|\`e\\\)mes?\\\|m\\\.\\\)") nil)
+			    (regexp "th\\\(\\\(�\\\|\'e\\\)or\\\(�\\\|\`e\\\)mes?\\\|m\\\.\\\)") nil)
 			   ("proposition" ?p "pro:" "~\\ref{%s}" t 
 			    (regexp "prop\\\(ositions?\\\|.\\\)") nil)
 			   ("lemma" ?l "lem:" "~\\ref{%s}" t 
 			    (regexp "lem\\\(mes?\\\|.\\\)") nil)
 			   ("equation" 101 "eq:" "~(\\ref{%s})" t
-			    (regexp "\\\(l'\\\)?\\\(é\\\|\'e\\\)quations?") nil)
+			    (regexp "\\\(l'\\\)?\\\(�\\\|\'e\\\)quations?") nil)
 			   ("example" ?x "exm:" "~\\ref{%s}" t 
 			    (regexp "exemp\\\(les?\\\|.\\\)")))))
 	     (defun reftex-page-reference ()
@@ -1313,12 +1313,9 @@ inserted."
 	     (define-key reftex-mode-map "\C-c]" 'reftex-page-reference)
 	     (define-key-after reftex-mode-menu [pageref]
 	       '(menu-item "\\pageref" reftex-page-reference) '\\cite)))
-;; La liste `reftex-label-alist' est à jour : elle prévoie l'encodage
-;; des accents à la TeX et avec l'encodage latin-1, ou encore la
-;; présence d'un «l'» devant le mot «équation». Une fonction pour
-;; l'insertion de référence à des pages est définie.
+
 (eval-after-load "reftex"
-  '(let ((dir (expand-file-name "~/Documents/Mathématiques/Bibliographie")))
+  '(let ((dir (expand-file-name "~/Documents/Math�matiques/Bibliographie")))
      (when (file-exists-p dir)
        (dolist (name (directory-files dir t ".*\.bib$"))
 	 (add-to-list 'reftex-default-bibliography name)))))
@@ -1451,9 +1448,9 @@ This function is to be called during filling, with no arguments and with
 point located at the place where a break is being considered. If the
 function returns non-`nil', then the line won't be broken there."
   (save-match-data                 
-    (or (looking-at "[ \t]*[])}»!?;:]")
+    (or (looking-at "[ \t]*[])}�!?;:]")
 	(save-excursion
-	  (skip-chars-backward "« \t")
+	  (skip-chars-backward "� \t")
 	  (backward-char 1)
 	  (looking-at "[([{]")))))
 #+end_src

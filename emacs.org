@@ -13,11 +13,11 @@
 
 I am using [[http://www.gnu.org/software/emacs/][GNU Emacs]] since the late '90 on various environments, both
 at home or at work. At the beginning, I used it to write LaTeX files:
-I found that tool more or less randomly sitting in front of one of the
-X Window terminals of my university. Today, whatever I have to do with
-a computer, it ends in an Emacs buffer... In my current use, Emacs has
-become a kind of interface over the computer's operating system
-(whatever it is: Arch Linux, Ubuntu, Windows XP and Vista). But
+I found that tool more or less randomly while sitting in front of one
+of the X Window terminals of my university. Today, whatever I have to
+do with a computer, it ends in an Emacs buffer... In my current use,
+Emacs has become a kind of interface over the computer's operating
+system (whatever it is: Arch Linux, Ubuntu, Windows XP and Vista). But
 suprisingly I feel like it has adapt to my needs rather than I have
 limited myself to its features.
 
@@ -28,8 +28,8 @@ order demanded by the flow of my needs rather than the one imposed by
 the computer; Share Emacs customization; Gather links to external
 tools; log my contributions; etc. Thus I have written an Org file
 whose code blocks could be converted to the source file I use to
-customize Emacs to my needs and that can be converted to the
-documentation you are reading.
+customize Emacs to my needs and, on the other hand, is the source of
+the documentation you are reading.
 
 *Downloads*
 
@@ -72,9 +72,9 @@ accordingly.
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/"))
 #+end_src
 
-The default list of archives from which to fetch points to the GNU
-Emacs packages repository. There are usefull packages in other places
-like [[http://tromey.com/elpa/][ELPA]] and [[http://marmalade-repo.org/][Marmalade]].
+The default is to fetch packages from the GNU Emacs packages
+repository. There are usefull packages in other places like [[http://tromey.com/elpa/][ELPA]] and
+[[http://marmalade-repo.org/][Marmalade]].
 
 #+begin_src emacs-lisp :tangle .emacs
 (eval-after-load "package"
@@ -95,19 +95,19 @@ At the time of writing, I have activated the following packages:
 #+end_src
 
 #+RESULTS:
-| Package           | Description                                        |
-|-------------------+----------------------------------------------------|
-| org               | Outline-based notes management and organizer       |
-| symbols-mode      | List symbols of object files                       |
-| php-mode          | major mode for editing PHP code                    |
-| nsis-mode         | NSIS-mode                                          |
-| minimap           | Sidebar showing a "mini-map" of a buffer           |
-| htmlize           | Convert buffer text and decorations to HTML.       |
-| graphviz-dot-mode | Mode for the dot-language used by graphviz (att).  |
-| doctags           | Generation of tags documentation in Doxygen syntax |
-| ascii             | ASCII code display.                                |
+| Package               | Description                                        |
+|-----------------------+----------------------------------------------------|
+| virtualenv            | Virtualenv for Python  -*- coding: utf-8 -*-       |
+| symbols-mode          | List symbols of object files                       |
+| php-mode              | major mode for editing PHP code                    |
+| htmlize               | Convert buffer text and decorations to HTML.       |
+| graphviz-dot-mode     | Mode for the dot-language used by graphviz (att).  |
+| gnuplot               | drive gnuplot from within emacs                    |
+| doctags               | Generation of tags documentation in Doxygen syntax |
+| dictionary            | an interface to an RFC 2229 dictionary server      |
+| color-theme-solarized | Solarized themes for Emacs                         |
 
-All settings written using the customize library goes to a dedicated
+All settings written using the customize library go to a dedicated
 file that is loaded when the loading of the file file:.emacs ends.
 
 #+begin_src emacs-lisp :noweb yes
@@ -126,7 +126,7 @@ running on.
 
 You feel like the computer screen is too narrow, don't you? So menu
 bars, scroll bars and tool bars must be disabled. Whats more disabling
-the eyecandy may improve responsiveness when Emacs run on a remote
+this eyecandy may improve responsiveness when Emacs run on a remote
 computer forwarding X11. Note that the content of the menu bar is
 still available by pressing =f10= or the contextual menu bind to
 =C-mouse-1=.
@@ -193,16 +193,7 @@ line...
 	      generic-mswindows-modes
 	      generic-unix-modes))
 (load "generic-x")
-
-(add-hook 'default-generic-mode-hook
-          '(lambda ()
-             (let ((name (buffer-name)))
-               (when (or (equal name "COMMIT_EDITMSG")
-                         (string-match "^svn-commit" name))
-                 (flyspell-mode 1)))))
 #+end_src
-
-*** TODO Associate generic mode to vc tmp files			   :noexport:
 
 ** Opening files
 
@@ -588,6 +579,31 @@ frame.
 	(cursor-color . "#fce94f")))
 #+end_src
 
+It is better to customize the file file:~/.Xresources:
+
+#+begin_src x-resource-generic-mode
+!Emacs colors
+Emacs.foreground: #eeeeec
+Emacs.background: #2e3434
+Emacs.cursorColor: #fce94f
+Emacs.borderColor: #2e3434
+Emacs.pointerColor: #8ae234
+Emacs.mouseColor: #8ae234
+
+! Emacs frame customization
+!Emacs.fullscreen: maximized
+Emacs.menuBar: off
+Emacs.toolBar: off
+Emacs.verticalScrollBars: off
+!Emacs.font: Inconsolata-13
+
+! Emacs faces customization
+Emacs.fringe.attributeBackground: grey20
+Emacs.header-line.attributeBackground: grey30
+Emacs.link.attributeForeground: cyan
+Emacs.link.attributeUnderline: false
+#+end_src
+
 ** Documentation reader
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -633,6 +649,15 @@ client will always find someone to talk to.
 (load-library "server")
 (when (not (or (server-running-p) (daemonp)))
   (server-start))
+#+end_src
+
+To have =emacsclient= called by =sudoedit=, =git= and other programs
+when they are tell to edit a file, Bash configuration file
+file:~/.bashrc contains the following snippet:
+
+#+begin_src shell-script-mode 
+builtin type -p emacsclient &>/dev/null
+[ -n $@ ] && export EDITOR=emacsclient
 #+end_src
 
 ** Various
@@ -695,7 +720,7 @@ computers.
 (add-hook 'write-file-hooks '(lambda () (time-stamp)))
 #+end_src
 
-*** TODO How to insert a timestamp at point
+*** TODO How to insert a timestamp at point			   :noexport:
 
 ** Completion
 
@@ -757,8 +782,36 @@ backends must be reordered.
 (setq vc-handled-backends (cons 'Git (remove 'Git vc-handled-backends)))
 #+end_src
 
+Comparing revisions using Ediff is so pleasant that it deserves a key
+binding.
+
 #+begin_src emacs-lisp :tangle .emacs
 (global-set-key "\C-xv=" 'ediff-revision)
+#+end_src
+
+Spell checking is automatically enabled when editing log messages,
+whether working with Git or Subversion from a shell, or using Emacs
+version control interface.
+
+Note that, when working with Git from a shell, the buffer opened to
+edit a log message has =default-generic-mode= enabled because its
+content match =generic-find-file-regexp= and
+=generic-use-find-file-hook= default value is =t= .
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'find-file-hook
+          '(lambda ()
+             (when (string-match "^svn-commit" (buffer-name))
+               (flyspell-mode 1))))
+
+(add-hook 'default-generic-mode-hook
+          '(lambda ()
+             (when (equal (buffer-name) "COMMIT_EDITMSG")
+               (flyspell-mode 1))))
+
+(add-hook 'log-edit-mode-hook
+          '(lambda ()
+             (flyspell-mode 1)))
 #+end_src
 
 ** Command interpreter
@@ -1113,8 +1166,6 @@ semantic include path.
 #+end_src
 
 **** TODO A word about virtualenv				   :noexport:
-
-Sample =dir-locals.el=.
 
 ** Support for Scheme
 

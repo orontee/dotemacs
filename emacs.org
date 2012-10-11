@@ -1131,7 +1131,8 @@ exists."
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'python-mode-hook
           '(lambda ()
-             (setq tab-width 3)))
+             (setq tab-width 3
+                   gud-pdb-command-name "python -m pdb ")))
 #+end_src
 
 The Python documentation used to be distributed in texinfo format. It

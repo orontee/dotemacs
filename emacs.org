@@ -853,8 +853,7 @@ for right spelling.
 (add-hook 'shell-mode-hook 
 	  '(lambda ()
 	     (ansi-color-for-comint-mode-on)
-	     (setq truncate-lines t
-		   shell-prompt-pattern "^\[[^$#\n]*\][$#] *"
+	     (setq shell-prompt-pattern "^\[[^$#\n]*\][$#] *"
 		   shell-font-lock-keywords
 		   '(("[ \t]\\([+-][^ \t\n]+\\)" 1 font-lock-comment-face)
 		     ("^\\[[1-9][0-9]*\\]" . font-lock-string-face))

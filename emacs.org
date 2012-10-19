@@ -853,8 +853,7 @@ for right spelling.
 (add-hook 'shell-mode-hook 
 	  '(lambda ()
 	     (ansi-color-for-comint-mode-on)
-	     (setq truncate-lines t
-		   shell-prompt-pattern "^\[[^$#\n]*\][$#] *"
+	     (setq shell-prompt-pattern "^\[[^$#\n]*\][$#] *"
 		   shell-font-lock-keywords
 		   '(("[ \t]\\([+-][^ \t\n]+\\)" 1 font-lock-comment-face)
 		     ("^\\[[1-9][0-9]*\\]" . font-lock-string-face))
@@ -967,6 +966,15 @@ window different than the selected window, run `recompile'."
 	     (setq tab-width 3)))
 #+end_src
 
+** Spell checking
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'prog-mode-hook
+          '(lambda ()
+	     (setq ispell-local-dictionary "english"
+		   flyspell-persistent-highlight nil)
+	     (flyspell-prog-mode)))
+#+end_src
 ** Visual interface to diff and patch
 
 Prefer to run the visual interface to diff in a single frame and split
@@ -1060,7 +1068,7 @@ Some abbreviation definitions for preprocessor directives are added.
 	  '(lambda ()
 	     (setq comment-style 'extra-line)
 	     (setq indent-tabs-mode nil)
-             (c-set-style "stroustrup")
+             (c-set-style "ellemtel")
 	     (setq c-cleanup-list '(empty-defun-braces
 				    one-liner-defun
 				    defun-close-semi
@@ -1074,8 +1082,6 @@ Some abbreviation definitions for preprocessor directives are added.
 	     (hs-minor-mode 1)
 	     (cwarn-mode 1)
 
-	     (hs-hide-initial-comment-block)
-	     
 	     (require 'find-file)
 	     (add-to-list ff-search-directories ".")
 

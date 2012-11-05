@@ -666,6 +666,24 @@ builtin type -p emacsclient &>/dev/null
 [ -n $@ ] && export EDITOR=emacsclient
 #+end_src
 
+** Desktop
+
+The desktop file should be saved in the user home directory. Only ten
+files are restored immediately in order not to slow down start up.
+Tramp, ftp and log files are not restored, dired buffers too.
+
+#+begin_src emacs-lisp :tangle .emacs
+(load-library "desktop")
+(setq desktop-dirname (expand-file-name "~")
+      desktop-restore-eager 10
+      desktop-lazy-verbose nil
+      desktop-files-not-to-save
+      "\\(^/[^/:]*:\\|(ftp)$\\|.*\.log\\)")
+
+(add-to-list 'desktop-modes-not-to-save
+             'dired-mode)
+#+end_src
+
 ** Various
 
 #+begin_src emacs-lisp :tangle .emacs

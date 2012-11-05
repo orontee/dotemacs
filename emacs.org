@@ -195,6 +195,12 @@ line...
 (load "generic-x")
 #+end_src
 
+#+begin_src emacs-lisp :tangle .emacs
+(when (eq system-type 'gnu/linux)
+  (add-to-list 'auto-mode-alist
+               '("/usr/lib/systemd/system" . ini-generic-mode)))
+#+end_src
+
 ** Opening files
 
 I sometime want the finding file commands to infer the name of the

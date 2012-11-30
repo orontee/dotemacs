@@ -80,7 +80,8 @@ repository. There are usefull packages in other places like [[http://tromey.com/
 (eval-after-load "package"
   '(progn
      (add-to-list 'package-archives '("elpa" . "http://tromey.com/elpa/"))
-     (add-to-list 'package-archives '("marmalade". "http://marmalade-repo.org/packages/"))))  
+     (add-to-list 'package-archives '("marmalade". "http://marmalade-repo.org/packages/"))))
+(package-initialize)
 #+end_src
 
 At the time of writing, I have activated the following packages:
@@ -1190,6 +1191,17 @@ semantic include path.
 (let* ((path ....))	; depends on version, os type and virtualenv
   (eval-after-load "wisent/python"
      (setq semantic-python-dependency-system-include-path path)))
+#+end_src
+
+Dynamic read of import path (regexp must be fixed):
+#+begin_src emacs-lisp
+(setq toto 
+      (let ((cmd python-command))
+	(shell-command-to-string
+	 (concat cmd " -c \"from sys import path;\
+path.remove(''); print path\""))))
+
+(split-string toto "(\\['|', '|'\\]\n)")
 #+end_src
 
 **** TODO A word about virtualenv				   :noexport:

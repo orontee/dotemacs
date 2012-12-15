@@ -884,10 +884,7 @@ for right spelling.
 		     ("^\\[[1-9][0-9]*\\]" . font-lock-string-face))
 		   comint-password-prompt-regexp
 		   "\\(\\([Ee]nter \\(?:same \\|the \\)?\\|[Oo]ld \\|[Nn]ew \\|'s \\|login \\|Kerberos \\|CVS \\|UNIX \\| SMB \\|LDAP \\|\\[sudo] \\|^\\)[Pp]assword\\( (again)\\)?\\|pass phrase\\|Mot de passe \\|\\(Enter \\|Repeat \\|Bad \\)?[Pp]assphrase\\)\\(?:, try again\\)?\\(?: for [^:]+\\)?:\\s *\\'")
-	     (define-abbrev shell-mode-abbrev-table "null" "&> /dev/null")
-	     (compilation-shell-minor-mode)
-	     (pcomplete-shell-setup)
-	     (setq pcomplete-arg-quote-list comint-file-name-quote-list)))
+	     (define-abbrev shell-mode-abbrev-table "null" "&> /dev/null")))
 #+end_src
 
 #+begin_src emacs-lisp :tangle .emacs

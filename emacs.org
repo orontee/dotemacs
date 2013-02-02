@@ -683,6 +683,8 @@ Tramp, ftp and log files are not restored, dired buffers too.
 
 (add-to-list 'desktop-modes-not-to-save
              'dired-mode)
+(add-to-list 'desktop-modes-not-to-save
+             'info-mode)
 #+end_src
 
 ** Various

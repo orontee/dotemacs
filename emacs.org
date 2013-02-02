@@ -26,7 +26,7 @@ customization: Centralize all customization to be able to deploy
 efficiently on multiple targets; Organize Emacs customization in the
 order demanded by the flow of my needs rather than the one imposed by
 the computer; Share Emacs customization; Gather links to external
-tools; log my contributions; etc. Thus I have written an Org file
+tools; Log my contributions; Etc. Thus I have written an Org file
 whose code blocks could be converted to the source file I use to
 customize Emacs to my needs and, on the other hand, is the source of
 the documentation you are reading.
@@ -126,10 +126,10 @@ running on.
 ** Widening the screen
 
 You feel like the computer screen is too narrow, don't you? So menu
-bars, scroll bars and tool bars must be disabled. Whats more disabling
-this eyecandy may improve responsiveness when Emacs run on a remote
-computer forwarding X11. Note that the content of the menu bar is
-still available by pressing =f10= or the contextual menu bind to
+bars, scroll bars and tool bars must be disabled. Whats more,
+disabling this eyecandy may improve responsiveness when Emacs run on a
+remote computer forwarding X11. Note that the content of the menu bar
+is still available by pressing =f10= or the contextual menu bind to
 =C-mouse-1=.
 
 #+begin_src emacs-lisp :tangle .emacs

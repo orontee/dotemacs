@@ -1032,11 +1032,11 @@ that frame vertically or horizontally according to the frame geometry.
 ** Support for C++
 
 It is common for C++ developpers and C developpers to name their
-header files with the common =.h= extension. As I am more interested
-in C++, the default is to visit such files in C++ mode. Whats more,
-candidate extensions for the source file associated to a =.h= file are
-reordered to privilege C++ usual extensions rather than C ones (see
-=ff-find-other-file=  binded to =C-co= for a way to switch between
+header files with the =.h= extension. As I am more interested in C++,
+the default is to visit such files in C++ mode. Whats more, candidate
+extensions for the source file associated to a =.h= file are reordered
+to privilege C++ usual extensions rather than C ones (see
+=ff-find-other-file= binded to =C-co= for a way to switch between
 implementation and declaration on a file name basis).
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1138,17 +1138,6 @@ exists."
 (add-hook 'after-save-hook 'byte-compile-current-buffer)
 #+end_src
 
-** Support for HTML
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'html-mode-hook
-	  '(lambda ()
-	     (setq time-stamp-start
-		   (concat "[ \t]*" comment-start "TIMESTAMP" comment-end)
-		   time-stamp-format "%:a %02d %:b %:y" 
-		   time-stamp-end "[ \t]*\n")))
-#+end_src
-
 ** Support for Python
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1211,6 +1200,79 @@ path.remove(''); print path\""))))
 (add-hook 'scheme-mode-hook
 	  '(lambda ()
 	     (setq scheme-program-name "umb-scheme")))
+#+end_src
+
+* Text edition
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'text-mode-hook
+	  '(lambda ()
+	     (setq sentence-end 
+		   "[.?!]\\($\\| $\\|	\\| \\)[ 	\n]*"
+		   sentence-end-double-space nil)
+ 	     (auto-fill-mode 1)
+	     (goto-address)
+	     (use-hard-newlines 1 'never)
+	     ;; (local-set-key "\C-c["
+	     ;;   '(lambda () 
+	     ;; 	  (interactive)
+	     ;; 	  (require 'reftex)
+	     ;; 	  (let ((reftex-cite-format 'locally)) 
+	     ;; 	    (reftex-citation))))
+	     (local-set-key [\"] 'skeleton-pair-insert-maybe)
+	     (local-set-key "`" 'skeleton-pair-insert-maybe)
+	     (local-set-key [?\C-\M-$] 'ispell-buffer)
+	     (defun alt-dbw ()
+	       "Delete backward one space character if possible."
+	       (when (eq (char-syntax (char-before)) ?\ ) 
+		 (backward-delete-char 1)))
+;;; 	     (local-set-key "?" 
+;;; 	       '(lambda () 
+;;; 		  (interactive)
+;;; 		  (let ((skeleton-end-newline nil))
+;;; 			    (skeleton-insert '(nil (alt-dbw) & ? ??)))))
+;;; 	     (local-set-key "!"
+;;; 	       '(lambda ()
+;;; 		  (interactive)
+;;; 		  	  (let ((skeleton-end-newline nil))
+;;; 			    (skeleton-insert '(nil (alt-dbw) & ? ?!)))))
+;;; 	     (local-set-key ";"
+;;; 	       '(lambda ()
+;;; 		  (interactive)
+;;; 		  (let ((skeleton-end-newline nil))
+;;; 		    (skeleton-insert '(nil (alt-dbw) & ? ?\;)))))
+;;; 	     (local-set-key ":"
+;;; 	       '(lambda ()
+;;; 		  (interactive)
+;;; 		  (let ((skeleton-end-newline nil))
+;;; 		    (skeleton-insert '(nil (alt-dbw) & ? ?:)))))
+	     ))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(defun alt-fill-nobreak-predicate ()
+  "Disable the breaking of current line.
+
+This function is to be called during filling, with no arguments and with
+point located at the place where a break is being considered. If the
+function returns non-`nil', then the line won't be broken there."
+  (save-match-data                 
+    (or (looking-at "[ \t]*[])}�!?;:]")
+	(save-excursion
+	  (skip-chars-backward "� \t")
+	  (backward-char 1)
+	  (looking-at "[([{]")))))
+#+end_src
+
+** Support for SGML, HTML
+
+It is difficult to avoid long lines when writing SGML files, thus
+automatic line breaking is turned off.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'html-mode-hook
+          '(lambda ()
+             (auto-fill-mode -1)))
 #+end_src
 
 ** Support for TeX and LaTeX
@@ -1430,69 +1492,6 @@ If prefix argument is provided, use the alternative command,
     (setq alt-latex-section-default section))
   \n "\\" str ?\{ (skeleton-read "Title: ") ?\} \n \n)
 #+end_src
-
-* Text edition
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'text-mode-hook
-	  '(lambda ()
-	     (setq sentence-end 
-		   "[.?!]\\($\\| $\\|	\\| \\)[ 	\n]*"
-		   sentence-end-double-space nil)
- 	     (auto-fill-mode 1)
-	     (goto-address)
-	     (use-hard-newlines 1 'never)
-	     ;; (local-set-key "\C-c["
-	     ;;   '(lambda () 
-	     ;; 	  (interactive)
-	     ;; 	  (require 'reftex)
-	     ;; 	  (let ((reftex-cite-format 'locally)) 
-	     ;; 	    (reftex-citation))))
-	     (local-set-key [\"] 'skeleton-pair-insert-maybe)
-	     (local-set-key "`" 'skeleton-pair-insert-maybe)
-	     (local-set-key [?\C-\M-$] 'ispell-buffer)
-	     (defun alt-dbw ()
-	       "Delete backward one space character if possible."
-	       (when (eq (char-syntax (char-before)) ?\ ) 
-		 (backward-delete-char 1)))
-;;; 	     (local-set-key "?" 
-;;; 	       '(lambda () 
-;;; 		  (interactive)
-;;; 		  (let ((skeleton-end-newline nil))
-;;; 			    (skeleton-insert '(nil (alt-dbw) & ? ??)))))
-;;; 	     (local-set-key "!"
-;;; 	       '(lambda ()
-;;; 		  (interactive)
-;;; 		  	  (let ((skeleton-end-newline nil))
-;;; 			    (skeleton-insert '(nil (alt-dbw) & ? ?!)))))
-;;; 	     (local-set-key ";"
-;;; 	       '(lambda ()
-;;; 		  (interactive)
-;;; 		  (let ((skeleton-end-newline nil))
-;;; 		    (skeleton-insert '(nil (alt-dbw) & ? ?\;)))))
-;;; 	     (local-set-key ":"
-;;; 	       '(lambda ()
-;;; 		  (interactive)
-;;; 		  (let ((skeleton-end-newline nil))
-;;; 		    (skeleton-insert '(nil (alt-dbw) & ? ?:)))))
-	     ))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-fill-nobreak-predicate ()
-  "Disable the breaking of current line.
-
-This function is to be called during filling, with no arguments and with
-point located at the place where a break is being considered. If the
-function returns non-`nil', then the line won't be broken there."
-  (save-match-data                 
-    (or (looking-at "[ \t]*[])}�!?;:]")
-	(save-excursion
-	  (skip-chars-backward "� \t")
-	  (backward-char 1)
-	  (looking-at "[([{]")))))
-#+end_src
-
 * File management
 
 ** Replace deletion by move to trash

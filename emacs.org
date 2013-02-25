@@ -616,11 +616,29 @@ Emacs.link.attributeUnderline: false
 #+begin_src emacs-lisp :tangle .emacs
 (require 'info)
 (define-key ctl-x-4-map "i" 'info-other-window)
+(define-key ctl-x-5-map "i" 'info-other-frame)
 
 (add-hook 'Info-mode-hook
 	  '(lambda ()
 	     (setq indicate-empty-lines nil
 		   truncate-lines t)))
+
+(defun info-other-frame ()
+  "Like `info' but put Info buffer in another frame.
+Only intended for interactive use."
+  (interactive)
+  (let* ((win (selected-window))
+	 (wdp (window-dedicated-p win))
+	 value)
+    (unwind-protect
+	(progn
+	  (set-window-dedicated-p win nil)
+	  (switch-to-buffer-other-frame
+	   (save-window-excursion
+	     (setq value (call-interactively 'info))
+	     (current-buffer))))
+      (set-window-dedicated-p win wdp))
+    value))
 #+end_src
 
 I prefer to read manual pages with the =woman= command than the legacy
@@ -1140,6 +1158,16 @@ exists."
 
 ** Support for Python
 
+Linux distributions like Arch Linux ship with both Python 2.x and 3.x,
+thus the list of interpreters must be expanded accordingly for file
+mode determination.
+
+#+begin_src emacs-lisp :tangle .emacs
+(eval-after-load "python"
+  (setq python-python-command "python2"))
+(add-to-list 'interpreter-mode-alist '("python2" . python-mode))
+#+end_src
+
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'python-mode-hook
           '(lambda ()
@@ -1160,14 +1188,6 @@ want to generate them by yourself...). The =info-look= setting for
     :mode 'python-mode
     :regexp "[[:alnum:]_]+"
     :doc-spec '(("(python)Index" nil ""))))
-#+end_src
-
-Linux distributions like Arch Linux ship with both Python 2.x and 3.x,
-thus the list of interpreters must be expanded accordingly for file
-mode determination.
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-to-list 'interpreter-mode-alist '("python2" . python-mode))
 #+end_src
 
 **** TODO Customize semantic include path			   :noexport:

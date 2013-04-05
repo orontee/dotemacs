@@ -53,8 +53,10 @@ Despite a common misconception, GNU Emacs is actively maintained and
 last versions were greatly improved. A recent version is required. It
 can be downloaded from http://ftp.gnu.org/pub/gnu/emacs/.
 
-#+begin_src  emacs-lisp :tangle .emacs
-(when (< emacs-major-version 24)
+#+begin_src emacs-lisp :tangle .emacs
+(when (or (< emacs-major-version 24)
+          (and (= emacs-major-version 24)
+               (< emacs-minor-version 3)))
   (error "Wrong Emacs version, update or remove the configuration
   file"))
 #+end_src
@@ -335,6 +337,7 @@ holidays are already present into the calendar since we have set
       org-log-done 'time
       org-directory (expand-file-name "~/.emacs.d/org")
       org-default-notes-file (expand-file-name "notes.org" org-directory))
+(require 'org-remember)
 (org-remember-insinuate)
 #+end_src
 
@@ -391,12 +394,14 @@ Org buffers on the fly.
 		    " 2 div PrintWidth 2 div exch sub 0 rmoveto}")))
 #+end_src
 
-** Electric pairs
+** Electric modes
 
-Enable pairing to insert pairs of matching characters.
+Enable pairing to insert pairs of matching characters and enable
+on-the-fly reindentation.
 
 #+begin_src emacs-lisp :tangle .emacs
 (electric-pair-mode 1)
+(electric-indent-mode 1)
 #+end_src
 
 ** Save place
@@ -817,6 +822,13 @@ significant while searching for expansions.
 (setq dabbrev-case-fold-search nil)
 #+end_src
 
+** Whitespaces
+
+#+begin_src emacs-lisp :tangle .emacs
+(eval-after-load 'prog-mode
+  (define-key prog-mode-map "\C-cw" 'whitespace-cleanup))
+#+end_src
+
 ** Version control
 
 I sometimes have directories both under [[http://subversion.apache.org/][Subversion]] and [[http://gitscm.org/][Git]]. As my
@@ -1164,7 +1176,7 @@ mode determination.
 
 #+begin_src emacs-lisp :tangle .emacs
 (eval-after-load "python"
-  (setq python-python-command "python2"))
+  (setq python-shell-interpreter "python2"))
 (add-to-list 'interpreter-mode-alist '("python2" . python-mode))
 #+end_src
 
@@ -1172,6 +1184,7 @@ mode determination.
 (add-hook 'python-mode-hook
           '(lambda ()
              (setq tab-width 4
+                   python-skeleton-autoinsert t
                    gud-pdb-command-name "python -m pdb ")))
 #+end_src
 
@@ -1239,8 +1252,6 @@ path.remove(''); print path\""))))
 	     ;; 	  (require 'reftex)
 	     ;; 	  (let ((reftex-cite-format 'locally)) 
 	     ;; 	    (reftex-citation))))
-	     (local-set-key [\"] 'skeleton-pair-insert-maybe)
-	     (local-set-key "`" 'skeleton-pair-insert-maybe)
 	     (local-set-key [?\C-\M-$] 'ispell-buffer)
 	     (defun alt-dbw ()
 	       "Delete backward one space character if possible."
@@ -1347,8 +1358,7 @@ acronyms not recognized by the spell checker).
 	     (define-key latex-mode-map [M-tab] 'info-complete-symbol)
 	     (define-key latex-mode-map "\C-c\C-s" 'alt-latex-section)
 	     (define-key latex-mode-map "\C-cm" 'alt-latex-math-env)
-	     (define-key latex-mode-map "\C-cM" 'alt-latex-displaymath-env)
-	     (define-key latex-mode-map "$" 'skeleton-pair-insert-maybe)))
+	     (define-key latex-mode-map "\C-cM" 'alt-latex-displaymath-env)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle .emacs

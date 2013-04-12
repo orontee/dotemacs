@@ -165,10 +165,6 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
             '(lambda ()
                (setq truncate-lines t)
                (alt-set-small-text-scale))))
-
-(add-hook 'prog-mode-hook
-          '(lambda ()
-             (setq truncate-lines t)))
 #+end_src
 
 *** TODO Improve =menu-bar-open=				   :noexport:
@@ -743,6 +739,14 @@ documentation using the mouse. It deserves a key binding.
 (define-key global-map "\M-0" 'speedbar)  
 #+end_src
 
+** Long lines
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'prog-mode-hook
+          '(lambda ()
+             (setq truncate-lines t)))
+#+end_src
+   
 ** Buffer indexes
 
 Another way to browse tags found in the current buffer is to use the
@@ -1242,6 +1246,8 @@ path.remove(''); print path\""))))
 	     (setq scheme-program-name "umb-scheme")))
 #+end_src
 
+** Support for JavaScript
+   
 * Text edition
 
 #+begin_src emacs-lisp :tangle .emacs

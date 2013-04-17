@@ -98,20 +98,23 @@ At the time of writing, I have activated the following packages:
 #+end_src
 
 #+RESULTS:
-| Package               | Description                                        |
-|-----------------------+----------------------------------------------------|
-| virtualenv            | Virtualenv for Python  -*- coding: utf-8 -*-       |
-| symbols-mode          | List symbols of object files                       |
-| php-mode              | major mode for editing PHP code                    |
-| htmlize               | Convert buffer text and decorations to HTML.       |
-| graphviz-dot-mode     | Mode for the dot-language used by graphviz (att).  |
-| gnuplot               | drive gnuplot from within emacs                    |
-| doctags               | Generation of tags documentation in Doxygen syntax |
-| dictionary            | an interface to an RFC 2229 dictionary server      |
-| color-theme-solarized | Solarized themes for Emacs                         |
+| Package                 | Description                                                        |
+|-------------------------+--------------------------------------------------------------------|
+| flymake-jslint          | A flymake handler for javascript using jslint                      |
+| symbols-mode            | List symbols of object files                                       |
+| php-mode                | major mode for editing PHP code                                    |
+| pastebin                | A simple interface to the www.pastebin.com webservice              |
+| htmlize                 | Convert buffer text and decorations to HTML.                       |
+| graphviz-dot-mode       | Mode for the dot-language used by graphviz (att).                  |
+| gnuplot                 | drive gnuplot from within emacs                                    |
+| flymake-python-pyflakes | A flymake handler for python-mode files using pyflakes (or flake8) |
+| flymake-easy            | Helpers for easily building flymake checkers                       |
+| doctags                 | Generation of tags documentation in Doxygen syntax                 |
+| dictionary              | an interface to an RFC 2229 dictionary server                      |
+| color-theme-solarized   | Solarized themes for Emacs                                         |
 
 All settings written using the customize library go to a dedicated
-file that is loaded when the loading of the file file:.emacs ends.
+file that is loaded when the loading of the [[file:.emacs][configuration file]] ends.
 
 #+begin_src emacs-lisp :noweb yes
 <<.emacs_custom-file_loading>>
@@ -167,12 +170,6 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
                (alt-set-small-text-scale))))
 #+end_src
 
-*** TODO Improve =menu-bar-open=				   :noexport:
-
-Automatically turn =menu-bar-mode= on for graphic displays. The
-main problem seems to be that =menu-bar-mode= is a global mode, not a
-per frame mode (doesn't make sense).
-
 ** Generic modes
 
 From the docstring: Generic modes provide basic comment and font-lock
@@ -185,6 +182,7 @@ default is to enable generic modes according to the host operating
 system; I prefer to always define MS Windows generic modes for I
 sometime have to work on script files for the MS Windows command
 line...
+
 #+begin_src emacs-lisp :tangle .emacs
 (load "generic-x")
 (setq generic-extras-enable-list
@@ -202,9 +200,11 @@ line...
 
 ** Opening files
 
-I sometime want the finding file commands to infer the name of the
-file to find from the text under point.
-#+begin_src emacs-lisp :tangle .emacs
+It is possible to have the finding file commands to infer the name of
+the file to find from the text under point. I found it confusing,
+thus I am not using it anymore.
+
+#+begin_src emacs-lisp
 (require 'ffap)
 (setq ffap-require-prefix t)
 (ffap-bindings)
@@ -214,8 +214,9 @@ file to find from the text under point.
 
 Auto insertion of templates at file creation is enabled and the
 location where templates are searched is defined.
+
 #+begin_src emacs-lisp :tangle .emacs
-(auto-insert-mode 1)
+(auto-insert-mode)
 (let ((file (expand-file-name "~/Modèles")))
   (when (file-exists-p file)
     (setq auto-insert-directory file)))
@@ -223,16 +224,18 @@ location where templates are searched is defined.
 
 ** Revert buffers on file changes
 
-#+begin_src emacs-lisp :tangle .emacs
-(global-auto-revert-mode 1)
-#+end_src
+Reverts any buffer associated with a file when the file changes on
+disk. For files with =.log= extension, the tail is constantly
+followed.
 
 #+begin_src emacs-lisp :tangle .emacs
+(global-auto-revert-mode)
+
 (add-hook 'find-file-hook
           '(lambda()
              (when (and (buffer-file-name)
                         (equal (file-name-extension (buffer-file-name)) "log"))
-               (auto-revert-tail-mode 1))))
+               (auto-revert-tail-mode))))
 #+end_src
 
 ** Moving between windows and selecting buffers
@@ -250,13 +253,10 @@ frame geometrically.
 
 To select a buffer I often use =C-xb= and completion. When my brain
 can't remember the buffer name, I use the default buffer menu
-(accessible from =C-xC-b= and =C-uC-xC-b=) or I cycle through the
-buffer ring with =C-<tab>= and =C-S-<iso-lefttab>=.
+(accessible from =C-xC-b= and =C-uC-xC-b=). That's all. No =ido=,
+=icycle=, etc (my preferred was =iswitchb= if you want to know).
 
-#+begin_src emacs-lisp :tangle .emacs
-(global-set-key (kbd "C-<tab>") 'next-buffer)
-(global-set-key (kbd "C-S-<iso-lefttab>") 'previous-buffer)
-#+end_src
+*** TODO Listing and naming window configurations		   :noexport:
 
 ** Empty scratch buffer
 
@@ -326,78 +326,14 @@ holidays are already present into the calendar since we have set
 
 *** TODO Configure Org-mode calendar				   :noexport:
 
-** Org mode
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq org-hide-leading-stars t
-      org-log-done 'time
-      org-directory (expand-file-name "~/.emacs.d/org")
-      org-default-notes-file (expand-file-name "notes.org" org-directory))
-(require 'org-remember)
-(org-remember-insinuate)
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(when (featurep 'windmove)
-  (add-hook 'org-shiftup-final-hook 'windmove-up)
-  (add-hook 'org-shiftleft-final-hook 'windmove-left)
-  (add-hook 'org-shiftdown-final-hook 'windmove-down)
-  (add-hook 'org-shiftright-final-hook 'windmove-right))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(define-key global-map "\C-cr" 'org-remember)
-(define-key global-map "\C-ca" 'org-agenda)
-#+end_src
-
-Org files have an option to set the language to use for translations
-while exporting to HTML. When this option is set, one can deduce the
-dictionary to use for spell checking. By the way I like to spell check
-Org buffers on the fly.
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'org-mode-hook
-   '(lambda ()
-      (require 'ispell)
-      (ispell-set-spellchecker-params)
-      (require 'org-exp)
-      (let ((lang (plist-get (org-infile-export-plist) :language)))
-        (when (and lang (assoc lang ispell-dictionary-alist))
-          (setq ispell-local-dictionary lang)))
-      (flyspell-mode 1)))
-#+end_src
-
-** PostScript printing 						   :noexport:
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq ps-paper-type 'a4
-      ps-font-size '(8 . 9.5))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq ps-print-header t
-      ps-print-header-frame t
-      ps-header-lines 2
-      ps-left-header '(ps-get-buffer-name ps-header-dirpart)
-      ps-right-header 
-      '(ps-time-stamp-locale-default ps-time-stamp-hh:mm:ss)
-      ps-print-footer t
-      ps-print-footer-frame nil
-      ps-footer-lines 1
-      ps-right-footer nil
-      ps-left-footer
-      (list (concat "{pagenumberstring dup stringwidth pop"
-		    " 2 div PrintWidth 2 div exch sub 0 rmoveto}")))
-#+end_src
-
 ** Electric modes
 
-Enable pairing to insert pairs of matching characters and enable
+Enable pairing to insert pairs of matching characters. and enable
 on-the-fly reindentation.
 
 #+begin_src emacs-lisp :tangle .emacs
-(electric-pair-mode 1)
-(electric-indent-mode 1)
+(electric-pair-mode)
+(electric-indent-mode)
 #+end_src
 
 ** Save place
@@ -427,7 +363,7 @@ is =display-time-mode=.
 	  '(lambda ()
 	     (setq display-time-day-and-date nil
 		   display-time-24hr-format t 
-		   display-time-use-mail-icon t
+		   display-time-use-mail-icon nil
 		   display-time-format "%A,%e %B %Y %R")))
 #+end_src
 
@@ -436,7 +372,7 @@ is =display-time-mode=.
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'font-lock-mode-hook
 	  '(lambda ()
-	     (show-paren-mode 1)))
+	     (show-paren-mode)))
 
 (add-hook 'show-paren-mode-hook
 	  '(lambda ()
@@ -458,14 +394,14 @@ preferred input method use prefix modifiers (use =C-hI= to get a
 description of any input method).
 
 #+begin_src emacs-lisp :tangle .emacs
-  (add-hook 'set-language-environment-hook
-            '(lambda ()
-               (let ((language-name current-language-environment))
-                 (when 
-                     (or (string= language-name "Latin-1")
-                         (string= language-name "UTF-8"))
-                   (setq default-input-method 'latin-1-prefix))
-                  (t nil))))
+(add-hook 'set-language-environment-hook
+          '(lambda ()
+             (let ((language-name current-language-environment))
+               (when 
+                   (or (string= language-name "Latin-1")
+                       (string= language-name "UTF-8"))
+                 (setq default-input-method 'latin-1-prefix))
+                (t nil))))
 #+end_src
 
 But there are other input methods I use: For example the TeX method.
@@ -487,7 +423,7 @@ If the display can display images, image files are rendered as images.
 
 #+begin_src emacs-lisp :tangle .emacs
 (when (display-images-p)
-  (auto-image-file-mode 1))
+  (auto-image-file-mode))
 #+end_src
 
 When a buffer is already displayed, its frame is raised when the
@@ -502,11 +438,11 @@ select a buffer.
 
 #+begin_src emacs-lisp :tangle .emacs
 (eval-after-load "mouse"
-  (progn
+  (progn        
     (setq mouse-buffer-menu-mode-mult 2)
     (add-to-list 'mouse-buffer-menu-mode-groups '("Dired" . "Dired"))
     (add-to-list 'mouse-buffer-menu-mode-groups '("tex" . "TeX/LaTeX"))
-    t))
+    t))    
 #+end_src
 
 ** Frame customization definitions
@@ -561,7 +497,7 @@ frame.
 	  (let ((terminal-type (getenv "TERM"))
 		(lang current-language-environment))
 	    (cond ((string-match "^xterm" terminal-type)
-		   (xterm-mouse-mode 1)
+		   (xterm-mouse-mode)
 		   (setq minor-mode-alist 
 			 (remove '(xterm-mouse-mode (" Mouse")) 
 				 minor-mode-alist)))
@@ -587,7 +523,7 @@ frame.
 	(cursor-color . "#fce94f")))
 #+end_src
 
-It is better to customize the file file:~/.Xresources:
+For X Window frames, it is better to customize the [[file:~/.Xresources][resources file]]:
 
 #+begin_src x-resource-generic-mode
 !Emacs colors
@@ -655,13 +591,9 @@ I prefer to read manual pages with the =woman= command than the legacy
 (define-key Info-mode-map "W" 'woman)
 #+end_src
 
-When using Emacs as a daemon, the default value of =woman-fontify=
-will be =nil= because the daemon may open frames on displays that do
-not support colors or different fonts.
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq woman-fontify t)
-#+end_src
+Note that when using Emacs as a daemon, the default value of
+=woman-fontify= will be =nil= because the daemon may open frames on
+displays that do not support colors or different fonts.
 
 ** Server, daemon
 
@@ -678,8 +610,8 @@ client will always find someone to talk to.
 #+end_src
 
 To have =emacsclient= called by =sudoedit=, =git= and other programs
-when they are tell to edit a file, Bash configuration file
-file:~/.bashrc contains the following snippet:
+when they are tell to edit a file, [[file:~/.bashrc][Bash configuration file]] contains
+the following snippet:
 
 #+begin_src shell-script-mode 
 builtin type -p emacsclient &>/dev/null
@@ -688,9 +620,10 @@ builtin type -p emacsclient &>/dev/null
 
 ** Desktop
 
-The desktop file should be saved in the user home directory. Only ten
-files are restored immediately in order not to slow down start up.
-Tramp, ftp and log files are not restored, dired buffers too.
+The desktop file is saved in the user home directory. Only ten buffers
+are restored immediately in order not to slow down start up. Tramp,
+ftp and log buffers are not restored, nor buffers in Info or Dired
+modes.
 
 #+begin_src emacs-lisp :tangle .emacs
 (load-library "desktop")
@@ -703,7 +636,7 @@ Tramp, ftp and log files are not restored, dired buffers too.
 (add-to-list 'desktop-modes-not-to-save
              'dired-mode)
 (add-to-list 'desktop-modes-not-to-save
-             'info-mode)
+             'Info-mode)
 #+end_src
 
 ** Various
@@ -727,7 +660,7 @@ list of most recently used tags is maintained.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-to-list 'semantic-default-submodes 'global-semantic-mru-bookmark-mode)
-(semantic-mode 1)
+(semantic-mode)
 #+end_src
 
 ** Speedbar
@@ -812,7 +745,7 @@ abbreviation is automatically expanded and replaced by its expansion.
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'prog-mode-hook
           '(lambda ()
-             (abbrev-mode 1)))
+             (abbrev-mode)))
 #+end_src
 
 An other way to use abbreviations is to expand letters in the buffer
@@ -827,6 +760,8 @@ significant while searching for expansions.
 #+end_src
 
 ** Whitespaces
+
+A key binding to cleanup blank problems in all buffer or at region.
 
 #+begin_src emacs-lisp :tangle .emacs
 (eval-after-load 'prog-mode
@@ -864,18 +799,18 @@ content match =generic-find-file-regexp= and
           '(lambda ()
              (when (string-match "^svn-commit" (buffer-name))
                (setq ispell-local-dictionary "english")
-               (flyspell-mode 1))))
+               (flyspell-mode))))
 
 (add-hook 'default-generic-mode-hook
           '(lambda ()
              (when (equal (buffer-name) "COMMIT_EDITMSG")
                (setq ispell-local-dictionary "english")
-               (flyspell-mode 1))))
+               (flyspell-mode))))
 
 (add-hook 'log-edit-mode-hook
           '(lambda ()
              (setq ispell-local-dictionary "english")
-             (flyspell-mode 1)))
+             (flyspell-mode)))
 #+end_src
 
 ** Command interpreter
@@ -908,6 +843,7 @@ for right spelling.
                    flyspell-persistent-highlight nil)
              (flyspell-prog-mode)))
 #+end_src
+
 ** Interactive shell
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -919,8 +855,14 @@ for right spelling.
 		   '(("[ \t]\\([+-][^ \t\n]+\\)" 1 font-lock-comment-face)
 		     ("^\\[[1-9][0-9]*\\]" . font-lock-string-face))
 		   comint-password-prompt-regexp
-		   "\\(\\([Ee]nter \\(?:same \\|the \\)?\\|[Oo]ld \\|[Nn]ew \\|'s \\|login \\|Kerberos \\|CVS \\|UNIX \\| SMB \\|LDAP \\|\\[sudo] \\|^\\)[Pp]assword\\( (again)\\)?\\|pass phrase\\|Mot de passe \\|\\(Enter \\|Repeat \\|Bad \\)?[Pp]assphrase\\)\\(?:, try again\\)?\\(?: for [^:]+\\)?:\\s *\\'")
-	     (define-abbrev shell-mode-abbrev-table "null" "&> /dev/null")))
+		   "\\(\\([Ee]nter \\(?:same \\|the \\)?\\|[Oo]ld \\|[Nn]ew \\|'s \\|login \\|Kerberos \\|CVS \\|UNIX \\| SMB \\|LDAP \\|\\[sudo] \\|^\\)[Pp]assword\\( (again)\\)?\\|pass phrase\\|Mot de passe \\|\\(Enter \\|Repeat \\|Bad \\)?[Pp]assphrase\\)\\(?:, try again\\)?\\(?: for [^:]+\\)?:\\s *\\'")))
+#+end_src
+
+An abbreviation is defined for =&> /dev/null=.
+
+#+begin_src emacs-lisp :tangle .emacs
+(eval-after-load 'shell-mode
+  (define-abbrev shell-mode-abbrev-table "null" "&> /dev/null"))
 #+end_src
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1016,6 +958,10 @@ window different than the selected window, run `recompile'."
         (call-interactively 'compile))))))
 #+end_src
 
+*** TODO Send a D-BUS notification at the end of compilation	   :noexport:
+
+Only if the compilation was lengthy.
+
 ** Make
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1033,6 +979,7 @@ window different than the selected window, run `recompile'."
 		   flyspell-persistent-highlight nil)
 	     (flyspell-prog-mode)))
 #+end_src
+
 ** Visual interface to diff and patch
 
 Prefer to run the visual interface to diff in a single frame and split
@@ -1093,7 +1040,7 @@ implementation and declaration on a file name basis).
 Some abbreviation definitions for preprocessor directives are added.
 
 #+begin_src emacs-lisp :tangle .emacs
-(eval-after-load "cc-mode"
+(eval-after-load 'c++-mode
   (progn
     (define-skeleton cc-preprocessor-conditional-group
       "Insert a C preprocessor conditional group"
@@ -1110,14 +1057,13 @@ Some abbreviation definitions for preprocessor directives are added.
     (define-skeleton cc-preprocessor-include-directive
       "Insert a C preprocessor include directive"
       "Header name: " "#include " str _)
-    t))
 
-(add-hook 'c++-mode-hook
-          '(lambda ()
-             (define-abbrev c++-mode-abbrev-table "ppif" "" 'cc-preprocessor-conditional-group)
-             (define-abbrev c++-mode-abbrev-table "ppnif" "" 'cc-preprocessor-not-conditional-group)
-             (define-abbrev c++-mode-abbrev-table "ppd" "" 'cc-preprocessor-create-macro)
-             (define-abbrev c++-mode-abbrev-table "ppi" "" 'cc-preprocessor-include-directive)))
+    (dolist (a '(("ppif" . cc-preprocessor-conditional-group)
+                 ("ppnif" . cc-preprocessor-not-conditional-group)
+                 ("ppd" . cc-preprocessor-create-macro)
+                 ("ppi" . cc-preprocessor-include-directive)))
+      (define-abbrev c++-mode-abbrev-table (car a) (cdr a)))
+    t))
 #+end_src
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1133,16 +1079,14 @@ Some abbreviation definitions for preprocessor directives are added.
 				    scope-operator
 				    list-close-comma)
 		   c-basic-offset 3)
-	     (c-toggle-electric-state 1)
-	     (c-toggle-hungry-state 1)
-	     (c-toggle-auto-newline 1)
-	     (subword-mode 1)
-	     (hs-minor-mode 1)
-	     (cwarn-mode 1)
-
+	     (c-toggle-electric-state)
+	     (c-toggle-hungry-state)
+	     (c-toggle-auto-newline)
+	     (subword-mode)
+	     (hs-minor-mode)
+	     (cwarn-mode)
 	     (require 'find-file)
 	     (add-to-list ff-search-directories ".")
-
 	     (define-key c++-mode-map "\C-co" 'ff-find-other-file)
 	     (define-key c++-mode-map "\C-ck" 'tags-apropos)
 	     (define-key c++-mode-map "\C-m" 'c-context-line-break)))
@@ -1161,7 +1105,7 @@ Some abbreviation definitions for preprocessor directives are added.
 	       'emacs-lisp-byte-compile)))
 #+end_src
 
-To speedup Emacs lisp execution, code can be compiled. The following
+To speedup Emacs Lisp execution, code can be compiled. The following
 will compile a buffer on save if and only if an associated
 byte-compiled file already exists.
 
@@ -1199,9 +1143,9 @@ mode determination.
                    gud-pdb-command-name "python -m pdb ")))
 #+end_src
 
-The Python documentation used to be distributed in texinfo format. It
+The Python documentation used to be distributed in Texinfo format. It
 is not the case anymore since the documentation is handled by the
-Sphinx framework. But it is still possible to generate texinfo files
+Sphinx framework. But it is still possible to generate Texinfo files
 using Sphinx; Such files are easy to find on the web (if you don't
 want to generate them by yourself...). The =info-look= setting for
 =python-mode= must be updated to those new files.
@@ -1247,6 +1191,13 @@ path.remove(''); print path\""))))
 #+end_src
 
 ** Support for JavaScript
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'js-mode-hook
+          '(lambda ()
+             (subword-mode)
+             (hs-minor-mode)))
+#+end_src
    
 * Text edition
 
@@ -1256,56 +1207,33 @@ path.remove(''); print path\""))))
 	     (setq sentence-end 
 		   "[.?!]\\($\\| $\\|	\\| \\)[ 	\n]*"
 		   sentence-end-double-space nil)
- 	     (auto-fill-mode 1)
+ 	     (auto-fill-mode)
 	     (goto-address)
-	     (use-hard-newlines 1 'never)
-	     ;; (local-set-key "\C-c["
-	     ;;   '(lambda () 
-	     ;; 	  (interactive)
-	     ;; 	  (require 'reftex)
-	     ;; 	  (let ((reftex-cite-format 'locally)) 
-	     ;; 	    (reftex-citation))))
-	     (local-set-key [?\C-\M-$] 'ispell-buffer)
-	     (defun alt-dbw ()
-	       "Delete backward one space character if possible."
-	       (when (eq (char-syntax (char-before)) ?\ ) 
-		 (backward-delete-char 1)))
-;;; 	     (local-set-key "?" 
-;;; 	       '(lambda () 
-;;; 		  (interactive)
-;;; 		  (let ((skeleton-end-newline nil))
-;;; 			    (skeleton-insert '(nil (alt-dbw) & ?Â ??)))))
-;;; 	     (local-set-key "!"
-;;; 	       '(lambda ()
-;;; 		  (interactive)
-;;; 		  	  (let ((skeleton-end-newline nil))
-;;; 			    (skeleton-insert '(nil (alt-dbw) & ?Â ?!)))))
-;;; 	     (local-set-key ";"
-;;; 	       '(lambda ()
-;;; 		  (interactive)
-;;; 		  (let ((skeleton-end-newline nil))
-;;; 		    (skeleton-insert '(nil (alt-dbw) & ?Â ?\;)))))
-;;; 	     (local-set-key ":"
-;;; 	       '(lambda ()
-;;; 		  (interactive)
-;;; 		  (let ((skeleton-end-newline nil))
-;;; 		    (skeleton-insert '(nil (alt-dbw) & ?Â ?:)))))
-	     ))
+	     (use-hard-newlines 1 'never)))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-fill-nobreak-predicate ()
-  "Disable the breaking of current line.
+I found that on-the-fly reindentation is confusing in text modes, so
+it is disabled.
 
-This function is to be called during filling, with no arguments and with
-point located at the place where a break is being considered. If the
-function returns non-`nil', then the line won't be broken there."
-  (save-match-data                 
-    (or (looking-at "[ \t]*[])}»!?;:]")
-	(save-excursion
-	  (skip-chars-backward "« \t")
-	  (backward-char 1)
-	  (looking-at "[([{]")))))
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'text-mode-hook
+          '(lambda ()
+             (set (make-local-variable 'electric-indent-functions)
+                  (list (lambda (arg) 'no-indent)))))
+#+end_src
+
+Sometime I refer to my bibliography database outside of a TeX/LaTeX
+buffer.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'text-mode-hook
+          '(lambda()
+             (local-set-key "\C-c["
+                            '(lambda () 
+                               (interactive)
+                               (require 'reftex)
+                               (let ((reftex-cite-format 'locally)) 
+                                 (reftex-citation))))))
 #+end_src
 
 ** Support for SGML, HTML
@@ -1316,7 +1244,22 @@ automatic line breaking is turned off.
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'html-mode-hook
           '(lambda ()
-             (auto-fill-mode -1)))
+             (auto-fill-mode -1)
+             (abbrev-mode)))
+#+end_src
+
+An abbreviation is defined for the Lorem Ipsum.
+
+#+begin_src emacs-lisp :tangle .emacs
+(eval-after-load 'html-mode
+  (define-abbrev html-mode-abbrev-table "lorem" 
+    "<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+enim ad minim veniam, quis nostrud exercitation ullamco laboris
+nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+reprehenderit in voluptate velit esse cillum dolore eu fugiat
+nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+sunt in culpa qui officia deserunt mollit anim id est laborum.</p>"))
 #+end_src
 
 ** Support for TeX and LaTeX
@@ -1535,6 +1478,48 @@ If prefix argument is provided, use the alternative command,
     (setq alt-latex-section-default section))
   \n "\\" str ?\{ (skeleton-read "Title: ") ?\} \n \n)
 #+end_src
+
+** Org mode
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq org-hide-leading-stars t
+      org-log-done 'time
+      org-directory (expand-file-name "~/.emacs.d/org")
+      org-default-notes-file (expand-file-name "notes.org" org-directory))
+(require 'org-remember)
+(org-remember-insinuate)
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(when (featurep 'windmove)
+  (add-hook 'org-shiftup-final-hook 'windmove-up)
+  (add-hook 'org-shiftleft-final-hook 'windmove-left)
+  (add-hook 'org-shiftdown-final-hook 'windmove-down)
+  (add-hook 'org-shiftright-final-hook 'windmove-right))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(define-key global-map "\C-cr" 'org-remember)
+(define-key global-map "\C-ca" 'org-agenda)
+#+end_src
+
+Org files have an option to set the language to use for translations
+while exporting to HTML. When this option is set, one can deduce the
+dictionary to use for spell checking. By the way I like to spell check
+Org buffers on the fly.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'org-mode-hook
+   '(lambda ()
+      (require 'ispell)
+      (ispell-set-spellchecker-params)
+      (require 'org-exp)
+      (let ((lang (plist-get (org-infile-export-plist) :language)))
+        (when (and lang (assoc lang ispell-dictionary-alist))
+          (setq ispell-local-dictionary lang)))
+      (flyspell-mode 1)))
+#+end_src
+
 * File management
 
 ** Replace deletion by move to trash

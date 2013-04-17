@@ -548,6 +548,8 @@ Emacs.link.attributeForeground: cyan
 Emacs.link.attributeUnderline: false
 #+end_src
 
+*** TODO Add the equivalent for MS Windows
+
 ** Documentation reader
 
 #+begin_src emacs-lisp :tangle .emacs

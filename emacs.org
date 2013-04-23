@@ -1651,6 +1651,26 @@ Servers are scanned every 5 minutes.
 (gnus-demon-init)
 #+end_src
 
+#+begin_src emacs-lisp :tangle .gnus.el
+(setq gnus-nntp-server nil
+      gnus-select-method
+      '(nnimap "gmail" 
+	       (nnimap-address "imap.gmail.com")
+	       (nnimap-server-port 993)
+	       (nnimap-stream ssl))
+      gnus-secondary-select-methods
+      '((nntp "free"
+	     (nntp-address "news.free.fr"))))
+
+(setq message-send-mail-function 'smtpmail-send-it
+      smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
+      smtpmail-auth-credentials '(("smtp.gmail.com" 587 "orontee@gmail.com" nil))
+      smtpmail-default-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587
+      smtpmail-local-domain "localdomain")
+#+end_src
+
 ** Message writing
 
 #+begin_src emacs-lisp :tangle .emacs

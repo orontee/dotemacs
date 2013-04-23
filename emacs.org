@@ -256,7 +256,30 @@ can't remember the buffer name, I use the default buffer menu
 (accessible from =C-xC-b= and =C-uC-xC-b=). That's all. No =ido=,
 =icycle=, etc (my preferred was =iswitchb= if you want to know).
 
-*** TODO Listing and naming window configurations		   :noexport:
+When I am working on multiple projects, I switch of windows
+configurations using registers (use =C-xrw= to store a window
+configuration in a register and =C-xrj= to jump back to it). But
+registers are named against single characters, so I need twice
+thinking before storing a new configuration. The following
+redefinition of =window-configuration-to-register= ask the user to
+confirm the overwrite when storing a configuration in a register
+already containing a window configuration.
+
+#+begin_src emacs-lisp :tangle .emacs
+(defun window-configuration-to-register (register &optional _arg)
+  "Like `window-configuration-to-register' but warn the user that
+he is about to overwrite a window configuration."
+  (interactive "cWindow configuration to register: \nP")
+  (let ((val (get-register register)))
+    (cond
+     ((or (not (consp val))
+	      (not (frame-configuration-p (car val)))
+	      (yes-or-no-p "Overwrite window configuration? "))
+      (set-register register
+		    (list (current-frame-configuration) (point-marker))))
+     (t
+      (error "Register already contains a window configuration")))))
+#+end_src
 
 ** Empty scratch buffer
 
@@ -1596,11 +1619,28 @@ configuration files goes into =~/.emacs.d=.
       mail-user-agent 'gnus-user-agent
       message-directory (expand-file-name "~/.emacs.d/Mail")
       gnus-home-directory (expand-file-name "~/.emacs.d/"))
+#+end_src
 
+Quit reading news before killing emacs.
+
+#+begin_src emacs-lisp :tangle .emacs
 (add-hook 'kill-emacs-hook
 	  '(lambda ()
 	     (when (and (fboundp 'gnus-alive-p) (gnus-alive-p))
 	       (gnus-group-exit))))
+#+end_src
+
+Group topics are enabled by default.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
+#+end_src
+
+Notifications are send on new messages.
+
+#+begin_src emacs-lisp :tangle .emacs
+(require 'gnus-notifications)
+(add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications)
 #+end_src
 
 ** Message writing

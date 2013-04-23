@@ -1643,6 +1643,14 @@ Notifications are send on new messages.
 (add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications)
 #+end_src
 
+Servers are scanned every 5 minutes.
+
+#+begin_src emacs-lisp :tangle .emacs
+(require 'gnus-demon)
+(gnus-demon-add-handler 'gnus-demon-add-scanmail (* 5 60) t)
+(gnus-demon-init)
+#+end_src
+
 ** Message writing
 
 #+begin_src emacs-lisp :tangle .emacs

@@ -1671,6 +1671,13 @@ Servers are scanned every 5 minutes.
       smtpmail-local-domain "localdomain")
 #+end_src
 
+To view images using Eye Of Gnome I have created the file:~/.mailcap
+with the following content.
+
+#+begin_src 
+image/jpeg; eog %s
+#+end_src
+
 ** Message writing
 
 #+begin_src emacs-lisp :tangle .emacs

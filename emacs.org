@@ -1511,8 +1511,6 @@ If prefix argument is provided, use the alternative command,
       org-log-done 'time
       org-directory (expand-file-name "~/.emacs.d/org")
       org-default-notes-file (expand-file-name "notes.org" org-directory))
-(require 'org-remember)
-(org-remember-insinuate)
 #+end_src
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1524,7 +1522,7 @@ If prefix argument is provided, use the alternative command,
 #+end_src
 
 #+begin_src emacs-lisp :tangle .emacs
-(define-key global-map "\C-cr" 'org-remember)
+(define-key global-map "\C-cr" 'org-capture)
 (define-key global-map "\C-ca" 'org-agenda)
 #+end_src
 
@@ -1543,6 +1541,17 @@ Org buffers on the fly.
         (when (and lang (assoc lang ispell-dictionary-alist))
           (setq ispell-local-dictionary lang)))
       (flyspell-mode 1)))
+#+end_src
+
+Various types of capture items are defined.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-to-list 'org-capture-templates
+      '("t" "Todo" entry (file+headline "notes.org" "Tasks")
+        "* TODO %?\n  %i\n  %a"))
+(add-to-list 'org-capture-templates
+             `("f" "Film" entry (file+headline "films.org" ,(format-time-string "%Y"))
+               "** %?\n   :PROPERTIES:\n   :Date: %u\n   :END:\n%i "))
 #+end_src
 
 * File management
@@ -1680,6 +1689,11 @@ image/jpeg; eog %s
 
 ** Message writing
 
+#+begin_src emacs-lisp
+(setq user-mail-address "orontee@gmail.com"
+      user-full-name "Matthias Meulien")
+#+end_src
+
 #+begin_src emacs-lisp :tangle .emacs
 (require 'message)
 (add-hook 'message-mode-hook
@@ -1695,6 +1709,18 @@ image/jpeg; eog %s
 		   '(("^To:[^\n,]+\\.fr[ \t\n,>]" . "francais")
 		     ("^Newsgroups:[ \t]*fr\\." . "francais")
 		     ("^Newsgroups:[ \t]*[^f]" . "english")))))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq gnus-posting-styles
+      '((".*"
+         (signature "Matthias")
+         (organization "What me?"))
+        ("^CELAD"
+         (address "matthias.meulien@celad.com")
+         (signature "Matthias Meulien\nIngénieur d'Étude - CELAD")
+         (x-face-file nil)
+         (organization "CELAD"))))
 #+end_src
 
 * Code sources 							   :noexport:

@@ -1714,12 +1714,10 @@ image/jpeg; eog %s
 #+begin_src emacs-lisp :tangle .emacs
 (setq gnus-posting-styles
       '((".*"
-         (signature "Matthias")
-         (organization "What me?"))
+         (signature "Matthias"))
         ("^CELAD"
          (address "matthias.meulien@celad.com")
          (signature "Matthias Meulien\nIngénieur d'Étude - CELAD")
-         (x-face-file nil)
          (organization "CELAD"))))
 #+end_src
 

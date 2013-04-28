@@ -1546,6 +1546,7 @@ Org buffers on the fly.
 Various types of capture items are defined.
 
 #+begin_src emacs-lisp :tangle .emacs
+(require 'org-capture)
 (add-to-list 'org-capture-templates
       '("t" "Todo" entry (file+headline "notes.org" "Tasks")
         "* TODO %?\n  %i\n  %a"))

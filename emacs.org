@@ -578,12 +578,19 @@ Emacs.link.attributeUnderline: false
 #+begin_src emacs-lisp :tangle .emacs
 (require 'info)
 (define-key ctl-x-4-map "i" 'info-other-window)
-(define-key ctl-x-5-map "i" 'info-other-frame)
 
 (add-hook 'Info-mode-hook
 	  '(lambda ()
 	     (setq indicate-empty-lines nil
 		   truncate-lines t)))
+#+end_src
+
+I used to open frames to keep documentation away from the code; Thus
+the interactive function =info-other-frame= is defined and bind to a
+key.
+
+#+begin_src emacs-lisp :tangle .emacs
+(define-key ctl-x-5-map "i" 'info-other-frame)
 
 (defun info-other-frame ()
   "Like `info' but put Info buffer in another frame.
@@ -601,6 +608,12 @@ Only intended for interactive use."
 	     (current-buffer))))
       (set-window-dedicated-p win wdp))
     value))
+#+end_src
+
+#+begin_src emacs-lisp :tangle .emacs
+(let ((path (expand-file-name "~/.local/share/info/")))
+  (when (file-accessible-directory-p path)
+    (add-to-list 'Info-additional-directory-list path)))
 #+end_src
 
 I prefer to read manual pages with the =woman= command than the legacy
@@ -1220,6 +1233,7 @@ path.remove(''); print path\""))))
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'js-mode-hook
           '(lambda ()
+             (setq indent-tabs-mode nil)
              (subword-mode)
              (hs-minor-mode)))
 #+end_src
@@ -1504,6 +1518,13 @@ If prefix argument is provided, use the alternative command,
   \n "\\" str ?\{ (skeleton-read "Title: ") ?\} \n \n)
 #+end_src
 
+** Support for dict protocol
+
+#+begin_src emacs-lisp :tangle .emacs
+(when (featurep 'dictionary)
+  (define-key dictionary-mode-map [backtab] 'dictionary-prev-link))
+#+end_src
+
 ** Org mode
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1690,7 +1711,7 @@ image/jpeg; eog %s
 
 ** Message writing
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle .emacs
 (setq user-mail-address "orontee@gmail.com"
       user-full-name "Matthias Meulien")
 #+end_src

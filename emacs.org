@@ -1238,6 +1238,23 @@ path.remove(''); print path\""))))
              (hs-minor-mode)))
 #+end_src
    
+** Support for SQL
+
+Most of the databases I use are PostgreSQL databases. Buffers in SQL
+mode will be properly highlighted thanks to the following setting.
+
+#+begin_src emacs-lisp :tangle .emacs 
+(require 'sql)
+(setq sql-product 'postgres)
+#+end_src
+
+Hitting =;= in an interactive SQL buffer will send the current input
+to the process.
+
+#+begin_src emacs-lisp :tangle .emacs 
+(setq sql-electric-stuff t)
+#+end_src
+
 * Text edition
 
 #+begin_src emacs-lisp :tangle .emacs

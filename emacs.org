@@ -100,15 +100,18 @@ At the time of writing, I have activated the following packages:
 #+RESULTS:
 | Package                 | Description                                                        |
 |-------------------------+--------------------------------------------------------------------|
-| flymake-jslint          | A flymake handler for javascript using jslint                      |
+| flymake-easy            | Helpers for easily building flymake checkers                       |
 | symbols-mode            | List symbols of object files                                       |
+| python-django           | A Jazzy package for managing Django projects                       |
 | php-mode                | major mode for editing PHP code                                    |
 | pastebin                | A simple interface to the www.pastebin.com webservice              |
+| mode-icons              | Show icons for modes                                               |
 | htmlize                 | Convert buffer text and decorations to HTML.                       |
 | graphviz-dot-mode       | Mode for the dot-language used by graphviz (att).                  |
 | gnuplot                 | drive gnuplot from within emacs                                    |
 | flymake-python-pyflakes | A flymake handler for python-mode files using pyflakes (or flake8) |
-| flymake-easy            | Helpers for easily building flymake checkers                       |
+| flymake-jslint          | A flymake handler for javascript using jslint                      |
+| flymake-csslint         | making flymake work with CSSLint                                   |
 | doctags                 | Generation of tags documentation in Doxygen syntax                 |
 | dictionary              | an interface to an RFC 2229 dictionary server                      |
 | color-theme-solarized   | Solarized themes for Emacs                                         |
@@ -817,7 +820,8 @@ backends must be reordered.
 #+end_src
 
 Comparing revisions using Ediff is so pleasant that it deserves a key
-binding.
+binding, an alternative to the usefull =C-xvD= (binded to
+=vc-root-diff=).
 
 #+begin_src emacs-lisp :tangle .emacs
 (global-set-key "\C-xv=" 'ediff-revision)
@@ -1196,6 +1200,15 @@ want to generate them by yourself...). The =info-look= setting for
     :doc-spec '(("(python)Index" nil ""))))
 #+end_src
 
+When available, load the package =flymake-python-pyflakes= to check
+code on the fly.
+
+#+begin_src emacs-lisp :tangle .emacs
+(when (locate-library "flymake-python-pyflakes")
+  (require 'flymake-python-pyflakes)
+  (add-hook 'python-mode-hook 'flymake-python-pyflakes-load))
+#+end_src
+
 **** TODO Customize semantic include path			   :noexport:
 
 Python mode hook must be enhanced with a dynamic customization of the
@@ -1236,6 +1249,15 @@ path.remove(''); print path\""))))
              (setq indent-tabs-mode nil)
              (subword-mode)
              (hs-minor-mode)))
+#+end_src
+
+When available, load the package =flymake-jslint= to check code on the
+fly.
+
+#+begin_src emacs-lisp :tangle .emacs
+(when (locate-library "flymake-jslint")
+  (load-library "flymake-jslint")
+  (add-hook 'js-mode-hook 'flymake-jslint-load))
 #+end_src
    
 ** Support for SQL
@@ -1292,7 +1314,7 @@ buffer.
                                  (reftex-citation))))))
 #+end_src
 
-** Support for SGML, HTML
+** Support for SGML, HTML, CSS
 
 It is difficult to avoid long lines when writing SGML files, thus
 automatic line breaking is turned off.
@@ -1316,6 +1338,15 @@ nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
 reprehenderit in voluptate velit esse cillum dolore eu fugiat
 nulla pariatur. Excepteur sint occaecat cupidatat non proident,
 sunt in culpa qui officia deserunt mollit anim id est laborum.</p>"))
+#+end_src
+
+When available, load the package =flymake-csslint= to check code on the
+fly.
+
+#+begin_src emacs-lisp :tangle .emacs
+(when (locate-library "flymake-csslint")
+  (require 'flymake-csslint)
+  (add-hook 'css-mode-hook 'flymake-mode))
 #+end_src
 
 ** Support for TeX and LaTeX
@@ -1684,12 +1715,12 @@ Group topics are enabled by default.
 (add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
 #+end_src
 
-Notifications are send on new messages.
+# Notifications are send on new messages.
 
-#+begin_src emacs-lisp :tangle .emacs
-(require 'gnus-notifications)
-(add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications)
-#+end_src
+# #+begin_src emacs-lisp :tangle .emacs
+# (require 'gnus-notifications)
+# (add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications)
+# #+end_src
 
 Servers are scanned every 5 minutes.
 

@@ -1569,7 +1569,8 @@ If prefix argument is provided, use the alternative command,
 ** Support for dict protocol
 
 #+begin_src emacs-lisp :tangle .emacs
-(when (featurep 'dictionary)
+(when (locate-library "dictionary")
+  (load-library "dictionary")
   (define-key dictionary-mode-map [backtab] 'dictionary-prev-link))
 #+end_src
 

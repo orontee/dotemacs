@@ -682,9 +682,13 @@ modes.
 
 ** Various
 
+Tired of typing =yes= and =no=? Prefer =y= and =n=!
+
 #+begin_src emacs-lisp :tangle .emacs
 (fset 'yes-or-no-p 'y-or-n-p)
 #+end_src
+
+These are some core features disabled for newbies.
 
 #+begin_src emacs-lisp :tangle .emacs
 (put 'narrow-to-region 'disabled nil)
@@ -693,6 +697,23 @@ modes.
 #+end_src
 
 * Programming
+
+** Spell checking
+
+When writing code source, I like to have comments, documentation and
+string checked for right spelling. But before one must check whether
+there is a  spell checker in path or not.
+
+#+begin_src emacs-lisp :tangle .emacs
+(setq has-spell-checker
+      (not (eq (executable-find ispell-program-name) nil)))
+(when has-spell-checker
+  (add-hook 'prog-mode-hook
+            '(lambda ()
+               (setq ispell-local-dictionary "english"
+                     flyspell-persistent-highlight nil)
+               (flyspell-prog-mode))))
+#+end_src
 
 ** File parser
 
@@ -837,22 +858,23 @@ content match =generic-find-file-regexp= and
 =generic-use-find-file-hook= default value is =t= .
 
 #+begin_src emacs-lisp :tangle .emacs
-(add-hook 'find-file-hook
-          '(lambda ()
-             (when (string-match "^svn-commit" (buffer-name))
+(when has-spell-checker
+  (add-hook 'find-file-hook
+            '(lambda ()
+               (when (string-match "^svn-commit" (buffer-name))
+                 (setq ispell-local-dictionary "english")
+                 (flyspell-mode))))
+
+  (add-hook 'default-generic-mode-hook
+            '(lambda ()
+               (when (equal (buffer-name) "COMMIT_EDITMSG")
+                 (setq ispell-local-dictionary "english")
+                 (flyspell-mode))))
+
+  (add-hook 'log-edit-mode-hook
+            '(lambda ()
                (setq ispell-local-dictionary "english")
                (flyspell-mode))))
-
-(add-hook 'default-generic-mode-hook
-          '(lambda ()
-             (when (equal (buffer-name) "COMMIT_EDITMSG")
-               (setq ispell-local-dictionary "english")
-               (flyspell-mode))))
-
-(add-hook 'log-edit-mode-hook
-          '(lambda ()
-             (setq ispell-local-dictionary "english")
-             (flyspell-mode)))
 #+end_src
 
 ** Command interpreter
@@ -871,19 +893,6 @@ content match =generic-find-file-regexp= and
 	       (setq comint-process-echoes 'on))))
 
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
-#+end_src
-
-** Spell checking
-
-When writing code source, I like to have comments and string checked
-for right spelling.
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'prog-mode-hook
-          '(lambda ()
-             (setq ispell-local-dictionary "english"
-                   flyspell-persistent-highlight nil)
-             (flyspell-prog-mode)))
 #+end_src
 
 ** Interactive shell
@@ -1010,16 +1019,6 @@ Only if the compilation was lengthy.
 (add-hook 'makefile-gmake-mode-hook
 	  '(lambda ()
 	     (setq tab-width 3)))
-#+end_src
-
-** Spell checking
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'prog-mode-hook
-          '(lambda ()
-	     (setq ispell-local-dictionary "english"
-		   flyspell-persistent-highlight nil)
-	     (flyspell-prog-mode)))
 #+end_src
 
 ** Visual interface to diff and patch
@@ -1602,7 +1601,8 @@ dictionary to use for spell checking. By the way I like to spell check
 Org buffers on the fly.
 
 #+begin_src emacs-lisp :tangle .emacs
-(add-hook 'org-mode-hook
+(when has-spell-checker
+  (add-hook 'org-mode-hook
    '(lambda ()
       (require 'ispell)
       (ispell-set-spellchecker-params)
@@ -1610,7 +1610,7 @@ Org buffers on the fly.
       (let ((lang (plist-get (org-infile-export-plist) :language)))
         (when (and lang (assoc lang ispell-dictionary-alist))
           (setq ispell-local-dictionary lang)))
-      (flyspell-mode 1)))
+      (flyspell-mode 1))))
 #+end_src
 
 Various types of capture items are defined.
@@ -1723,12 +1723,11 @@ Group topics are enabled by default.
 # (add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications)
 # #+end_src
 
-Servers are scanned every 5 minutes.
+Maill servers are scanned every 2 minutes.
 
 #+begin_src emacs-lisp :tangle .emacs
 (require 'gnus-demon)
-(gnus-demon-add-handler 'gnus-demon-add-scanmail (* 5 60) t)
-(gnus-demon-init)
+(gnus-demon-add-scanmail)
 #+end_src
 
 #+begin_src emacs-lisp :tangle .gnus.el

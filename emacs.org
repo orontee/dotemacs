@@ -220,7 +220,7 @@ location where templates are searched is defined.
 
 #+begin_src emacs-lisp :tangle .emacs
 (auto-insert-mode)
-(let ((file (expand-file-name "~/Modèles")))
+(let ((file (expand-file-name "~/ModÃ¨les")))
   (when (file-exists-p file)
     (setq auto-insert-directory file)))
 #+end_src
@@ -340,9 +340,9 @@ holidays are already present into the calendar since we have set
 #+begin_src emacs-lisp :tangle .emacs
 (setq french-holiday
       '((holiday-fixed 1 1 "Jour de l'an")
-        (holiday-fixed 5 1 "Fête du travail")
+        (holiday-fixed 5 1 "FÃªte du travail")
         (holiday-fixed 5 8 "Victoire 1945")
-        (holiday-fixed 7 14 "Fête nationale")
+        (holiday-fixed 7 14 "FÃªte nationale")
         (holiday-fixed 11 1 "Toussaint")
         (holiday-fixed 11 11 "Armistice 1918")))
 
@@ -680,6 +680,26 @@ modes.
              'Info-mode)
 #+end_src
 
+** MinGW
+
+In case there MinGW is installed, the list of directories where to
+search programs, the =PATH= environment variable and the list of
+directories where to search documentation files are extended.
+
+#+begin_src emacs-lisp :tangle .emacs
+(when (eq system-type 'windows-nt)
+  (let ((mingw-root "C:\\GNU\\MinGW"))
+    (when (file-exists-p mingw-root)
+      (dolist (path ("bin"
+                     "msys\\1.0\\local\\bin"
+                     "msys\\1.0\\bin"))
+        ((let ((full-path (expand-file-name path mingw-root)))
+           (add-to-list 'exec-path full-path)
+           (setenv "PATH" (concat full-path (getenv "PATH"))))))
+      (add-to-list â€˜Info-directory-list
+                    (expand-file-name "share/info/" mingw-root)))))
+#+end_src
+
 ** Various
 
 Tired of typing =yes= and =no=? Prefer =y= and =n=!
@@ -705,6 +725,7 @@ string checked for right spelling. But before one must check whether
 there is a  spell checker in path or not.
 
 #+begin_src emacs-lisp :tangle .emacs
+(require 'ispell)
 (setq has-spell-checker
       (not (eq (executable-find ispell-program-name) nil)))
 (when has-spell-checker
@@ -1466,13 +1487,13 @@ inserted."
 		   reftex-label-alist
 		   (setq reftex-label-alist
 			 '(("theorem" ?h "thr:" "~\\ref{%s}" t 
-			    (regexp "th\\\(\\\(é\\\|\'e\\\)or\\\(è\\\|\`e\\\)mes?\\\|m\\\.\\\)") nil)
+			    (regexp "th\\\(\\\(Ã©\\\|\'e\\\)or\\\(Ã¨\\\|\`e\\\)mes?\\\|m\\\.\\\)") nil)
 			   ("proposition" ?p "pro:" "~\\ref{%s}" t 
 			    (regexp "prop\\\(ositions?\\\|.\\\)") nil)
 			   ("lemma" ?l "lem:" "~\\ref{%s}" t 
 			    (regexp "lem\\\(mes?\\\|.\\\)") nil)
 			   ("equation" 101 "eq:" "~(\\ref{%s})" t
-			    (regexp "\\\(l'\\\)?\\\(é\\\|\'e\\\)quations?") nil)
+			    (regexp "\\\(l'\\\)?\\\(Ã©\\\|\'e\\\)quations?") nil)
 			   ("example" ?x "exm:" "~\\ref{%s}" t 
 			    (regexp "exemp\\\(les?\\\|.\\\)")))))
 	     (defun reftex-page-reference ()
@@ -1487,7 +1508,7 @@ inserted."
 	       '(menu-item "\\pageref" reftex-page-reference) '\\cite)))
 
 (eval-after-load "reftex"
-  '(let ((dir (expand-file-name "~/Documents/Mathématiques/Bibliographie")))
+  '(let ((dir (expand-file-name "~/Documents/MathÃ©matiques/Bibliographie")))
      (when (file-exists-p dir)
        (dolist (name (directory-files dir t ".*\.bib$"))
 	 (add-to-list 'reftex-default-bibliography name)))))
@@ -1787,7 +1808,7 @@ image/jpeg; eog %s
          (signature "Matthias"))
         ("^CELAD"
          (address "matthias.meulien@celad.com")
-         (signature "Matthias Meulien\nIngénieur d'Étude - CELAD")
+         (signature "Matthias Meulien\nIngÃ©nieur d'Ã‰tude - CELAD")
          (organization "CELAD"))))
 #+end_src
 

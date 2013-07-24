@@ -690,13 +690,13 @@ directories where to search documentation files are extended.
 (when (eq system-type 'windows-nt)
   (let ((mingw-root "C:\\GNU\\MinGW"))
     (when (file-exists-p mingw-root)
-      (dolist (path ("bin"
-                     "msys\\1.0\\local\\bin"
-                     "msys\\1.0\\bin"))
-        ((let ((full-path (expand-file-name path mingw-root)))
+      (dolist (path '("bin"
+                      "msys\\1.0\\local\\bin"
+                      "msys\\1.0\\bin"))
+        (let ((full-path (expand-file-name path mingw-root)))
            (add-to-list 'exec-path full-path)
-           (setenv "PATH" (concat full-path (getenv "PATH"))))))
-      (add-to-list ‘Info-directory-list
+           (setenv "PATH" (concat full-path (getenv "PATH")))))
+      (add-to-list 'Info-directory-list
                     (expand-file-name "share/info/" mingw-root)))))
 #+end_src
 

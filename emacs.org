@@ -814,12 +814,13 @@ By the way when reading file or buffer names the case will be ignored.
 
 The file =~/.emacs.d/abbrev_defs= (or whatever the value of
 =abbrev-file-name= is) defines abbreviations and their expansions. It
-is read quietly.
+is read and saved silently.
 
 #+begin_src emacs-lisp :tangle .emacs
 (let ((file abbrev-file-name))
   (when (file-readable-p file)
     (read-abbrev-file file t)))
+(setq save-abbrevs 'silently)
 #+end_src
 
 While editing buffers in programming modes, insertion of an
@@ -933,8 +934,7 @@ content match =generic-find-file-regexp= and
 An abbreviation is defined for =&> /dev/null=.
 
 #+begin_src emacs-lisp :tangle .emacs
-(eval-after-load 'shell-mode
-  (define-abbrev shell-mode-abbrev-table "null" "&> /dev/null"))
+(define-abbrev-table 'shell-mode-abbrev-table '(("null" "&> /dev/null")))
 #+end_src
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1102,30 +1102,27 @@ implementation and declaration on a file name basis).
 Some abbreviation definitions for preprocessor directives are added.
 
 #+begin_src emacs-lisp :tangle .emacs
-(eval-after-load 'c++-mode
-  (progn
-    (define-skeleton cc-preprocessor-conditional-group
-      "Insert a C preprocessor conditional group"
-      "Group macro: " "#ifdef " str ?\n _ ?\n"#endif // " str ?\n)
+(define-skeleton cc-preprocessor-conditional-group
+  "Insert a C preprocessor conditional group"
+  "Group macro: " "#ifdef " str ?\n _ ?\n"#endif // " str ?\n)
 
-    (define-skeleton cc-preprocessor-not-conditional-group
-      "Insert a C preprocessor conditional group"
-      "Group macro: " "#ifndef " str ?\n _ ?\n"#endif // " str ?\n)
+(define-skeleton cc-preprocessor-not-conditional-group
+  "Insert a C preprocessor conditional group"
+  "Group macro: " "#ifndef " str ?\n _ ?\n"#endif // " str ?\n)
 
-    (define-skeleton cc-preprocessor-create-macro
-      "Insert a C preprocessor macro creation"
-      "Macro name: " "#define " str " " (skeleton-read "Macro expansion: ") _)
+(define-skeleton cc-preprocessor-create-macro
+  "Insert a C preprocessor macro creation"
+  "Macro name: " "#define " str " " (skeleton-read "Macro expansion: ") _)
 
-    (define-skeleton cc-preprocessor-include-directive
-      "Insert a C preprocessor include directive"
-      "Header name: " "#include " str _)
+(define-skeleton cc-preprocessor-include-directive
+  "Insert a C preprocessor include directive"
+  "Header name: " "#include " str _)
 
-    (dolist (a '(("ppif" . cc-preprocessor-conditional-group)
-                 ("ppnif" . cc-preprocessor-not-conditional-group)
-                 ("ppd" . cc-preprocessor-create-macro)
-                 ("ppi" . cc-preprocessor-include-directive)))
-      (define-abbrev c++-mode-abbrev-table (car a) (cdr a)))
-    t))
+(define-abbrev-table 'c++-mode-abbrev-table
+  '(("ppif" cc-preprocessor-conditional-group)
+    ("ppnif" cc-preprocessor-not-conditional-group)
+    ("ppd" cc-preprocessor-create-macro)
+    ("ppi" cc-preprocessor-include-directive)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1349,15 +1346,16 @@ automatic line breaking is turned off.
 An abbreviation is defined for the Lorem Ipsum.
 
 #+begin_src emacs-lisp :tangle .emacs
-(eval-after-load 'html-mode
-  (define-abbrev html-mode-abbrev-table "lorem" 
-    "<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-enim ad minim veniam, quis nostrud exercitation ullamco laboris
-nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-reprehenderit in voluptate velit esse cillum dolore eu fugiat
-nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-sunt in culpa qui officia deserunt mollit anim id est laborum.</p>"))
+(define-abbrev-table 'html-mode-abbrev-table
+  '(("lorem" 
+     "<p>Lorem ipsum dolor sit amet, consectetur adipisicing
+elit, sed do eiusmod tempor incididunt ut labore et dolore magna
+aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis
+aute irure dolor in reprehenderit in voluptate velit esse cillum
+dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+cupidatat non proident, sunt in culpa qui officia deserunt mollit
+anim id est laborum.</p>")))
 #+end_src
 
 When available, load the package =flymake-csslint= to check code on the

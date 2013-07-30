@@ -1195,21 +1195,21 @@ exists."
 
 ** Support for Python
 
-Linux distributions like Arch Linux ship with both Python 2.x and 3.x,
-thus the list of interpreters must be expanded accordingly for file
-mode determination.
+Some Linux distributions (e.g. Arch Linux) ship with both Python 2.x
+and 3.x, thus the list of interpreters must be expanded accordingly
+for file mode determination.
 
 #+begin_src emacs-lisp :tangle .emacs
 (eval-after-load "python"
-  (setq python-shell-interpreter "python2"))
-(add-to-list 'interpreter-mode-alist '("python2" . python-mode))
+  (when (executable-find "python2")
+    (setq python-shell-interpreter "python2")
+    (add-to-list 'interpreter-mode-alist '("python2" . python-mode))))
 #+end_src
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'python-mode-hook
           '(lambda ()
              (setq tab-width 4
-                   python-skeleton-autoinsert t
                    gud-pdb-command-name "python -m pdb ")))
 #+end_src
 

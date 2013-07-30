@@ -688,16 +688,27 @@ directories where to search documentation files are extended.
 
 #+begin_src emacs-lisp :tangle .emacs
 (when (eq system-type 'windows-nt)
-  (let ((mingw-root "C:\\GNU\\MinGW"))
+  (let ((mingw-root "C:\\GNU\\MinGW"))   
     (when (file-exists-p mingw-root)
-      (dolist (path '("bin"
-                      "msys\\1.0\\local\\bin"
-                      "msys\\1.0\\bin"))
-        (let ((full-path (expand-file-name path mingw-root)))
-           (add-to-list 'exec-path full-path)
-           (setenv "PATH" (concat full-path ";" (getenv "PATH")))))
+      ;; MinGW
+      (setenv "PATH" (concat mingw-root "\\bin" ";" (getenv "PATH")))
+      (add-to-list 'exec-path (expand-file-name "bin" mingw-root))
       (add-to-list 'Info-directory-list
-                    (expand-file-name "share/info/" mingw-root)))))
+                   (expand-file-name "share/info" mingw-root))
+      ;; MSYS
+      (let ((msys-root (concat mingw-root "msys\\1.0\\bin")))
+        (when (file-exists-p msys-root)
+          (setenv "PATH" (concat msys-root "\\bin"  ";" (getenv "PATH")))
+          (add-to-list 'exec-path (expand-file-name "bin" msys-root))
+          (setenv "PATH" (concat msys-root "\\local\\bin"  ";" (getenv "PATH")))
+          (add-to-list 'exec-path (expand-file-name "local/bin" msys-root))
+          (add-to-list 'Info-directory-list
+                       (expand-file-name "share/info" msys-root))
+          (require 'grep)
+          (grep-apply-setting 'grep-command
+                              (expand-file-name "bin/grep.exe" msys-root))
+          (grep-apply-setting 'grep-find-command
+                              (expand-file-name "bin/find.exe" msys-root)))))))
 #+end_src
 
 ** Various

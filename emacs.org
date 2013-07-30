@@ -696,9 +696,9 @@ directories where to search documentation files are extended.
       (add-to-list 'Info-directory-list
                    (expand-file-name "share/info" mingw-root))
       ;; MSYS
-      (let ((msys-root (concat mingw-root "msys\\1.0\\bin")))
+      (let ((msys-root (concat mingw-root "msys\\1.0")))
         (when (file-exists-p msys-root)
-          (setenv "PATH" (concat msys-root "\\bin"  ";" (getenv "PATH")))
+          (setenv "PATH" (concat msys-root "\\bin" ";" (getenv "PATH")))
           (add-to-list 'exec-path (expand-file-name "bin" msys-root))
           (setenv "PATH" (concat msys-root "\\local\\bin"  ";" (getenv "PATH")))
           (add-to-list 'exec-path (expand-file-name "local/bin" msys-root))

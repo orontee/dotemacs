@@ -1210,8 +1210,7 @@ for file mode determination.
 #+begin_src emacs-lisp :tangle .emacs
 (eval-after-load "python"
   (when (executable-find "python2")
-    (setq python-shell-interpreter "python2")
-    (add-to-list 'interpreter-mode-alist '("python2" . python-mode))))
+    (setq python-shell-interpreter "python2")))
 #+end_src
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1243,6 +1242,13 @@ code on the fly.
 (when (locate-library "flymake-python-pyflakes")
   (require 'flymake-python-pyflakes)
   (add-hook 'python-mode-hook 'flymake-python-pyflakes-load))
+#+end_src
+
+An abbreviation is defined for the common PDB call.
+
+#+begin_src emacs-lisp :tangle .emacs
+(define-abbrev-table 'python-mode-abbrev-table
+  '(("pdb" "import pdb; pdb.set_trace()")))
 #+end_src
 
 **** TODO Customize semantic include path			   :noexport:

@@ -1138,10 +1138,10 @@ Some abbreviation definitions for preprocessor directives are added.
   "Header name: " "#include " str _)
 
 (define-abbrev-table 'c++-mode-abbrev-table
-  '(("ppif" cc-preprocessor-conditional-group)
-    ("ppnif" cc-preprocessor-not-conditional-group)
-    ("ppd" cc-preprocessor-create-macro)
-    ("ppi" cc-preprocessor-include-directive)))
+  '(("ppif" "" cc-preprocessor-conditional-group)
+    ("ppnif" "" cc-preprocessor-not-conditional-group)
+    ("ppd" "" cc-preprocessor-create-macro)
+    ("ppi" "" cc-preprocessor-include-directive)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle .emacs

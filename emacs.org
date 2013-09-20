@@ -821,6 +821,15 @@ By the way when reading file or buffer names the case will be ignored.
       read-buffer-completion-ignore-case t)
 #+end_src
 
+The [[http://cx4a.org/software/auto-complete/][Auto Complete Mode]] rocks: Thus it is enabled wherever it is
+possible.
+
+#+begin_src emacs-lisp :tangle .emacs
+(when (locate-library "auto-complete")
+  (require 'auto-complete)
+  (global-auto-complete-mode))
+#+end_src
+
 ** Abbreviations
 
 The file =~/.emacs.d/abbrev_defs= (or whatever the value of

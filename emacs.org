@@ -516,28 +516,28 @@ frame.
   "To be run after frame creation."
  (let ((frame-type (framep frame)))
    (cond ((or (eq frame-type 'x)
-	      (eq frame-type 'w32))
-	  (setq x-select-enable-clipboard t
-		x-stretch-cursor t)
-	  (setq-default indicate-empty-lines t)
-	  (mouse-avoidance-mode 'banish)
-	  (add-hook 'gdb-mode-hook
-		    '(lambda ()
-		       (setq gdb-many-windows t
-			     gdb-speedbar-auto-raise nil))))
-	 ((eq frame-type 't)
-	  (let ((terminal-type (getenv "TERM"))
-		(lang current-language-environment))
-	    (cond ((string-match "^xterm" terminal-type)
-		   (xterm-mouse-mode)
-		   (setq minor-mode-alist 
-			 (remove '(xterm-mouse-mode (" Mouse")) 
-				 minor-mode-alist)))
-		  ((equal terminal-type "linux")
-		   (setq browse-url-browser-function 'browse-url-lynx-emacs)
-		   (when (equal lang "UTF-8") 
-		     (set-keyboard-coding-system 'utf-8)))
-		  (t nil)))))))
+              (eq frame-type 'w32))
+          (setq x-select-enable-clipboard t
+                x-stretch-cursor t)
+          (setq-default indicate-empty-lines nil)
+          (mouse-avoidance-mode 'banish)
+          (add-hook 'gdb-mode-hook
+                    '(lambda ()
+                       (setq gdb-many-windows t
+                             gdb-speedbar-auto-raise nil))))
+         ((eq frame-type 't)
+          (let ((terminal-type (getenv "TERM"))
+                (lang current-language-environment))
+            (cond ((string-match "^xterm" terminal-type)
+                   (xterm-mouse-mode)
+                   (setq minor-mode-alist 
+                         (remove '(xterm-mouse-mode (" Mouse")) 
+                                 minor-mode-alist)))
+                  ((equal terminal-type "linux")
+                   (setq browse-url-browser-function 'browse-url-lynx-emacs)
+                   (when (equal lang "UTF-8") 
+                     (set-keyboard-coding-system 'utf-8)))
+                  (t nil)))))))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -772,12 +772,13 @@ documentation using the mouse. It deserves a key binding.
 (define-key global-map "\M-0" 'speedbar)  
 #+end_src
 
-** Long lines
+** Long lines and buffer boundaries
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'prog-mode-hook
           '(lambda ()
-             (setq truncate-lines t)))
+             (setq truncate-lines t
+                   indicate-buffer-boundaries '((top . left) (bottom . right)))))
 #+end_src
    
 ** Buffer indexes

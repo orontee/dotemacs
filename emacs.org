@@ -100,9 +100,13 @@ At the time of writing, I have activated the following packages:
 #+RESULTS:
 | Package                 | Description                                                        |
 |-------------------------+--------------------------------------------------------------------|
-| flymake-easy            | Helpers for easily building flymake checkers                       |
+| gist                    | Emacs integration for gist.github.com                              |
+| gh                      | A GitHub library for Emacs                                         |
+| pcache                  | persistent caching for Emacs                                       |
+| logito                  | logging library for Emacs                                          |
 | symbols-mode            | List symbols of object files                                       |
 | python-django           | A Jazzy package for managing Django projects                       |
+| popup                   | Visual Popup User Interface                                        |
 | php-mode                | major mode for editing PHP code                                    |
 | pastebin                | A simple interface to the www.pastebin.com webservice              |
 | mode-icons              | Show icons for modes                                               |
@@ -111,10 +115,12 @@ At the time of writing, I have activated the following packages:
 | gnuplot                 | drive gnuplot from within emacs                                    |
 | flymake-python-pyflakes | A flymake handler for python-mode files using pyflakes (or flake8) |
 | flymake-jslint          | A flymake handler for javascript using jslint                      |
+| flymake-easy            | Helpers for easily building flymake checkers                       |
 | flymake-csslint         | making flymake work with CSSLint                                   |
 | doctags                 | Generation of tags documentation in Doxygen syntax                 |
-| dictionary              | an interface to an RFC 2229 dictionary server                      |
 | color-theme-solarized   | Solarized themes for Emacs                                         |
+| auto-complete           | Auto Completion for GNU Emacs                                      |
+| Django-doc              | Info documentation for Django                                      |
 
 All settings written using the customize library go to a dedicated
 file that is loaded when the loading of the [[file:.emacs][configuration file]] ends.

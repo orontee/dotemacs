@@ -174,7 +174,7 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
                 speedbar-mode-hook compilation-mode-hook vc-dir-mode-hook
                 occur-mode-hook apropos-mode-hook grep-mode-hook))
   (add-hook hook
-            '(lambda ()
+            (lambda ()
                (setq truncate-lines t)
                (alt-set-small-text-scale))))
 #+end_src
@@ -241,7 +241,7 @@ followed.
 (global-auto-revert-mode)
 
 (add-hook 'find-file-hook
-          '(lambda()
+          (lambda()
              (when (and (buffer-file-name)
                         (equal (file-name-extension (buffer-file-name)) "log"))
                (auto-revert-tail-mode))))
@@ -392,7 +392,7 @@ is =display-time-mode=.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'display-time-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (setq display-time-day-and-date nil
 		   display-time-24hr-format t 
 		   display-time-use-mail-icon nil
@@ -403,11 +403,11 @@ is =display-time-mode=.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'font-lock-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (show-paren-mode)))
 
 (add-hook 'show-paren-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (setq show-paren-style 'parenthesis)))
 #+end_src
 
@@ -427,7 +427,7 @@ description of any input method).
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'set-language-environment-hook
-          '(lambda ()
+          (lambda ()
              (let ((language-name current-language-environment))
                (when 
                    (or (string= language-name "Latin-1")
@@ -522,7 +522,7 @@ frame.
           (setq-default indicate-empty-lines nil)
           (mouse-avoidance-mode 'banish)
           (add-hook 'gdb-mode-hook
-                    '(lambda ()
+                    (lambda ()
                        (setq gdb-many-windows t
                              gdb-speedbar-auto-raise nil))))
          ((eq frame-type 't)
@@ -589,7 +589,7 @@ Emacs.link.attributeUnderline: false
 (define-key ctl-x-4-map "i" 'info-other-window)
 
 (add-hook 'Info-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (setq indicate-empty-lines nil
 		   truncate-lines t)))
 #+end_src
@@ -747,7 +747,7 @@ there is a  spell checker in path or not.
       (not (eq (executable-find ispell-program-name) nil)))
 (when has-spell-checker
   (add-hook 'prog-mode-hook
-            '(lambda ()
+            (lambda ()
                (setq ispell-local-dictionary "english"
                      flyspell-persistent-highlight nil)
                (flyspell-prog-mode))))
@@ -776,7 +776,7 @@ documentation using the mouse. It deserves a key binding.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'prog-mode-hook
-          '(lambda ()
+          (lambda ()
              (setq truncate-lines t
                    indicate-buffer-boundaries '((top . left) (bottom . right)))))
 #+end_src
@@ -791,7 +791,7 @@ the user the buffer indexes.
 (setq imenu-auto-rescan t
       imenu-max-items 35)
 (add-hook 'prog-mode-hook
-          '(lambda ()
+          (lambda ()
              (local-set-key "\C-ci" 'imenu)))
 #+end_src
 
@@ -805,7 +805,7 @@ computers.
 #+begin_src emacs-lisp :tangle .emacs
 (setq-default time-stamp-format "%:y-%02m-%02d %02H:%02M:%02S %u@%s")
 
-(add-hook 'write-file-hooks '(lambda () (time-stamp)))
+(add-hook 'write-file-hooks (lambda () (time-stamp)))
 #+end_src
 
 *** TODO How to insert a timestamp at point			   :noexport:
@@ -855,7 +855,7 @@ abbreviation is automatically expanded and replaced by its expansion.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'prog-mode-hook
-          '(lambda ()
+          (lambda ()
              (abbrev-mode)))
 #+end_src
 
@@ -909,19 +909,19 @@ content match =generic-find-file-regexp= and
 #+begin_src emacs-lisp :tangle .emacs
 (when has-spell-checker
   (add-hook 'find-file-hook
-            '(lambda ()
+            (lambda ()
                (when (string-match "^svn-commit" (buffer-name))
                  (setq ispell-local-dictionary "english")
                  (flyspell-mode))))
 
   (add-hook 'default-generic-mode-hook
-            '(lambda ()
+            (lambda ()
                (when (equal (buffer-name) "COMMIT_EDITMSG")
                  (setq ispell-local-dictionary "english")
                  (flyspell-mode))))
 
   (add-hook 'log-edit-mode-hook
-            '(lambda ()
+            (lambda ()
                (setq ispell-local-dictionary "english")
                (flyspell-mode))))
 #+end_src
@@ -930,7 +930,7 @@ content match =generic-find-file-regexp= and
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'comint-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (if (fboundp 'ansi-color-for-comint-mode-on)
 		 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t))
 	     (setq comint-scroll-show-maximum-output t
@@ -948,7 +948,7 @@ content match =generic-find-file-regexp= and
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'shell-mode-hook 
-	  '(lambda ()
+	  (lambda ()
 	     (ansi-color-for-comint-mode-on)
 	     (setq shell-prompt-pattern "^\[[^$#\n]*\][$#] *"
 		   shell-font-lock-keywords
@@ -966,7 +966,7 @@ An abbreviation is defined for =&> /dev/null=.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'sh-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (define-key sh-mode-map "'" 'self-insert-command)))
 #+end_src
 
@@ -1011,7 +1011,7 @@ named after the string \"*shell*\" using `generate-new-buffer-name'."
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'term-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (term-pager-toggle)))
 #+end_src
 
@@ -1019,7 +1019,7 @@ named after the string \"*shell*\" using `generate-new-buffer-name'."
 
 #+begin_src emacs-lisp
 (add-hook 'compilation-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (setq truncate-partial-width-windows nil)))
 #+end_src
 
@@ -1065,7 +1065,7 @@ Only if the compilation was lengthy.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'makefile-gmake-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (setq tab-width 3)))
 #+end_src
 
@@ -1076,7 +1076,7 @@ that frame vertically or horizontally according to the frame geometry.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'ediff-mode-hook
-          '(lambda ()
+          (lambda ()
              (setq ediff-window-setup-function 'ediff-setup-windows-plain)
              (when (< (* 2 (frame-height)) (frame-width))
                (setq ediff-split-window-function 'split-window-horizontally))))
@@ -1086,7 +1086,7 @@ White space visualization is useful when inspecting diffs.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'diff-mode-hook
-          '(lambda ()
+          (lambda ()
              (whitespace-mode)))
 #+end_src
 
@@ -1096,13 +1096,13 @@ White space visualization is useful when inspecting diffs.
 (global-set-key [S-f8] 'gdb)
 
 (add-hook 'gdb-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (setq gdb-show-changed-values t
 		   gdb-use-colon-colon-notation nil
 		   gdb-use-separate-io-buffer t)))
 
 (add-hook 'gud-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (setq gud-tooltip-mode nil
 		   gud-gdb-command-name "gdb --silent --annotate=3")))
 #+end_src
@@ -1163,7 +1163,7 @@ Some abbreviation definitions for preprocessor directives are added.
 #+begin_src emacs-lisp :tangle .emacs
 (require 'hideshow)
 (add-hook 'c++-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (setq comment-style 'extra-line)
 	     (setq indent-tabs-mode nil)
              (c-set-style "ellemtel")
@@ -1190,7 +1190,7 @@ Some abbreviation definitions for preprocessor directives are added.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'emacs-lisp-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (set (make-local-variable 'comment-auto-fill-only-comments) t)
 	     (set (make-local-variable 'imenu-sort-function) 
 		  'imenu--sort-by-name)
@@ -1231,7 +1231,7 @@ for file mode determination.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'python-mode-hook
-          '(lambda ()
+          (lambda ()
              (setq tab-width 4
                    gud-pdb-command-name "python -m pdb ")))
 #+end_src
@@ -1295,7 +1295,7 @@ path.remove(''); print path\""))))
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'scheme-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (setq scheme-program-name "umb-scheme")))
 #+end_src
 
@@ -1303,7 +1303,7 @@ path.remove(''); print path\""))))
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'js-mode-hook
-          '(lambda ()
+          (lambda ()
              (setq indent-tabs-mode nil)
              (subword-mode)
              (hs-minor-mode)))
@@ -1339,7 +1339,7 @@ to the process.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'text-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (setq sentence-end 
 		   "[.?!]\\($\\| $\\|	\\| \\)[ 	\n]*"
 		   sentence-end-double-space nil)
@@ -1353,7 +1353,7 @@ it is disabled.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'text-mode-hook
-          '(lambda ()
+          (lambda ()
              (set (make-local-variable 'electric-indent-functions)
                   (list (lambda (arg) 'no-indent)))))
 #+end_src
@@ -1363,9 +1363,9 @@ buffer.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'text-mode-hook
-          '(lambda()
+          (lambda ()
              (local-set-key "\C-c["
-                            '(lambda () 
+                            (lambda ()
                                (interactive)
                                (require 'reftex)
                                (let ((reftex-cite-format 'locally)) 
@@ -1379,7 +1379,7 @@ automatic line breaking is turned off.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'html-mode-hook
-          '(lambda ()
+          (lambda ()
              (auto-fill-mode -1)
              (abbrev-mode)))
 #+end_src
@@ -1429,7 +1429,7 @@ acronyms not recognized by the spell checker).
 #+begin_src emacs-lisp :tangle .emacs
 (setq latex-run-command "latex -src-specials -interaction=nonstopmode")
 (add-hook 'latex-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (setq comment-style 'plain
 		   comment-column 0
 		   indent-tabs-mode nil
@@ -1465,7 +1465,7 @@ acronyms not recognized by the spell checker).
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'tex-shell-hook
-	  '(lambda ()
+	  (lambda ()
 	     (add-to-list 'shell-font-lock-keywords
 		    '("^\\(LaTeX Warning:\\|\\!\\)" . font-lock-warning-face))
 	     (define-key tex-shell-map "\C-c\C-p" 'comint-previous-prompt)))
@@ -1518,7 +1518,7 @@ inserted."
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'reftex-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (setq reftex-extra-bindings t
 		   reftex-enable-partial-scans t
 		   reftex-save-parse-info nil
@@ -1663,7 +1663,7 @@ Org buffers on the fly.
 #+begin_src emacs-lisp :tangle .emacs
 (when has-spell-checker
   (add-hook 'org-mode-hook
-   '(lambda ()
+   (lambda ()
       (require 'ispell)
       (ispell-set-spellchecker-params)
       (require 'org-exp)
@@ -1720,7 +1720,7 @@ Various types of capture items are defined.
 #+begin_src emacs-lisp :tangle .emacs
 (require 'dired-x)
 (add-hook 'dired-load-hook
-	  '(lambda ()
+	  (lambda ()
              (load-library "dired-x")
 	     (setq dired-x-hands-off-my-keys nil)
              (dired-bind-find-file)
@@ -1737,7 +1737,7 @@ Various types of capture items are defined.
 	      "\\|^\\..+\\|^CVS$\\|^lost\\+found")
       dired-omit-extensions (delete ".pdf" dired-omit-extensions))
 (add-hook 'dired-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (when (fboundp 'gnus-dired-mode)
 	       (gnus-dired-mode 1))
 	     (setq dired-omit-files-p t
@@ -1765,7 +1765,7 @@ Quit reading news before killing emacs.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'kill-emacs-hook
-	  '(lambda ()
+	  (lambda ()
 	     (when (and (fboundp 'gnus-alive-p) (gnus-alive-p))
 	       (gnus-group-exit))))
 #+end_src
@@ -1827,7 +1827,7 @@ image/jpeg; eog %s
 #+begin_src emacs-lisp :tangle .emacs
 (require 'message)
 (add-hook 'message-mode-hook
-	  '(lambda ()
+	  (lambda ()
 	     (setq message-elide-ellipsis "\n> (...)\n"
 		   message-signature t) 
 	     (setq message-completion-alist

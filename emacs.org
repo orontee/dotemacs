@@ -763,13 +763,28 @@ list of most recently used tags is maintained.
 (semantic-mode)
 #+end_src
 
-** Speedbar
+** Speedbar and Minimap
 
 I found that the speedbar is a nice way to browse files, tags and
-documentation using the mouse. It deserves a key binding.
+documentation using the mouse. It deserved a key binding. But as I was
+not using it much, I binded that key to minimap when available;
+Minimap offers a visual way to browse large buffers.
 
-#+begin_src emacs-lisp :tangle .emacs
-(define-key global-map "\M-0" 'speedbar)  
+#+begin_src emacs-lisp :tangle .emacs 
+(if (locate-library "minimap")
+    (progn
+      (require 'minimap)
+      (defun minimap-toggle-window ()
+        (interactive)
+        (let ((buff
+               (and minimap-bufname
+                    (get-buffer minimap-bufname)
+                    (get-buffer-window (get-buffer minimap-bufname)))))
+          (if buff
+              (minimap-kill)
+            (minimap-create))))
+      (define-key global-map "\M-0" 'minimap-toggle-window))
+  (define-key global-map "\M-0" 'speedbar))
 #+end_src
 
 ** Long lines and buffer boundaries

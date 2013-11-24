@@ -262,8 +262,13 @@ frame geometrically.
 
 To select a buffer I often use =C-xb= and completion. When my brain
 can't remember the buffer name, I use the default buffer menu
-(accessible from =C-xC-b= and =C-uC-xC-b=). That's all. No =ido=,
-=icycle=, etc (my preferred was =iswitchb= if you want to know).
+(accessible from =C-xC-b= and =C-uC-xC-b=) or =icomplete-mode=. That's
+all. No =ido=, =icycle=, etc.
+
+#+begin_src emacs-lisp :tangle .emacs
+(icomplete-mode 1)
+(setq confirm-nonexistent-file-or-buffer t)
+#+end_src
 
 When I am working on multiple projects, I switch of windows
 configurations using registers (use =C-xrw= to store a window
@@ -288,6 +293,16 @@ he is about to overwrite a window configuration."
 		    (list (current-frame-configuration) (point-marker))))
      (t
       (error "Register already contains a window configuration")))))
+#+end_src
+
+The buffer naming scheme can be slightly improved with the =uniquify=
+library.
+
+#+begin_src emacs-lisp :tangle .emacs
+(when (locate-library "uniquify")
+  (load-library "uniquify")
+  (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+  (toggle-uniquify-buffer-names 1))
 #+end_src
 
 ** Empty scratch buffer

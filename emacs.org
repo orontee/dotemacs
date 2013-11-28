@@ -436,19 +436,32 @@ All files will have a newline at their end.
 
 ** Language environment
 
-When using the =Latin-1= or =UTF-8= language environment, the
-preferred input method use prefix modifiers (use =C-hI= to get a
-description of any input method).
+The preferred input method is set according to the current language
+environment. I prefer to use prefix modifiers (use =C-hI= to get a
+description of any input method). Note that the default language
+environment is set during startup, before the user init file is
+loaded; It explains the explicit call to our
+=choose-language-input-method=.
 
 #+begin_src emacs-lisp :tangle .emacs
+(defun choose-language-input-method ()
+  "Set default input method according to current language
+environment."
+  (let* ((language-name current-language-environment)
+         (method (cond
+                  ((string= language-name "French")
+                   'french-prefix)
+                  ((or (string= language-name "Latin-1")
+                       (string= language-name "UTF-8"))
+                   'latin-1-prefix)
+                  (t nil))))
+    (setq default-input-method method)))
+
 (add-hook 'set-language-environment-hook
           (lambda ()
-             (let ((language-name current-language-environment))
-               (when 
-                   (or (string= language-name "Latin-1")
-                       (string= language-name "UTF-8"))
-                 (setq default-input-method 'latin-1-prefix))
-                (t nil))))
+            (choose-language-input-method)))
+
+(choose-language-input-method)
 #+end_src
 
 But there are other input methods I use: For example the TeX method.

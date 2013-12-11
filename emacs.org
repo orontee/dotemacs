@@ -67,11 +67,11 @@ The easiest way to extend Emacs features is to use =list-package= and
 install packages from remote repositories. But =package.el= is rather
 new and not all libraries are available in the form of packages. When
 a library must be installed by hand, a good practice is to always put
-it in the directory =~/.emacs.d=. The load path is extended
+it in the directory =~/.emacs.d/lisp=. The load path is extended
 accordingly.
 
 #+begin_src emacs-lisp :tangle .emacs
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/"))
 #+end_src
 
 The default is to fetch packages from the GNU Emacs packages
@@ -702,6 +702,7 @@ modes.
 
 #+begin_src emacs-lisp :tangle .emacs
 (load-library "desktop")
+(desktop-save-mode)
 (setq desktop-dirname (expand-file-name "~")
       desktop-restore-eager 10
       desktop-lazy-verbose nil
@@ -1386,6 +1387,13 @@ to the process.
 (setq sql-electric-stuff t)
 #+end_src
 
+** Support for PHP
+
+#+begin_src emacs-lisp :tangle .emacs
+(when (locate-library "php-mode")
+  (load-library "php-mode")
+  (add-hook 'php-mode-hook 'flymake-mode))
+#+end_src
 * Text edition
 
 #+begin_src emacs-lisp :tangle .emacs

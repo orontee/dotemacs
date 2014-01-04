@@ -697,8 +697,7 @@ builtin type -p emacsclient &>/dev/null
 
 The desktop file is saved in the user home directory. Only ten buffers
 are restored immediately in order not to slow down start up. Tramp,
-ftp and log buffers are not restored, nor buffers in Info or Dired
-modes.
+ftp and log buffers are not restored.
 
 #+begin_src emacs-lisp :tangle .emacs
 (load-library "desktop")
@@ -708,11 +707,6 @@ modes.
       desktop-lazy-verbose nil
       desktop-files-not-to-save
       "\\(^/[^/:]*:\\|(ftp)$\\|.*\.log\\)")
-
-(add-to-list 'desktop-modes-not-to-save
-             'dired-mode)
-(add-to-list 'desktop-modes-not-to-save
-             'Info-mode)
 #+end_src
 
 ** MinGW
@@ -1510,8 +1504,6 @@ acronyms not recognized by the spell checker).
 	     (define-skeleton alt-latex-displaymath-env
 	       "Create a matching pair of brackets."
 	       nil 92 91 _ 92 93)
- 	     (when input-method-alist
-	       (activate-input-method "latin-1-prefix"))
 	     (add-to-list 'tex-compile-commands
 			  '("xdg-open %r.pdf &" "%r.pdf"))
 	     (reftex-mode t)

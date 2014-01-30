@@ -743,8 +743,7 @@ there is a  spell checker in path or not.
   (add-hook 'prog-mode-hook
             (lambda ()
                (setq ispell-local-dictionary "english"
-                     flyspell-persistent-highlight nil)
-               (flyspell-prog-mode))))
+                     flyspell-persistent-highlight nil))))
 #+end_src
 
 ** File parser
@@ -1596,6 +1595,15 @@ If prefix argument is provided, use the alternative command,
   (define-key dictionary-mode-map [backtab] 'dictionary-prev-link))
 #+end_src
 
+** Support for reStructuredText
+
+Auto fill mode may break the indentation.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'rst-mode-hook
+          (lambda ()
+            (auto-fill-mode -1)))
+#+end_src
 ** Org mode
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1739,13 +1747,6 @@ Group topics are enabled by default.
 (add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
 #+end_src
 
-# Notifications are send on new messages.
-
-# #+begin_src emacs-lisp :tangle .emacs
-# (require 'gnus-notifications)
-# (add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications)
-# #+end_src
-
 Maill servers are scanned every 2 minutes.
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1778,6 +1779,28 @@ with the following content.
 
 #+begin_src 
 image/jpeg; eog %s
+#+end_src
+
+Atom feeds must be converted before Gnus can parsed them. The
+file:~/.emacs.d/atom2rss.xsl can be downloaded from
+http://atom.geekhood.net/.
+
+#+begin_src 
+(require 'mm-url)
+(defadvice mm-url-insert (after DE-convert-atom-to-rss () )
+  "Converts atom to RSS by calling xsltproc."
+  (when (re-search-forward "xmlns=\"http://www.w3.org/.*/Atom\""
+			   nil t)
+    (goto-char (point-min))
+    (message "Converting Atom to RSS... ")
+    (call-process-region (point-min) (point-max)
+			 "xsltproc"
+			 t t nil
+			 (expand-file-name "~/.emacs.d/atom2rss.xsl") "-")
+    (goto-char (point-min))
+    (message "Converting Atom to RSS... done")))
+
+(ad-activate 'mm-url-insert)
 #+end_src
 
 ** Message writing

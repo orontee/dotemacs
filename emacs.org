@@ -295,16 +295,6 @@ he is about to overwrite a window configuration."
       (error "Register already contains a window configuration")))))
 #+end_src
 
-The buffer naming scheme can be slightly improved with the =uniquify=
-library.
-
-#+begin_src emacs-lisp :tangle .emacs
-(when (locate-library "uniquify")
-  (load-library "uniquify")
-  (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
-  (toggle-uniquify-buffer-names 1))
-#+end_src
-
 ** Empty scratch buffer
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -548,7 +538,6 @@ frame.
           (setq x-select-enable-clipboard t
                 x-stretch-cursor t)
           (setq-default indicate-empty-lines nil)
-          (mouse-avoidance-mode 'banish)
           (add-hook 'gdb-mode-hook
                     (lambda ()
                        (setq gdb-many-windows t
@@ -1267,11 +1256,14 @@ for file mode determination.
     (setq python-shell-interpreter "python2")))
 #+end_src
 
+The style used for docstring is the one found in Django code source.
+
 #+begin_src emacs-lisp :tangle .emacs
 (add-hook 'python-mode-hook
           (lambda ()
              (setq tab-width 4
-                   gud-pdb-command-name "python -m pdb ")))
+                   gud-pdb-command-name "python -m pdb "
+                   python-fill-docstring-style 'django)))
 #+end_src
 
 The Python documentation used to be distributed in Texinfo format. It
@@ -1310,32 +1302,16 @@ Common abbreviations are defined (PDB call, import statement, etc).
 
 (define-abbrev-table 'python-mode-abbrev-table
   '(("fim" "" py-from-import)))
-
 #+end_src
 
-**** TODO Customize semantic include path			   :noexport:
+Set the name of the Python template to insert at file creation. 
 
-Python mode hook must be enhanced with a dynamic customization of the
-semantic include path.
-
-#+begin_src emacs-lisp
-(let* ((path ....))	; depends on version, os type and virtualenv
-  (eval-after-load "wisent/python"
-     (setq semantic-python-dependency-system-include-path path)))
+#+begin_src emacs-lisp :tangle .emacs
+(let ((filename "python_template.py"))
+  (when (file-exists-p (expand-file-name filename auto-insert-directory))
+    (add-to-list 'auto-insert-alist
+                 `(python-mode . ,filename))))
 #+end_src
-
-Dynamic read of import path (regexp must be fixed):
-#+begin_src emacs-lisp
-(setq toto 
-      (let ((cmd python-command))
-	(shell-command-to-string
-	 (concat cmd " -c \"from sys import path;\
-path.remove(''); print path\""))))
-
-(split-string toto "(\\['|', '|'\\]\n)")
-#+end_src
-
-**** TODO A word about virtualenv				   :noexport:
 
 ** Support for Scheme
 

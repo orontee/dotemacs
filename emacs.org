@@ -164,11 +164,6 @@ the text scale in secondary buffers. Restoring or changing the text
 scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
 
 #+begin_src emacs-lisp :tangle .emacs
-(defun alt-set-small-text-scale ()
-  "Display buffer text in a smaller face than usual."
-  (when (fboundp 'text-scale-set)
-    (text-scale-set -1)))
-
 (dolist (hook '(gdb-breakpoints-mode-hook gdb-inferior-io-mode-hook
                 gdb-mode-hook gdb-locals-mode-hook gdb-frames-mode-hook
                 speedbar-mode-hook compilation-mode-hook vc-dir-mode-hook
@@ -176,7 +171,7 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
   (add-hook hook
             (lambda ()
                (setq truncate-lines t)
-               (alt-set-small-text-scale))))
+               (text-scale-set -1))))
 #+end_src
 
 ** Generic modes
@@ -201,17 +196,19 @@ line...
 (load "generic-x")
 #+end_src
 
+The systemd configuration files are Conf files. 
+
 #+begin_src emacs-lisp :tangle .emacs
 (when (eq system-type 'gnu/linux)
   (add-to-list 'auto-mode-alist
-               '("/usr/lib/systemd/system" . ini-generic-mode)))
+               '("\\.service\\'" . conf-mode)))
 #+end_src
 
 ** Opening files
 
-It is possible to have the finding file commands to infer the name of
-the file to find from the text under point. I found it confusing,
-thus I am not using it anymore.
+It is possible to have the find file commands to infer the name of the
+file to find from the text under point. I found it confusing, thus I
+am not using it anymore.
 
 #+begin_src emacs-lisp
 (require 'ffap)
@@ -365,7 +362,7 @@ holidays are already present into the calendar since we have set
 
 ** Electric modes
 
-Enable pairing to insert pairs of matching characters. and enable
+Enable pairing to insert pairs of matching characters and enable
 on-the-fly reindentation.
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -495,33 +492,17 @@ select a buffer.
     t))    
 #+end_src
 
-** Frame customization definitions
-
-A function (binded to =f11=) is defined to maximize/restore the
-selected frame.
+Highlight the current line in table based buffers and alike ones.
 
 #+begin_src emacs-lisp :tangle .emacs
-(global-set-key [f11] 'alt-fullscreen-both)
-
-(defun alt-fullscreen-both ()
-  """Toggle fullscreen parameter for selected frame."""
-  (interactive)
-  (let ((frame-type (framep (selected-frame))))
-    (when (or (eq frame-type 'x)
-              (eq frame-type 'w32))
-      (let* ((frame (selected-frame))
-             (value (frame-parameter frame 'fullscreen)))
-        (cond 
-         ((eq value 'fullboth) 
-          (set-frame-parameter frame 'fullscreen nil)
-          (when (eq system-type 'windows-nt)
-            (w32-send-sys-command 61728)))
-         ((eq value nil) 
-          (set-frame-parameter frame 'fullscreen 'fullboth)
-          (when (eq system-type 'windows-nt)
-            (w32-send-sys-command 61488)))
-         (t nil))))))
+(dolist (hook '(tabulated-list-mode-hook
+                bookmark-bmenu-mode-hook))
+  (add-hook hook
+            (lambda ()
+              (hl-line-mode))))
 #+end_src
+
+** Frame customization definitions
 
 Various customizations are done for each frame depending on the frame
 type: An X Window frame, a frame on MS-Windows display or a termcap
@@ -538,6 +519,7 @@ frame.
           (setq x-select-enable-clipboard t
                 x-stretch-cursor t)
           (setq-default indicate-empty-lines nil)
+          (blink-cursor-mode)
           (add-hook 'gdb-mode-hook
                     (lambda ()
                        (setq gdb-many-windows t
@@ -551,7 +533,6 @@ frame.
                          (remove '(xterm-mouse-mode (" Mouse")) 
                                  minor-mode-alist)))
                   ((equal terminal-type "linux")
-                   (setq browse-url-browser-function 'browse-url-lynx-emacs)
                    (when (equal lang "UTF-8") 
                      (set-keyboard-coding-system 'utf-8)))
                   (t nil)))))))
@@ -761,8 +742,7 @@ there is a  spell checker in path or not.
   (add-hook 'prog-mode-hook
             (lambda ()
                (setq ispell-local-dictionary "english"
-                     flyspell-persistent-highlight nil)
-               (flyspell-prog-mode))))
+                     flyspell-persistent-highlight nil))))
 #+end_src
 
 ** File parser
@@ -953,6 +933,8 @@ content match =generic-find-file-regexp= and
                (flyspell-mode))))
 #+end_src
 
+*** TODO Disable spell menu when no spell program is found 	   :noexport:
+
 ** Command interpreter
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -995,43 +977,8 @@ An abbreviation is defined for =&> /dev/null=.
 (add-hook 'sh-mode-hook
 	  (lambda ()
 	     (define-key sh-mode-map "'" 'self-insert-command)))
-#+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
-(defun alt-skip-dedicated-windows ()
-  "Select a non dedicated window."
-  (let ((list nil))
-    (while (window-dedicated-p (selected-window))
-      (push (selected-window) list)
-      (select-window (next-window nil 1 'visible))
-      (if (member (selected-window) list)
-	  (error "All windows are dedicated windows")))))
-
-(defadvice shell (before skip-dedicated-windows activate)
-  "Like `shell' but select a non dedicated window."
-  (interactive)
-  (alt-skip-dedicated-windows))
-#+end_src
-
-#+begin_src emacs-lisp :tangle .emacs
-(global-set-key [f9] 'alt-shell-dwim)
-
-(defun alt-shell-dwim (arg)
-  "Run an inferior shell like `shell'. If an inferior shell as its I/O
-through the current buffer, then pop the next buffer in `buffer-list'
-whose name is generated from the string \"*shell*\". When called with
-an argument, start a new inferior shell whose I/O will go to a buffer
-named after the string \"*shell*\" using `generate-new-buffer-name'."
-  (interactive "p")
-  (let* ((shell-buffer-list
-	  (let (blist)
-	    (dolist (buff (buffer-list) blist)
-	      (when (string-match "^\\*shell\\*" (buffer-name buff))
-		(setq blist (cons buff blist))))))
-	 (name (if current-prefix-arg 
-		   (generate-new-buffer-name "*shell*")
-		 (car shell-buffer-list))))
-    (shell name)))
+(global-set-key [f9] 'shell)
 #+end_src
 
 ** Terminal emulation
@@ -1050,38 +997,11 @@ named after the string \"*shell*\" using `generate-new-buffer-name'."
 	     (setq truncate-partial-width-windows nil)))
 #+end_src
 
-I use the single key binding =f8= to compile, display the compilation
-buffer, recompile and delete the window displaying the compilation
-buffer (in case it is the selected window).
+I use the =f8= key to compile and recompile.
 
 #+begin_src emacs-lisp :tangle .emacs
-(global-set-key [f8] 'alt-compile-dwim)
-
-(defun alt-compile-dwim (arg)
-  "A wrapper around both commands `compile' and `recompile'. 
-
-When there is no buffer named *compilation* or when called with
-an argument, run `compile'.
-
-If a buffer named *compilation* exists but is not visible, it is
-displayed. In case the *compilation* buffer exists and is
-displayed in the selected window, the window is deleted. If the
-,*compilation* buffer exists and it is displayed in a visible
-window different than the selected window, run `recompile'."
-  (interactive "P")
-  (if arg 
-      (call-interactively 'compile arg)
-    (let* ((buff (get-buffer "*compilation*"))
-           (win (get-buffer-window buff 'visible)))
-      (cond
-       ((and (bufferp buff) (not (windowp win)))
-        (display-buffer buff))
-       ((eq (window-buffer) buff)
-        (delete-window win))
-       ((bufferp buff) 
-        (call-interactively 'recompile))
-       (t
-        (call-interactively 'compile))))))
+(global-set-key [f8] 'recompile)
+(global-set-key [C-f8] 'compile)
 #+end_src
 
 *** TODO Send a D-BUS notification at the end of compilation	   :noexport:
@@ -1290,7 +1210,7 @@ code on the fly.
   (add-hook 'python-mode-hook 'flymake-python-pyflakes-load))
 #+end_src
 
-Common abbreviations are defined (PDB call, import statement, etc).
+Common abbreviations are defined (PDB call, =import= statement, etc).
 
 #+begin_src emacs-lisp :tangle .emacs
 (define-skeleton py-from-import
@@ -1364,6 +1284,7 @@ to the process.
   (load-library "php-mode")
   (add-hook 'php-mode-hook 'flymake-mode))
 #+end_src
+
 * Text edition
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1660,6 +1581,15 @@ If prefix argument is provided, use the alternative command,
   (define-key dictionary-mode-map [backtab] 'dictionary-prev-link))
 #+end_src
 
+** Support for reStructuredText
+
+Auto fill mode may break the indentation.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'rst-mode-hook
+          (lambda ()
+            (auto-fill-mode -1)))
+#+end_src
 ** Org mode
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1693,8 +1623,8 @@ Org buffers on the fly.
    (lambda ()
       (require 'ispell)
       (ispell-set-spellchecker-params)
-      (require 'org-exp)
-      (let ((lang (plist-get (org-infile-export-plist) :language)))
+      (require 'ox)
+      (let ((lang (plist-get (org-export-get-environment) :language)))
         (when (and lang (assoc lang ispell-dictionary-alist))
           (setq ispell-local-dictionary lang)))
       (flyspell-mode 1))))
@@ -1803,13 +1733,6 @@ Group topics are enabled by default.
 (add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
 #+end_src
 
-# Notifications are send on new messages.
-
-# #+begin_src emacs-lisp :tangle .emacs
-# (require 'gnus-notifications)
-# (add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications)
-# #+end_src
-
 Maill servers are scanned every 2 minutes.
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1842,6 +1765,28 @@ with the following content.
 
 #+begin_src 
 image/jpeg; eog %s
+#+end_src
+
+Atom feeds must be converted before Gnus can parsed them. The
+file:~/.emacs.d/atom2rss.xsl can be downloaded from
+http://atom.geekhood.net/.
+
+#+begin_src 
+(require 'mm-url)
+(defadvice mm-url-insert (after DE-convert-atom-to-rss () )
+  "Converts atom to RSS by calling xsltproc."
+  (when (re-search-forward "xmlns=\"http://www.w3.org/.*/Atom\""
+			   nil t)
+    (goto-char (point-min))
+    (message "Converting Atom to RSS... ")
+    (call-process-region (point-min) (point-max)
+			 "xsltproc"
+			 t t nil
+			 (expand-file-name "~/.emacs.d/atom2rss.xsl") "-")
+    (goto-char (point-min))
+    (message "Converting Atom to RSS... done")))
+
+(ad-activate 'mm-url-insert)
 #+end_src
 
 ** Message writing

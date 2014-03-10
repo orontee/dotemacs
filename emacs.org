@@ -1358,6 +1358,15 @@ fly.
   (add-hook 'css-mode-hook 'flymake-mode))
 #+end_src
 
+When available, load the package =irfc= providing an interface to IETF
+RFC documents.
+
+#+begin_src emacs-lisp :tangle .emacs
+(when (locate-library "irfc")
+  (require 'irfc)
+  (setq irfc-assoc-mode t))
+#+end_src
+
 ** Support for TeX and LaTeX
 
 When a file with =.tex= extension is opened, it is parsed to identify

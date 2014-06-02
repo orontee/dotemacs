@@ -1183,7 +1183,8 @@ The style used for docstring is the one found in Django code source.
           (lambda ()
              (setq tab-width 4
                    gud-pdb-command-name "python -m pdb "
-                   python-fill-docstring-style 'django)))
+                   python-fill-docstring-style 'pep257
+                   python-check-command "pep8")))
 #+end_src
 
 The Python documentation used to be distributed in Texinfo format. It
@@ -1210,18 +1211,17 @@ code on the fly.
   (add-hook 'python-mode-hook 'flymake-python-pyflakes-load))
 #+end_src
 
-Common abbreviations are defined (PDB call, =import= statement, etc).
+Common skeletons and abbreviations are defined (PDB call, =import=
+statement, etc).
 
 #+begin_src emacs-lisp :tangle .emacs
-(define-skeleton py-from-import
-  "Insert a from import statement"
-  "Relative module: " "from " str " import " ("Identifier: " str ", ") -2 \n _)
+(python-skeleton-define from nil
+  "Module: " 
+  "from " str " import " 
+  ("Identifier: " str ", ") -2 \n _)
 
 (define-abbrev-table 'python-mode-abbrev-table
   '(("pdb" "import pdb; pdb.set_trace()")))
-
-(define-abbrev-table 'python-mode-abbrev-table
-  '(("fim" "" py-from-import)))
 #+end_src
 
 Set the name of the Python template to insert at file creation. 

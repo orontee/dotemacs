@@ -149,6 +149,7 @@ is still available by pressing =f10= or the contextual menu bind to
 #+begin_src emacs-lisp :tangle .emacs
 (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 #+end_src
 
@@ -164,14 +165,16 @@ the text scale in secondary buffers. Restoring or changing the text
 scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
 
 #+begin_src emacs-lisp :tangle .emacs
-(dolist (hook '(gdb-breakpoints-mode-hook gdb-inferior-io-mode-hook
-                gdb-mode-hook gdb-locals-mode-hook gdb-frames-mode-hook
-                speedbar-mode-hook compilation-mode-hook vc-dir-mode-hook
-                occur-mode-hook apropos-mode-hook grep-mode-hook))
-  (add-hook hook
-            (lambda ()
-               (setq truncate-lines t)
-               (text-scale-set -1))))
+(when (require 'face-remap)
+  (dolist (hook '(gdb-breakpoints-mode-hook gdb-inferior-io-mode-hook
+                                            gdb-mode-hook gdb-locals-mode-hook gdb-frames-mode-hook
+                                            speedbar-mode-hook compilation-mode-hook vc-dir-mode-hook
+                                            occur-mode-hook apropos-mode-hook grep-mode-hook))
+    (add-hook hook
+              (lambda ()
+                (setq truncate-lines t)
+                (when (not text-scale-mode)
+                  (text-scale-set -1))))))
 #+end_src
 
 ** Generic modes
@@ -196,24 +199,12 @@ line...
 (load "generic-x")
 #+end_src
 
-The systemd configuration files are Conf files. 
+The =systemd= configuration files are Conf files.
 
 #+begin_src emacs-lisp :tangle .emacs
 (when (eq system-type 'gnu/linux)
   (add-to-list 'auto-mode-alist
                '("\\.service\\'" . conf-mode)))
-#+end_src
-
-** Opening files
-
-It is possible to have the find file commands to infer the name of the
-file to find from the text under point. I found it confusing, thus I
-am not using it anymore.
-
-#+begin_src emacs-lisp
-(require 'ffap)
-(setq ffap-require-prefix t)
-(ffap-bindings)
 #+end_src
 
 ** Auto insertion at file creation
@@ -247,15 +238,7 @@ followed.
 ** Moving between windows and selecting buffers
 
 Usually the frame is split at most twice. I find =C-xo= sufficient to
-change the selected window along the three candidates. When there are
-fewer windows (for example while debugging), it is useful to have key
-bindings (=S-left=, =S-right=, etc) for selection of windows in a
-frame geometrically.
-
-#+begin_src emacs-lisp :tangle .emacs
-(windmove-default-keybindings)
-(setq windmove-wrap-around t)
-#+end_src
+change the selected window along the three candidates.\
 
 To select a buffer I often use =C-xb= and completion. When my brain
 can't remember the buffer name, I use the default buffer menu
@@ -358,16 +341,12 @@ holidays are already present into the calendar since we have set
       (append french-holiday holiday-other-holidays))
 #+end_src
 
-*** TODO Configure Org-mode calendar				   :noexport:
-
 ** Electric modes
 
-Enable pairing to insert pairs of matching characters and enable
-on-the-fly reindentation.
+Enable pairing to insert pairs of matching characters.
 
 #+begin_src emacs-lisp :tangle .emacs
 (electric-pair-mode)
-(electric-indent-mode)
 #+end_src
 
 ** Save place
@@ -466,20 +445,6 @@ Key sequences are defined to easily set the input methods I need.
 
 ** Display settings
 
-If the display can display images, image files are rendered as images.
-
-#+begin_src emacs-lisp :tangle .emacs
-(when (display-images-p)
-  (auto-image-file-mode))
-#+end_src
-
-When a buffer is already displayed, its frame is raised when the
-default is to create a new window displaying that buffer.
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq display-buffer-reuse-frames t)
-#+end_src
-
 Group buffers by their major modes when using the contextual menu to
 select a buffer.
 
@@ -504,40 +469,6 @@ Highlight the current line in table based buffers and alike ones.
 
 ** Frame customization definitions
 
-Various customizations are done for each frame depending on the frame
-type: An X Window frame, a frame on MS-Windows display or a termcap
-frame.
-
-#+begin_src emacs-lisp :tangle .emacs
-(add-hook 'after-make-frame-functions 'alt-frame-customization)
-
-(defun alt-frame-customization (frame)
-  "To be run after frame creation."
- (let ((frame-type (framep frame)))
-   (cond ((or (eq frame-type 'x)
-              (eq frame-type 'w32))
-          (setq x-select-enable-clipboard t
-                x-stretch-cursor t)
-          (setq-default indicate-empty-lines nil)
-          (blink-cursor-mode)
-          (add-hook 'gdb-mode-hook
-                    (lambda ()
-                       (setq gdb-many-windows t
-                             gdb-speedbar-auto-raise nil))))
-         ((eq frame-type 't)
-          (let ((terminal-type (getenv "TERM"))
-                (lang current-language-environment))
-            (cond ((string-match "^xterm" terminal-type)
-                   (xterm-mouse-mode)
-                   (setq minor-mode-alist 
-                         (remove '(xterm-mouse-mode (" Mouse")) 
-                                 minor-mode-alist)))
-                  ((equal terminal-type "linux")
-                   (when (equal lang "UTF-8") 
-                     (set-keyboard-coding-system 'utf-8)))
-                  (t nil)))))))
-#+end_src
-
 #+begin_src emacs-lisp
 (setq default-frame-alist
       '((height . 40)
@@ -545,6 +476,7 @@ frame.
 	(menu-bar-lines . nil)
 	(tool-bar-lines . nil)
 	(vertical-scroll-bars . nil)
+        (horizontal-scroll-bars . nil)
 	(background-color . "#2e3434")
 	(background-mode . dark)
 	(foreground-color . "#eeeeec")
@@ -588,8 +520,7 @@ Emacs.link.attributeUnderline: false
 
 (add-hook 'Info-mode-hook
 	  (lambda ()
-	     (setq indicate-empty-lines nil
-		   truncate-lines t)))
+	     (setq truncate-lines t)))
 #+end_src
 
 I used to open frames to keep documentation away from the code; Thus
@@ -623,23 +554,6 @@ Only intended for interactive use."
     (add-to-list 'Info-additional-directory-list path)))
 #+end_src
 
-I prefer to read manual pages with the =woman= command than the legacy
-=man= command. It is configured to use the whole frame.
-
-#+begin_src emacs-lisp :tangle .emacs
-(require 'woman)
-(defalias 'man 'woman)
-
-(setq woman-fill-frame t
-      woman-use-own-frame nil)
-
-(define-key Info-mode-map "W" 'woman)
-#+end_src
-
-Note that when using Emacs as a daemon, the default value of
-=woman-fontify= will be =nil= because the daemon may open frames on
-displays that do not support colors or different fonts.
-
 ** Server, daemon
 
 A server is started if and only if the running process is not a daemon
@@ -662,6 +576,15 @@ the following snippet:
 builtin type -p emacsclient &>/dev/null
 [ -n $@ ] && export EDITOR=emacsclient
 #+end_src
+
+I also define an [[file:~/.bash_aliases][Bash alias]] to launch Emacs in terminals:
+
+#+begin_src shell-script-mode
+function is_command { type "$1" &> /dev/null; }
+is_command emacs      && alias     em='emacsclient -t'
+#+end_src
+
+*** TODO Windows equivalent
 
 ** Desktop
 
@@ -762,23 +685,6 @@ documentation using the mouse. It deserved a key binding. But as I was
 not using it much, I binded that key to minimap when available;
 Minimap offers a visual way to browse large buffers.
 
-#+begin_src emacs-lisp :tangle .emacs 
-(if (locate-library "minimap")
-    (progn
-      (require 'minimap)
-      (defun minimap-toggle-window ()
-        (interactive)
-        (let ((buff
-               (and minimap-bufname
-                    (get-buffer minimap-bufname)
-                    (get-buffer-window (get-buffer minimap-bufname)))))
-          (if buff
-              (minimap-kill)
-            (minimap-create))))
-      (define-key global-map "\M-0" 'minimap-toggle-window))
-  (define-key global-map "\M-0" 'speedbar))
-#+end_src
-
 ** Long lines and buffer boundaries
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -801,21 +707,6 @@ the user the buffer indexes.
           (lambda ()
              (local-set-key "\C-ci" 'imenu)))
 #+end_src
-
-** Time stamps
-
-The command =time-stamp= updates the time stamp string in the buffer.
-The default format of the time stamp does not include the system name.
-I found it usefull when working on a given file from different
-computers.
-
-#+begin_src emacs-lisp :tangle .emacs
-(setq-default time-stamp-format "%:y-%02m-%02d %02H:%02M:%02S %u@%s")
-
-(add-hook 'write-file-hooks (lambda () (time-stamp)))
-#+end_src
-
-*** TODO How to insert a timestamp at point			   :noexport:
 
 ** Completion
 
@@ -1215,11 +1106,6 @@ Common skeletons and abbreviations are defined (PDB call, =import=
 statement, etc).
 
 #+begin_src emacs-lisp :tangle .emacs
-(python-skeleton-define from nil
-  "Module: " 
-  "from " str " import " 
-  ("Identifier: " str ", ") -2 \n _)
-
 (define-abbrev-table 'python-mode-abbrev-table
   '(("pdb" "import pdb; pdb.set_trace()")))
 #+end_src

@@ -1024,6 +1024,14 @@ Some abbreviation definitions for preprocessor directives are added.
 	     (define-key c++-mode-map "\C-m" 'c-context-line-break)))
 #+end_src
 
+Update default text to insert into new files.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-to-list 'auto-insert-alist
+             '(("\\.\\([Hh]\\|hh\\|hpp\\)\\'" . "C / C++ header")
+  t "#pragma once\n\n"))
+#+end_src
+
 ** Support for Emacs Lisp
 
 #+begin_src emacs-lisp :tangle .emacs

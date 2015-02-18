@@ -824,6 +824,13 @@ content match =generic-find-file-regexp= and
                (flyspell-mode))))
 #+end_src
 
+When using Git in an shell buffer I prefer not to have a pager
+filtering the output.
+
+#+begin_src emacs-lisp :tangle .emacs
+(setenv "GIT_PAGER" "")
+#+end_src
+
 *** TODO Disable spell menu when no spell program is found 	   :noexport:
 
 ** Command interpreter

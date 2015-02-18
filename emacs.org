@@ -1195,7 +1195,7 @@ to the process.
 		   "[.?!]\\($\\| $\\|	\\| \\)[ 	\n]*"
 		   sentence-end-double-space nil)
  	     (auto-fill-mode)
-	     (goto-address)
+	     (goto-address-mode)
 	     (use-hard-newlines 1 'never)))
 #+end_src
 

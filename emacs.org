@@ -207,6 +207,13 @@ The =systemd= configuration files are Conf files.
                '("\\.service\\'" . conf-mode)))
 #+end_src
 
+Bind =rc-generic-mode= to Visual Studio Resource files.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-to-list 'auto-mode-alist
+             '("\\.rc2\\'" . rc-generic-mode))
+#+end_src
+
 ** Auto insertion at file creation
 
 Auto insertion of templates at file creation is enabled and the

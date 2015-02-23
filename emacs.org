@@ -615,6 +615,8 @@ In case there MinGW is installed, the list of directories where to
 search programs, the =PATH= environment variable and the list of
 directories where to search documentation files are extended.
 
+Similar tweaks are done for Ghostscript, GNU Aspell, Visual Studio.
+
 #+begin_src emacs-lisp :tangle .emacs
 (when (eq system-type 'windows-nt)
   (let ((mingw-root "C:\\GNU\\MinGW"))   
@@ -637,7 +639,25 @@ directories where to search documentation files are extended.
           (grep-apply-setting 'grep-command
                               (expand-file-name "bin/grep.exe" msys-root))
           (grep-apply-setting 'grep-find-command
-                              (expand-file-name "bin/find.exe" msys-root)))))))
+                              (expand-file-name "bin/find.exe" msys-root))))))
+  (let ((gs-root "C:\\Program Files (x86)\\gs\\gs9.14"))
+    (when (file-exists-p gs-root)
+      (setenv "PATH" (concat gs-root "\\bin" ";" (getenv "PATH")))
+      (setenv "PATH" (concat gs-root "\\lib" ";" (getenv "PATH")))
+      (add-to-list 'exec-path (expand-file-name "bin" gs-root))
+      (add-to-list 'exec-path (expand-file-name "lib" gs-root))
+      (require 'doc-view)
+      (setq doc-view-ghostscript-program "gswin32c.exe")))
+  (let ((aspell-root "C:\\GNU\\aspell"))
+    (when (file-exists-p aspell-root)
+      (setenv "PATH" (concat aspell-root "\\bin" ";" (getenv "PATH")))
+      (add-to-list 'exec-path (expand-file-name "bin" aspell-root))))
+  (let ((visual-studio-root "C:\\Program Files (x86)\\Microsoft Visual Studio 10.0"))
+    (when (file-exists-p visual-studio-root)
+      (setenv "PATH" (concat visual-studio-root "\\Common7\\IDE" ";" (getenv "PATH")))
+      (add-to-list 'exec-path (expand-file-name "Common7/IDE" visual-studio-root))
+      (add-to-list 'auto-mode-alist
+             `(,(expand-file-name "VC/include" visual-studio-root) . c++-mode)))))
 #+end_src
 
 ** Various

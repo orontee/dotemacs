@@ -1258,7 +1258,9 @@ automatic line breaking is turned off.
 (add-hook 'html-mode-hook
           (lambda ()
              (auto-fill-mode -1)
-             (abbrev-mode)))
+             (abbrev-mode)
+             (when has-spell-checker
+               (flyspell-mode))))
 #+end_src
 
 An abbreviation is defined for the Lorem Ipsum.

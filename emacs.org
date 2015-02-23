@@ -81,7 +81,6 @@ repository. There are usefull packages in other places like [[http://tromey.com/
 #+begin_src emacs-lisp :tangle .emacs
 (eval-after-load "package"
   '(progn
-     (add-to-list 'package-archives '("elpa" . "http://tromey.com/elpa/"))
      (add-to-list 'package-archives '("marmalade". "http://marmalade-repo.org/packages/"))))
 (package-initialize)
 #+end_src

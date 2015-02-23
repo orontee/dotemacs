@@ -10,15 +10,17 @@ export_cmd = \
 
 build_files = .emacs emacs.html
 
+EMACSCLIENT ?= emacsclient
+
 all: .emacs
 
 html: emacs.html
 
 .emacs: emacs.org
-	emacsclient -e $(tangle_cmd)
+	$(EMACSCLIENT) -e $(tangle_cmd)
 
 emacs.html: emacs.org
-	emacsclient -e $(export_cmd)
+	$(EMACSCLIENT) -e $(export_cmd)
 
 install: .emacs
 	mv $^ $(HOME)

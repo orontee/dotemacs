@@ -652,12 +652,15 @@ Similar tweaks are done for Ghostscript, GNU Aspell, Visual Studio.
       (when (file-exists-p aspell-root)
         (setenv "PATH" (concat aspell-root "\\bin" ";" (getenv "PATH")))
         (add-to-list 'exec-path (expand-file-name "bin" aspell-root))))
-    (let ((visual-studio-root "C:\\Program Files (x86)\\Microsoft Visual Studio 10.0"))
+    (let ((visual-studio-root "C:\\Program Files (x86)\\Microsoft Visual Studio 10.0")
+	  (dotnet-framework-root "C:\\Windows\\Microsoft.NET\\Framework\v4.0.30319"))
       (when (file-exists-p visual-studio-root)
         (setenv "PATH" (concat visual-studio-root "\\Common7\\IDE" ";" (getenv "PATH")))
         (add-to-list 'exec-path (expand-file-name "Common7/IDE" visual-studio-root))
         (add-to-list 'auto-mode-alist
-               `(,(expand-file-name "VC/include" visual-studio-root) . c++-mode)))))
+               `(,(expand-file-name "VC/include" visual-studio-root) . c++-mode)))
+      (when (file-exists-p dotnet-framework-root)
+        (setenv "PATH" (concat dotnet-framework-root ";" (getenv "PATH"))))))
 #+end_src
 
 ** Various

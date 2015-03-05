@@ -702,6 +702,8 @@ there is a  spell checker in path or not.
                      flyspell-persistent-highlight nil))))
 #+end_src
 
+*** TODO Disable spell menu when no spell program is found 	   :noexport:
+
 ** File parser
 
 Visited buffers will always be parsed for their semantic content and a
@@ -865,7 +867,14 @@ filtering the output.
 (setenv "GIT_PAGER" "")
 #+end_src
 
-*** TODO Disable spell menu when no spell program is found 	   :noexport:
+While merging changes, when the last conflic is resolved, don't leave
+automaticaly =smerge-mode=; Otherwise I tend to use =smerge-mode= key
+bindings after the mode has been deactivated.
+
+#+begin_src emacs-lisp :tangle .emacs
+(eval-after-load "smerge-mode"
+  (setq smerge-auto-leave nil))
+#+end_src
 
 ** Command interpreter
 

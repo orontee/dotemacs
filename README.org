@@ -1131,7 +1131,7 @@ The style used for docstring is the one found in Django code source.
           (lambda ()
              (setq tab-width 4
                    gud-pdb-command-name "python -m pdb "
-                   python-fill-docstring-style 'pep257
+                   python-fill-docstring-style 'pep-257
                    python-check-command "pep8")))
 #+end_src
 

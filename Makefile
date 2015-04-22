@@ -16,10 +16,10 @@ all: .emacs
 
 html: emacs.html
 
-.emacs: README
+.emacs: README.org
 	$(EMACSCLIENT) -e $(tangle_cmd)
 
-emacs.html: README
+emacs.html: README.org
 	$(EMACSCLIENT) -e $(export_cmd)
 
 install: .emacs

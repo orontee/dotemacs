@@ -32,8 +32,9 @@ the documentation you are reading.
 
 *Downloads*
 
-You can download both the [[file:README.org][Org file]] and build a file:.emacs using
-=GNU Make=.
+You can download this [[file:README.org][Org file]] and build the corresponding =.emacs= using
+=org-babel-tangle=, or simply clone this repository and use =GNU Make=
+to build that file.
 
 *References*
 

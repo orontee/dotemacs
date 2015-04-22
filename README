@@ -1,5 +1,4 @@
-
-		     An Emacs configuration tour
+An Emacs configuration tour
 
 #+startup: overview
 #+language: en
@@ -1806,3 +1805,7 @@ http://atom.geekhood.net/.
 #+end_src
 
 
+
+# Local Variables:
+# Mode: org
+# End:

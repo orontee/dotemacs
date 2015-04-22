@@ -6,7 +6,7 @@ tangle_cmd = \
 export_cmd = \
 "(with-temp-buffer \
   (find-file \"$<\") \
-  (org-export-as-html 3))"
+  (org-html-export-as-html))"
 
 build_files = .emacs emacs.html
 
@@ -16,10 +16,10 @@ all: .emacs
 
 html: emacs.html
 
-.emacs: emacs.org
+.emacs: README
 	$(EMACSCLIENT) -e $(tangle_cmd)
 
-emacs.html: emacs.org
+emacs.html: README
 	$(EMACSCLIENT) -e $(export_cmd)
 
 install: .emacs

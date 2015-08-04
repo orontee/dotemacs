@@ -286,6 +286,12 @@ he is about to overwrite a window configuration."
       (error "Register already contains a window configuration")))))
 #+end_src
 
+** Cycling spacing
+
+#+begin_src emacs-lisp :tangle .emacs
+(global-set-key (kbd "M-SPC") 'cycle-spacing)
+#+end_src
+
 ** Empty scratch buffer
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -810,8 +816,9 @@ significant while searching for expansions.
 A key binding to cleanup blank problems in all buffer or at region.
 
 #+begin_src emacs-lisp :tangle .emacs
-(eval-after-load 'prog-mode
-  (define-key prog-mode-map "\C-cw" 'whitespace-cleanup))
+  (add-hook 'prog-mode-hook
+            (lambda ()
+              (define-key prog-mode-map "\C-cw" 'whitespace-cleanup)))
 #+end_src
 
 ** Version control

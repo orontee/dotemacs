@@ -813,13 +813,37 @@ significant while searching for expansions.
 
 ** Whitespaces
 
-A key binding to cleanup blank problems in all buffer or at region.
+Key bindings to report and cleanup blank problems in all buffer or at
+region.
+
+#+begin_src emacs-lisp :tangle .emacs 
+(define-prefix-command 'ctl-cw-map)
+(global-set-key "\C-cw" 'ctl-cw-map)
+(define-key ctl-cw-map "t" 'whitespace-mode)
+(define-key ctl-cw-map "c" 'whitespace-cleanup)
+(define-key ctl-cw-map "r" 'whitespace-report)
+
+(setq whitespace-style
+      (quote (face spaces tabs newline space-mark
+                   tab-mark newline-mark lines-tail)))
+
+(setq whitespace-display-mappings
+      '((space-mark 32 [183] [46])
+        (newline-mark 10 [182 10]) 
+        (tab-mark 9 [8594 9] [92 9])))
+#+end_src
+
+** Glasses
+
+Glasses help reading Camel case. I prefer parentheses to stick to the
+preceding identifier and embedded capitals to be downcase.
 
 #+begin_src emacs-lisp :tangle .emacs
-  (add-hook 'prog-mode-hook
-            (lambda ()
-              (define-key prog-mode-map "\C-cw" 'whitespace-cleanup)))
+(require 'glasses)
+(setq glasses-separate-parentheses-p nil
+      glasses-uncapitalize-p t)
 #+end_src
+
 
 ** Version control
 

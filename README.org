@@ -721,6 +721,17 @@ list of most recently used tags is maintained.
 (semantic-mode)
 #+end_src
 
+#+begin_src emacs-lisp :tangle .emacs
+(defun create-tags (dir-name)
+    "Create tags file."
+    (interactive "DDirectory: ")
+    (let ((ctags (executable-find "ctags")))
+      (if ctags
+          (shell-command
+           (format "ctags -e -R"))
+        (message "Exuberant Ctags not found in path..."))))
+#+end_src
+
 ** Speedbar and Minimap
 
 I found that the speedbar is a nice way to browse files, tags and

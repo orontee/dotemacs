@@ -1687,19 +1687,26 @@ Various types of capture items are defined.
 #+begin_src emacs-lisp :tangle .emacs
 (when (locate-library "gnus-dired")
   (require 'gnus-dired))
-(setq dired-omit-files
+
+(let ((system-type))
+  (cond
+   ('windows-nt
+    (setq dired-omit-files
       (concat dired-omit-files
-	      "\\|^\\..+\\|^CVS$\\|^lost\\+found")
-      dired-omit-extensions (delete ".pdf" dired-omit-extensions))
+              "\\|^\\..+\\|^CVS$\\|^\\$Recycle\\.Bin$")))
+   (t (setq dired-omit-files
+      (concat dired-omit-files
+              "\\|^\\..+\\|^CVS$\\|^lost\\+found")))))
+(setq dired-omit-extensions (delete ".pdf" dired-omit-extensions))
 (add-hook 'dired-mode-hook
-	  (lambda ()
-	     (when (fboundp 'gnus-dired-mode)
-	       (gnus-dired-mode 1))
-	     (setq dired-omit-files-p t
-		   dired-omit-size-limit nil
-		   truncate-lines t)
-	     (set (make-local-variable 'transient-mark-mode) nil)
-	     (define-key dired-mode-map "w" 'dired-copy-filename-as-kill)))
+          (lambda ()
+             (when (fboundp 'gnus-dired-mode)
+               (gnus-dired-mode 1))
+             (setq dired-omit-files-p t
+                   dired-omit-size-limit nil
+                   truncate-lines t)
+             (set (make-local-variable 'transient-mark-mode) nil)
+             (define-key dired-mode-map "w" 'dired-copy-filename-as-kill)))
 #+end_src
 
 * Mail, newsgroup, RSS

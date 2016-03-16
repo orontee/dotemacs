@@ -1104,11 +1104,9 @@ Some abbreviation definitions for preprocessor directives are added.
 				    scope-operator
 				    list-close-comma)
 		   c-basic-offset 3)
-	     (c-toggle-electric-state)
-	     (c-toggle-hungry-state)
-	     (c-toggle-auto-newline)
+	     ;(c-toggle-electric-state)
+	     (c-toggle-hungry-state 1)
 	     (subword-mode)
-	     (hs-minor-mode)
 	     (cwarn-mode)
 	     (require 'find-file)
 	     (add-to-list ff-search-directories ".")
@@ -1354,6 +1352,15 @@ RFC documents.
 (when (locate-library "irfc")
   (require 'irfc)
   (setq irfc-assoc-mode t))
+#+end_src
+
+** Support for MarkDown
+
+#+begin_src emacs-lisp :tangle .emacs
+  (when (locate-library "markdown-mode")
+    (load-library "markdown-mode")
+    (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
+
 #+end_src
 
 ** Support for TeX and LaTeX

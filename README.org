@@ -1354,6 +1354,15 @@ RFC documents.
   (setq irfc-assoc-mode t))
 #+end_src
 
+When available, load the package =rainbow-mode= to colorize strings
+that represent colors.
+
+#+begin_src emacs-lisp :tangle .emacs
+(when (locate-library "rainbow-mode")
+  (require 'rainbow-mode)
+  (add-hook 'css-mode-hook 'rainbow-mode))
+#+end_src
+
 ** Support for MarkDown
 
 #+begin_src emacs-lisp :tangle .emacs

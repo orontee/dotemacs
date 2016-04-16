@@ -855,7 +855,6 @@ preceding identifier and embedded capitals to be downcase.
       glasses-uncapitalize-p t)
 #+end_src
 
-
 ** Version control
 
 I sometimes have directories both under [[http://subversion.apache.org/][Subversion]] and [[http://gitscm.org/][Git]]. As my
@@ -1122,6 +1121,14 @@ Update default text to insert into new files.
              '(("\\.\\([Hh]\\|hh\\|hpp\\)\\'" . "C / C++ header")
   t "#pragma once\n\n"))
 #+end_src
+
+** Qt
+
+ #+begin_src emacs-lisp :tangle .emacs
+(add-to-list 'auto-mode-alist '("\\.qrc\\'" . xml-mode))
+(add-to-list 'auto-mode-alist '("\\.qss\\'" . css-mode))
+ #+end_src
+
 
 ** Support for Emacs Lisp
 

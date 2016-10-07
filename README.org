@@ -165,20 +165,21 @@ the text scale in secondary buffers. Restoring or changing the text
 scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
 
 #+begin_src emacs-lisp :tangle .emacs
-(when (require 'face-remap)
-  (dolist (hook '(gdb-breakpoints-mode-hook gdb-inferior-io-mode-hook
-                                            gdb-mode-hook gdb-locals-mode-hook gdb-frames-mode-hook
-                                            speedbar-mode-hook vc-dir-mode-hook
-                                            occur-mode-hook apropos-mode-hook grep-mode-hook))
-    (add-hook hook
-              (lambda ()
-                (setq truncate-lines t)
-                (when (not text-scale-mode)
-                  (text-scale-set -1))))))
-(add-hook 'compilation-mode-hook
-  (lambda ()
-    (when (not text-scale-mode)
-      (text-scale-set -1))))
+  (when (require 'face-remap)
+    (dolist (hook '(gdb-breakpoints-mode-hook gdb-inferior-io-mode-hook
+                                              gdb-mode-hook gdb-locals-mode-hook gdb-frames-mode-hook
+                                              speedbar-mode-hook vc-dir-mode-hook
+                                              occur-mode-hook apropos-mode-hook grep-mode-hook 
+                                              xref--xref-buffer-mode-hook))
+      (add-hook hook
+                (lambda ()
+                  (setq truncate-lines t)
+                  (when (not text-scale-mode)
+                    (text-scale-set -1))))))
+  (add-hook 'compilation-mode-hook
+    (lambda ()
+      (when (not text-scale-mode)
+        (text-scale-set -1))))
 #+end_src
 
 ** Generic modes
@@ -692,6 +693,14 @@ These are some core features disabled for newbies.
 
 * Programming
 
+** Edition
+
+#+begin_src emacs-lisp :tangle .emacs
+  (add-hook 'prog-mode-hook
+            (lambda ()
+              (electric-layout-mode 1)))
+#+end_src
+
 ** Spell checking
 
 When writing code source, I like to have comments, documentation and
@@ -722,14 +731,15 @@ list of most recently used tags is maintained.
 #+end_src
 
 #+begin_src emacs-lisp :tangle .emacs
-(defun create-tags (dir-name)
-    "Create tags file."
-    (interactive "DDirectory: ")
-    (let ((ctags (executable-find "ctags")))
-      (if ctags
-          (shell-command
-           (format "ctags -e -R"))
-        (message "Exuberant Ctags not found in path..."))))
+  (defun create-tags (dir-name)
+      "Create tags file."
+      (interactive "DDirectory: ")
+      (let ((etags (executable-find "etags")))
+        (if etags
+            (shell-command (concat "find " dir-name 
+                                   "\( -name '*.cpp' -or -name '*.h' \) -print | "
+                                   "etags -l c++ - "))
+          (message "Exuberant Ctags not found in path..."))))
 #+end_src
 
 ** Speedbar and Minimap
@@ -1129,7 +1139,6 @@ Update default text to insert into new files.
 (add-to-list 'auto-mode-alist '("\\.qss\\'" . css-mode))
  #+end_src
 
-
 ** Support for Emacs Lisp
 
 #+begin_src emacs-lisp :tangle .emacs
@@ -1180,8 +1189,7 @@ The style used for docstring is the one found in Django code source.
           (lambda ()
              (setq tab-width 4
                    gud-pdb-command-name "python -m pdb "
-                   python-fill-docstring-style 'pep-257
-                   python-check-command "pep8")))
+                   python-fill-docstring-style 'pep-257)))
 #+end_src
 
 The Python documentation used to be distributed in Texinfo format. It

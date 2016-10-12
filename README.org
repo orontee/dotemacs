@@ -737,7 +737,7 @@ list of most recently used tags is maintained.
       (let ((etags (executable-find "etags")))
         (if etags
             (shell-command (concat "find " dir-name 
-                                   "\( -name '*.cpp' -or -name '*.h' \) -print | "
+                                   " \\( -name '*.cpp' -or -name '*.h' \\) -print | "
                                    "etags -l c++ - "))
           (message "Exuberant Ctags not found in path..."))))
 #+end_src

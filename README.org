@@ -742,9 +742,12 @@ list of most recently used tags is maintained.
       (interactive "DDirectory: ")
       (let ((etags (executable-find "etags")))
         (if etags
-            (shell-command (concat "find " dir-name 
-                                   " \\( -name '*.cpp' -or -name '*.h' \\) -print | "
-                                   "etags -l c++ - "))
+            (progn (shell-command (concat "find " dir-name 
+                                          " \\( -name '*.cpp' -or -name '*.h' \\)"
+                                          " -print | " "etags -l c++ - "))
+                   (shell-command (concat "find " dir-name 
+                                   " -name '*.py' -print | etags -a -l python - ")))
+          
           (message "Exuberant Ctags not found in path..."))))
 #+end_src
 

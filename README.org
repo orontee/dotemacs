@@ -691,6 +691,12 @@ These are some core features disabled for newbies.
 (put 'scroll-left 'disabled nil)
 #+end_src
 
+Pacman package build files are shell scripts.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-to-list 'auto-mode-alist '("PKGBUILD\\'" . sh-mode))
+#+end_src
+
 * Programming
 
 ** Edition

@@ -886,10 +886,13 @@ backends must be reordered.
 
 Comparing revisions using Ediff is so pleasant that it deserves a key
 binding, an alternative to the usefull =C-xvD= (binded to
-=vc-root-diff=).
+=vc-root-diff=). Same remark for the command that grep in Git
+repositories.
 
 #+begin_src emacs-lisp :tangle .emacs
 (global-set-key "\C-xv=" 'ediff-revision)
+(require 'vc-git)
+(global-set-key "\C-xvG" 'vc-git-grep)
 #+end_src
 
 Spell checking is automatically enabled when editing log messages,

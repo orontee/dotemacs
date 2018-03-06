@@ -16,9 +16,9 @@ I found that tool more or less randomly while sitting in front of one
 of the X Window terminals of my university. Today, whatever I have to
 do with a computer, it ends in an Emacs buffer... In my current use,
 Emacs has become a kind of interface over the computer's operating
-system (whatever it is: Arch Linux, Ubuntu, Windows XP and Vista). But
-suprisingly I feel like it has adapt to my needs rather than I have
-limited myself to its features.
+system (whatever it is: Arch Linux, Ubuntu, Windows XP, Vista and 10).
+But suprisingly I feel like it has adapt to my needs rather than I
+have limited myself to its features.
 
 As an intensive Emacs user I had various needs related to Emacs
 customization: Centralize all customization to be able to deploy
@@ -82,7 +82,7 @@ repository. There are usefull packages in other places like [[http://tromey.com/
 #+begin_src emacs-lisp :tangle .emacs
 (eval-after-load "package"
   '(progn
-     (add-to-list 'package-archives '("marmalade". "http://marmalade-repo.org/packages/"))))
+     (add-to-list 'package-archives '("melpa". "https://melpa.org/packages/"))))
 (package-initialize)
 #+end_src
 
@@ -92,7 +92,7 @@ At the time of writing, I have activated the following packages:
 (let ((descriptions "|Package|Description|\n|---|\n"))
   (dolist (package package-alist descriptions)
     (let ((name (car package))
-	  (desc (aref (cdr package) 2)))
+          (desc (package-desc-summary (cadr package))))
     (setq descriptions 
 	  (concat descriptions (format "|%s|%s|\n" name desc))))))
 #+end_src
@@ -100,27 +100,54 @@ At the time of writing, I have activated the following packages:
 #+RESULTS:
 | Package                 | Description                                                        |
 |-------------------------+--------------------------------------------------------------------|
+| yaml-mode               | Major mode for editing YAML files                                  |
+| url-shortener           | shorten long url and expand tinyurl                                |
+| telephone-line          | Rewrite of Powerline                                               |
+| systemd                 | Major mode for editing systemd units                               |
+| symbols-mode            | List symbols of object files                                       |
+| sws-mode                | (S)ignificant (W)hite(S)pace mode                                  |
+| seq                     | Sequence manipulation functions                                    |
+| s                       | The long lost Emacs string manipulation library.                   |
+| restclient              | An interactive HTTP client for Emacs                               |
+| rainbow-mode            | Colorize color names in buffers                                    |
+| powershell              | Mode for editing Powershell scripts                                |
+| popup                   | Visual Popup User Interface                                        |
+| php-mode                | Major mode for editing PHP code                                    |
+| pcache                  | persistent caching for Emacs.                                      |
+| nsis-mode               | NSIS-mode                                                          |
+| mode-icons              | Show icons for modes                                               |
+| minimap                 | Sidebar showing a "mini-map" of a buffer                           |
+| material-theme          | A Theme based on the colors of the Google Material Design          |
+| marshal                 | eieio extension for automatic (un)marshalling                      |
+| markdown-mode           | Major mode for Markdown-formatted text                             |
+| logito                  | logging library for Emacs                                          |
+| js-comint               | JavaScript interpreter in window.                                  |
+| jade-mode               | Major mode for editing .jade files                                 |
+| irfc                    | Interface for IETF RFC document.                                   |
+| httprepl                | An HTTP REPL                                                       |
+| httpcode                | explains the meaning of an HTTP status code                        |
+| ht                      | The missing hash table library for Emacs                           |
+| hcl-mode                | Major mode for Hashicorp                                           |
+| go-mode                 | Major mode for the Go programming language                         |
+| git-doc                 | Info documentation for git                                         |
 | gist                    | Emacs integration for gist.github.com                              |
 | gh                      | A GitHub library for Emacs                                         |
-| pcache                  | persistent caching for Emacs                                       |
-| logito                  | logging library for Emacs                                          |
-| symbols-mode            | List symbols of object files                                       |
-| python-django           | A Jazzy package for managing Django projects                       |
-| popup                   | Visual Popup User Interface                                        |
-| php-mode                | major mode for editing PHP code                                    |
-| pastebin                | A simple interface to the www.pastebin.com webservice              |
-| mode-icons              | Show icons for modes                                               |
-| htmlize                 | Convert buffer text and decorations to HTML.                       |
-| graphviz-dot-mode       | Mode for the dot-language used by graphviz (att).                  |
-| gnuplot                 | drive gnuplot from within emacs                                    |
 | flymake-python-pyflakes | A flymake handler for python-mode files using pyflakes (or flake8) |
-| flymake-jslint          | A flymake handler for javascript using jslint                      |
 | flymake-easy            | Helpers for easily building flymake checkers                       |
-| flymake-csslint         | making flymake work with CSSLint                                   |
-| doctags                 | Generation of tags documentation in Doxygen syntax                 |
-| color-theme-solarized   | Solarized themes for Emacs                                         |
+| dockerfile-mode         | Major mode for editing Docker's Dockerfiles                        |
+| dash                    | A modern list library for Emacs                                    |
+| darkroom                | Remove visual distractions and focus on writing                    |
+| color-theme-github      | Github color theme for GNU Emacs.                                  |
+| color-theme-cobalt      | Cobalt Color Theme for Emacs                                       |
+| color-theme-actress     | A dark color theme for GNU Emacs.                                  |
+| color-theme             | install color themes                                               |
+| clang-format            | Format code using clang-format                                     |
+| boxquote                | Quote text with a semi-box.                                        |
+| beacon                  | Highlight the cursor whenever the window scrolls                   |
 | auto-complete           | Auto Completion for GNU Emacs                                      |
-| Django-doc              | Info documentation for Django                                      |
+| ascii                   | ASCII code display.                                                |
+| ample-zen-theme         | AmpleZen Theme for Emacs 24                                        |
+| Python-doc              | Info documentation for Python                                      |
 
 All settings written using the customize library go to a dedicated
 file that is loaded when the loading of the [[file:.emacs][configuration file]] ends.
@@ -539,6 +566,9 @@ Emacs.link.attributeUnderline: false
 (add-hook 'Info-mode-hook
 	  (lambda ()
 	     (setq truncate-lines t)))
+
+(when (file-directory-p "~/.local/share/info")
+  (add-to-list 'Info-additional-directory-list "~/.local/share/info"))
 #+end_src
 
 I used to open frames to keep documentation away from the code; Thus
@@ -695,6 +725,12 @@ Pacman package build files are shell scripts.
 
 #+begin_src emacs-lisp :tangle .emacs
 (add-to-list 'auto-mode-alist '("PKGBUILD\\'" . sh-mode))
+#+end_src
+
+Extend executable path.
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-to-list 'exec-path (expand-file-name "~/.local/bin"))
 #+end_src
 
 * Programming
@@ -1190,8 +1226,8 @@ for file mode determination.
 
 #+begin_src emacs-lisp :tangle .emacs
 (eval-after-load "python"
-  (when (executable-find "python2")
-    (setq python-shell-interpreter "python2")))
+  (when (executable-find "python3")
+    (setq python-shell-interpreter "python3")))
 #+end_src
 
 The style used for docstring is the one found in Django code source.
@@ -1740,6 +1776,9 @@ Various types of capture items are defined.
    (t (setq dired-omit-files
       (concat dired-omit-files
               "\\|^\\..+\\|^CVS$\\|^lost\\+found")))))
+(setq dired-omit-files 
+  (concat dired-omit-files "\\|^__pycache__$"))
+(add-to-list 'dired-omit-extensions ".egg-info")
 (setq dired-omit-extensions (delete ".pdf" dired-omit-extensions))
 (add-hook 'dired-mode-hook
           (lambda ()

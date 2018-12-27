@@ -83,7 +83,6 @@ repository. There are usefull packages in other places like [[http://tromey.com/
 (eval-after-load "package"
   '(progn
      (add-to-list 'package-archives '("melpa". "https://melpa.org/packages/"))))
-(package-initialize)
 #+end_src
 
 At the time of writing, I have activated the following packages:
@@ -98,56 +97,31 @@ At the time of writing, I have activated the following packages:
 #+end_src
 
 #+RESULTS:
-| Package                 | Description                                                        |
-|-------------------------+--------------------------------------------------------------------|
-| yaml-mode               | Major mode for editing YAML files                                  |
-| url-shortener           | shorten long url and expand tinyurl                                |
-| telephone-line          | Rewrite of Powerline                                               |
-| systemd                 | Major mode for editing systemd units                               |
-| symbols-mode            | List symbols of object files                                       |
-| sws-mode                | (S)ignificant (W)hite(S)pace mode                                  |
-| seq                     | Sequence manipulation functions                                    |
-| s                       | The long lost Emacs string manipulation library.                   |
-| restclient              | An interactive HTTP client for Emacs                               |
-| rainbow-mode            | Colorize color names in buffers                                    |
-| powershell              | Mode for editing Powershell scripts                                |
-| popup                   | Visual Popup User Interface                                        |
-| php-mode                | Major mode for editing PHP code                                    |
-| pcache                  | persistent caching for Emacs.                                      |
-| nsis-mode               | NSIS-mode                                                          |
-| mode-icons              | Show icons for modes                                               |
-| minimap                 | Sidebar showing a "mini-map" of a buffer                           |
-| material-theme          | A Theme based on the colors of the Google Material Design          |
-| marshal                 | eieio extension for automatic (un)marshalling                      |
-| markdown-mode           | Major mode for Markdown-formatted text                             |
-| logito                  | logging library for Emacs                                          |
-| js-comint               | JavaScript interpreter in window.                                  |
-| jade-mode               | Major mode for editing .jade files                                 |
-| irfc                    | Interface for IETF RFC document.                                   |
-| httprepl                | An HTTP REPL                                                       |
-| httpcode                | explains the meaning of an HTTP status code                        |
-| ht                      | The missing hash table library for Emacs                           |
-| hcl-mode                | Major mode for Hashicorp                                           |
-| go-mode                 | Major mode for the Go programming language                         |
-| git-doc                 | Info documentation for git                                         |
-| gist                    | Emacs integration for gist.github.com                              |
-| gh                      | A GitHub library for Emacs                                         |
-| flymake-python-pyflakes | A flymake handler for python-mode files using pyflakes (or flake8) |
-| flymake-easy            | Helpers for easily building flymake checkers                       |
-| dockerfile-mode         | Major mode for editing Docker's Dockerfiles                        |
-| dash                    | A modern list library for Emacs                                    |
-| darkroom                | Remove visual distractions and focus on writing                    |
-| color-theme-github      | Github color theme for GNU Emacs.                                  |
-| color-theme-cobalt      | Cobalt Color Theme for Emacs                                       |
-| color-theme-actress     | A dark color theme for GNU Emacs.                                  |
-| color-theme             | install color themes                                               |
-| clang-format            | Format code using clang-format                                     |
-| boxquote                | Quote text with a semi-box.                                        |
-| beacon                  | Highlight the cursor whenever the window scrolls                   |
-| auto-complete           | Auto Completion for GNU Emacs                                      |
-| ascii                   | ASCII code display.                                                |
-| ample-zen-theme         | AmpleZen Theme for Emacs 24                                        |
-| Python-doc              | Info documentation for Python                                      |
+| Package             | Description                                               |
+|---------------------+-----------------------------------------------------------|
+| minions             | A minor-mode menu for the mode line                       |
+| restclient          | An interactive HTTP client for Emacs                      |
+| inf-mongo           | Run a MongoDB shell process in a buffer                   |
+| nodejs-repl         | Run Node.js REPL                                          |
+| yaml-mode           | Major mode for editing YAML files                         |
+| tablist             | Extended tabulated-list-mode                              |
+| s                   | The long lost Emacs string manipulation library.          |
+| material-theme      | A Theme based on the colors of the Google Material Design |
+| markdown-mode       | Major mode for Markdown-formatted text                    |
+| magit-popup         | Define prefix-infix-suffix command combos                 |
+| json-snatcher       | Grabs the path to JSON values in a JSON file              |
+| json-reformat       | Reformatting tool for JSON                                |
+| json-mode           | Major mode for editing JSON files.                        |
+| hcl-mode            | Major mode for Hashicorp                                  |
+| flymake-yaml        | A flymake handler for YAML                                |
+| flymake-easy        | Helpers for easily building flymake checkers              |
+| dockerfile-mode     | Major mode for editing Docker's Dockerfiles               |
+| docker-tramp        | TRAMP integration for docker containers                   |
+| docker-compose-mode | Major mode for editing docker-compose files               |
+| docker              | Emacs interface to Docker                                 |
+| dash                | A modern list library for Emacs                           |
+| async               | Asynchronous processing in Emacs                          |
+| Python-doc          | Info documentation for Python                             |
 
 All settings written using the customize library go to a dedicated
 file that is loaded when the loading of the [[file:.emacs][configuration file]] ends.

@@ -373,8 +373,8 @@ Enable pairing to insert pairs of matching characters.
 Automatically save place of cursor in each file.
 
 #+begin_src emacs-lisp :tangle .emacs
-(setq-default save-place t)
 (require 'saveplace)
+(save-place-mode t)
 #+end_src
 
 ** Archives display

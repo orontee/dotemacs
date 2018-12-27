@@ -717,6 +717,28 @@ Extend executable path.
               (electric-layout-mode 1)))
 #+end_src
 
+** Highlight changes
+
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'prog-mode-hook
+  (lambda ()
+    (highlight-changes-mode)))
+
+(setq highlight-changes-visibility-initial-state nil)
+#+end_src
+
+** On the fly code check
+
+Flymake is used to check code on the fly.
+
+#+begin_src emacs-lisp :tangle .emacs
+  (add-hook 'flymake-mode-hook
+	    (lambda ()
+	      (local-set-key "\C-cfd" 'flymake-show-diagnostics-buffer)
+	      (local-set-key "\C-cfn" 'flymake-goto-next-error)
+	      (local-set-key "\C-cfp" 'flymake-goto-prev-error)))
+#+end_src
+
 ** Spell checking
 
 When writing code source, I like to have comments, documentation and
@@ -864,7 +886,7 @@ region.
 (define-key ctl-cw-map "r" 'whitespace-report)
 
 (setq whitespace-style
-      (quote (face spaces tabs newline space-mark trailing
+      (quote (face empty spaces tabs newline space-mark trailing
                    tab-mark newline-mark lines-tail)))
 
 (setq whitespace-display-mappings
@@ -1210,7 +1232,7 @@ The style used for docstring is the one found in Django code source.
 (add-hook 'python-mode-hook
           (lambda ()
              (setq tab-width 4
-                   gud-pdb-command-name "python -m pdb "
+                   gud-pdb-command-name (concat python-shell-interpreter "-m pdb ")
                    python-fill-docstring-style 'pep-257)))
 #+end_src
 
@@ -1229,13 +1251,10 @@ want to generate them by yourself...). The =info-look= setting for
     :doc-spec '(("(python)Index" nil ""))))
 #+end_src
 
-When available, load the package =flymake-python-pyflakes= to check
-code on the fly.
+Always check code on the fly.
 
 #+begin_src emacs-lisp :tangle .emacs
-(when (locate-library "flymake-python-pyflakes")
-  (require 'flymake-python-pyflakes)
-  (add-hook 'python-mode-hook 'flymake-python-pyflakes-load))
+(add-hook 'python-mode-hook 'flymake-mode)
 #+end_src
 
 Common skeletons and abbreviations are defined (PDB call, =import=
@@ -1640,6 +1659,11 @@ Auto fill mode may break the indentation.
 (add-hook 'rst-mode-hook
           (lambda ()
             (auto-fill-mode -1)))
+
+(let ((filename "template.rst"))
+  (when (file-exists-p (expand-file-name filename auto-insert-directory))
+    (add-to-list 'auto-insert-alist
+                 `(rst-mode . ,filename))))
 #+end_src
 ** Org mode
 

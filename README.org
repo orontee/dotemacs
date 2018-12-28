@@ -743,17 +743,21 @@ Flymake is used to check code on the fly.
 
 When writing code source, I like to have comments, documentation and
 string checked for right spelling. But before one must check whether
-there is a  spell checker in path or not.
+there is a spell checker in path or not.
 
 #+begin_src emacs-lisp :tangle .emacs
-(require 'ispell)
-(setq has-spell-checker
-      (not (eq (executable-find ispell-program-name) nil)))
-(when has-spell-checker
-  (add-hook 'prog-mode-hook
-            (lambda ()
-               (setq ispell-local-dictionary "english"
-                     flyspell-persistent-highlight nil))))
+  (require 'ispell)
+  (setq has-spell-checker
+	(not (eq (executable-find ispell-program-name) nil)))
+  (when has-spell-checker
+    (add-hook 'prog-mode-hook
+	      (lambda ()
+		 (setq ispell-local-dictionary "english"
+		       flyspell-persistent-highlight nil)))
+    (add-hook 'rst-mode-hook
+	      (lambda ()
+		(setq ispell-local-dictionary "english")
+		(flyspell-mode))))
 #+end_src
 
 *** TODO Disable spell menu when no spell program is found 	   :noexport:

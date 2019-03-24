@@ -1380,6 +1380,14 @@ buffer.
                                  (reftex-citation))))))
 #+end_src
 
+Don’t replace double quotes with curved quotes in YAML mode.
+
+#+begin_src emacs-lisp :tangle .emacs
+  (add-hook 'yaml-mode-hook
+	    (lambda ()
+	      (setq electric-quote-replace-double nil)))
+#+end_src
+
 ** Support for SGML, HTML, CSS
 
 It is difficult to avoid long lines when writing SGML files, thus

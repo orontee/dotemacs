@@ -714,7 +714,9 @@ Extend executable path.
 #+begin_src emacs-lisp :tangle .emacs
   (add-hook 'prog-mode-hook
             (lambda ()
-              (electric-layout-mode 1)))
+              (electric-layout-mode 1)
+	      (display-line-numbers-mode 1)
+	      (setq display-line-numbers-widen t)))
 #+end_src
 
 ** Highlight changes
@@ -1391,7 +1393,7 @@ Don’t replace double quotes with curved quotes in YAML mode.
 #+begin_src emacs-lisp :tangle .emacs
   (add-hook 'yaml-mode-hook
 	    (lambda ()
-	      (setq electric-quote-replace-double nil)))
+	      (electric-quote-mode -1)))
 #+end_src
 
 ** Support for SGML, HTML, CSS

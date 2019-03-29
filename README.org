@@ -892,6 +892,12 @@ region.
         (tab-mark 9 [8594 9] [92 9])))
 #+end_src
 
+#+begin_src emacs-lisp :tangle .emacs
+(add-hook 'prog-mode-hook
+  (lambda ()
+    (setq show-trailing-whitespace t)))
+#+end_src
+
 ** Glasses
 
 Glasses help reading Camel case. I prefer parentheses to stick to the

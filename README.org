@@ -1815,9 +1815,9 @@ Various types of capture items are defined.
           (lambda ()
              (when (fboundp 'gnus-dired-mode)
                (gnus-dired-mode 1))
-             (setq dired-omit-files-p t
-                   dired-omit-size-limit nil
+             (setq dired-omit-size-limit nil
                    truncate-lines t)
+             (dired-omit-mode 1)
              (set (make-local-variable 'transient-mark-mode) nil)
              (define-key dired-mode-map "w" 'dired-copy-filename-as-kill)))
 #+end_src

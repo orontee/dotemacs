@@ -8,24 +8,24 @@ export_cmd = \
   (find-file \"$<\") \
   (org-html-export-as-html))"
 
-build_files = .emacs emacs.html
+build_files = init.el emacs.html
 
 EMACSCLIENT ?= emacsclient
 
-all: .emacs
+all: init.el
 
 html: emacs.html
 
-.emacs: README.org
+init.el: README.org
 	$(EMACSCLIENT) -e $(tangle_cmd)
 
 emacs.html: README.org
 	$(EMACSCLIENT) -e $(export_cmd)
 
-install: .emacs
-	mv $^ $(HOME)
+install: init.el
+	mv $^ $(HOME)/.config/emacs/
 
-distclean: 
+distclean:
 	for FILE in $(build_files); do \
 		[ -f $$FILE ] && rm $$FILE; \
 	done

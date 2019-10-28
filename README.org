@@ -32,7 +32,7 @@ the documentation you are reading.
 
 *Downloads*
 
-You can download this [[file:README.org][Org file]] and build the corresponding =.emacs= using
+You can download this [[file:README.org][Org file]] and build the corresponding =init.el= using
 =org-babel-tangle=, or simply clone this repository and use =GNU Make=
 to build that file.
 
@@ -44,8 +44,8 @@ copied from the [[https://lists.gnu.org/mailman/listinfo/help-gnu-emacs][gnu.ema
 * General use
 ** Header							   :noexport:
 
-#+begin_src emacs-lisp :tangle .emacs :noweb tangle
-<<.emacs_header>>
+#+begin_src emacs-lisp :tangle init.el :noweb tangle
+<<init.el_header>>
 #+end_src
 
 ** Checking emacs version
@@ -54,7 +54,7 @@ Despite a common misconception, GNU Emacs is actively maintained and
 last versions were greatly improved. A recent version is required. It
 can be downloaded from http://ftp.gnu.org/pub/gnu/emacs/.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (when (or (< emacs-major-version 24)
           (and (= emacs-major-version 24)
                (< emacs-minor-version 3)))
@@ -68,18 +68,18 @@ The easiest way to extend Emacs features is to use =list-package= and
 install packages from remote repositories. But =package.el= is rather
 new and not all libraries are available in the form of packages. When
 a library must be installed by hand, a good practice is to always put
-it in the directory =~/.emacs.d/lisp=. The load path is extended
+it in the directory =~/.config/emacs/lisp=. The load path is extended
 accordingly.
 
-#+begin_src emacs-lisp :tangle .emacs
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/"))
+#+begin_src emacs-lisp :tangle init.el
+(add-to-list 'load-path (expand-file-name "~/.config/emacs/lisp/"))
 #+end_src
 
 The default is to fetch packages from the GNU Emacs packages
 repository. There are usefull packages in other places like [[http://tromey.com/elpa/][ELPA]] and
 [[http://marmalade-repo.org/][Marmalade]].
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (eval-after-load "package"
   '(progn
      (add-to-list 'package-archives '("melpa". "https://melpa.org/packages/"))))
@@ -124,10 +124,10 @@ At the time of writing, I have activated the following packages:
 | Python-doc          | Info documentation for Python                             |
 
 All settings written using the customize library go to a dedicated
-file that is loaded when the loading of the [[file:.emacs][configuration file]] ends.
+file that is loaded when the loading of the [[file:.init.el][configuration file]] ends.
 
 #+begin_src emacs-lisp :noweb yes
-<<.emacs_custom-file_loading>>
+<<init.el_custom-file_loading>>
 #+end_src
 
 When the custom settings are loaded, a machine specific file is
@@ -135,7 +135,7 @@ loaded. The file name comes from the host name of the machine Emacs is
 running on.
 
 #+begin_src emacs-lisp :noweb yes
-<<.emacs_system-name_loading>>
+<<init.el_system-name_loading>>
 #+end_src
 
 ** Widening the screen
@@ -147,7 +147,7 @@ remote computer forwarding X11. Note that the content of the menu bar
 is still available by pressing =f10= or the contextual menu bind to
 =C-mouse-1=.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
@@ -165,7 +165,7 @@ Another way to widen the screen is to truncate long lines and change
 the text scale in secondary buffers. Restoring or changing the text
 scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
   (when (require 'face-remap)
     (dolist (hook '(gdb-breakpoints-mode-hook gdb-inferior-io-mode-hook
                                               gdb-mode-hook gdb-locals-mode-hook gdb-frames-mode-hook
@@ -196,7 +196,7 @@ system; I prefer to always define MS Windows generic modes for I
 sometime have to work on script files for the MS Windows command
 line...
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (load "generic-x")
 (setq generic-extras-enable-list
       (append generic-default-modes
@@ -207,7 +207,7 @@ line...
 
 The =systemd= configuration files are Conf files.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (when (eq system-type 'gnu/linux)
   (add-to-list 'auto-mode-alist
                '("\\.service\\'" . conf-mode)))
@@ -215,7 +215,7 @@ The =systemd= configuration files are Conf files.
 
 Bind =rc-generic-mode= to Visual Studio Resource files.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-to-list 'auto-mode-alist
              '("\\.rc2\\'" . rc-generic-mode))
 #+end_src
@@ -225,7 +225,7 @@ Bind =rc-generic-mode= to Visual Studio Resource files.
 Auto insertion of templates at file creation is enabled and the
 location where templates are searched is defined.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (auto-insert-mode)
 (let ((file (expand-file-name "~/Modèles")))
   (when (file-exists-p file)
@@ -238,7 +238,7 @@ Reverts any buffer associated with a file when the file changes on
 disk. For files with =.log= extension, the tail is constantly
 followed.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (global-auto-revert-mode)
 
 (add-hook 'find-file-hook
@@ -258,7 +258,7 @@ can't remember the buffer name, I use the default buffer menu
 (accessible from =C-xC-b= and =C-uC-xC-b=) or =icomplete-mode=. That's
 all. No =ido=, =icycle=, etc.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (icomplete-mode 1)
 (setq confirm-nonexistent-file-or-buffer t)
 #+end_src
@@ -272,7 +272,7 @@ redefinition of =window-configuration-to-register= ask the user to
 confirm the overwrite when storing a configuration in a register
 already containing a window configuration.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (defun window-configuration-to-register (register &optional _arg)
   "Like `window-configuration-to-register' but warn the user that
 he is about to overwrite a window configuration."
@@ -290,13 +290,13 @@ he is about to overwrite a window configuration."
 
 ** Cycling spacing
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (global-set-key (kbd "M-SPC") 'cycle-spacing)
 #+end_src
 
 ** Empty scratch buffer
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setq initial-scratch-message nil)
 #+end_src
 
@@ -304,8 +304,8 @@ he is about to overwrite a window configuration."
 
 A diary file is automatically created.
 
-#+begin_src emacs-lisp :tangle .emacs
-(let ((file (expand-file-name "~/.emacs.d/diary")))
+#+begin_src emacs-lisp :tangle init.el
+(let ((file (expand-file-name "~/.config/emacs/diary")))
   (when (not (file-exists-p file))
     (write-region "" nil file))
   (setq diary-file file))
@@ -313,7 +313,7 @@ A diary file is automatically created.
 
 The calendar is configured to match the french standards.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setq european-calendar-style t
       calendar-time-display-form 
       '(24-hours ":" minutes
@@ -347,7 +347,7 @@ French holidays are be added to the calendar. Note that Christian
 holidays are already present into the calendar since we have set
 =all-christian-calendar-holidays= to =t=.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setq french-holiday
       '((holiday-fixed 1 1 "Jour de l'an")
         (holiday-fixed 5 1 "Fête du travail")
@@ -364,7 +364,7 @@ holidays are already present into the calendar since we have set
 
 Enable pairing to insert pairs of matching characters.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (electric-pair-mode)
 #+end_src
 
@@ -372,14 +372,14 @@ Enable pairing to insert pairs of matching characters.
 
 Automatically save place of cursor in each file.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (require 'saveplace)
 (save-place-mode t)
 #+end_src
 
 ** Archives display
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (require 'tar-mode)
 (setq tar-mode-show-date t)
 #+end_src
@@ -390,7 +390,7 @@ When working in a console, it is sometime usefull to get the time:
 =M-! date= is ok for this. To display the time in the modeline there
 is =display-time-mode=.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'display-time-mode-hook
 	  (lambda ()
 	     (setq display-time-day-and-date nil
@@ -401,7 +401,7 @@ is =display-time-mode=.
 
 ** Syntax highlighting
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'font-lock-mode-hook
 	  (lambda ()
 	     (show-paren-mode)))
@@ -415,7 +415,7 @@ is =display-time-mode=.
 
 All files will have a newline at their end.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setq require-final-newline t)
 #+end_src
 
@@ -428,7 +428,7 @@ environment is set during startup, before the user init file is
 loaded; It explains the explicit call to our
 =choose-language-input-method=.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (defun choose-language-input-method ()
   "Set default input method according to current language
 environment."
@@ -452,7 +452,7 @@ environment."
 But there are other input methods I use: For example the TeX method.
 Key sequences are defined to easily set the input methods I need.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (dolist (elt '(("1" . "latin-1-prefix")
 	       ("9" . "latin-9-prefix")
 	       ("u" . "TeX")))
@@ -467,7 +467,7 @@ Key sequences are defined to easily set the input methods I need.
 Group buffers by their major modes when using the contextual menu to
 select a buffer.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (eval-after-load "mouse"
   (progn        
     (setq mouse-buffer-menu-mode-mult 2)
@@ -478,7 +478,7 @@ select a buffer.
 
 Highlight the current line in table based buffers and alike ones.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (dolist (hook '(tabulated-list-mode-hook
                 bookmark-bmenu-mode-hook))
   (add-hook hook
@@ -533,7 +533,7 @@ Emacs.link.attributeUnderline: false
 
 ** Documentation reader
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (require 'info)
 (define-key ctl-x-4-map "i" 'info-other-window)
 
@@ -549,7 +549,7 @@ I used to open frames to keep documentation away from the code; Thus
 the interactive function =info-other-frame= is defined and bind to a
 key.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (define-key ctl-x-5-map "i" 'info-other-frame)
 
 (defun info-other-frame ()
@@ -570,7 +570,7 @@ Only intended for interactive use."
     value))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (let ((path (expand-file-name "~/.local/share/info/")))
   (when (file-accessible-directory-p path)
     (add-to-list 'Info-additional-directory-list path)))
@@ -582,7 +582,7 @@ A server is started if and only if the running process is not a daemon
 and there is not already a server started. In that way the Emacs
 client will always find someone to talk to.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'server-switch-hook 'raise-frame)
 
 (load-library "server")
@@ -614,7 +614,7 @@ The desktop file is saved in the user home directory. Only ten buffers
 are restored immediately in order not to slow down start up. Tramp,
 ftp and log buffers are not restored.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (load-library "desktop")
 (desktop-save-mode)
 (setq desktop-dirname (expand-file-name "~")
@@ -632,7 +632,7 @@ directories where to search documentation files are extended.
 
 Similar tweaks are done for Ghostscript, GNU Aspell, Visual Studio.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
   (when (eq system-type 'windows-nt)
     (setq find-ls-option '("-exec ls -ld {} +" . "-ld"))
     (let ((mingw-root "C:\\GNU\\MinGW"))
@@ -683,13 +683,13 @@ Similar tweaks are done for Ghostscript, GNU Aspell, Visual Studio.
 
 Tired of typing =yes= and =no=? Prefer =y= and =n=!
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (fset 'yes-or-no-p 'y-or-n-p)
 #+end_src
 
 These are some core features disabled for newbies.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (put 'narrow-to-region 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
 (put 'scroll-left 'disabled nil)
@@ -697,13 +697,13 @@ These are some core features disabled for newbies.
 
 Pacman package build files are shell scripts.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-to-list 'auto-mode-alist '("PKGBUILD\\'" . sh-mode))
 #+end_src
 
 Extend executable path.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-to-list 'exec-path (expand-file-name "~/.local/bin"))
 #+end_src
 
@@ -711,7 +711,7 @@ Extend executable path.
 
 ** Edition
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
   (add-hook 'prog-mode-hook
             (lambda ()
               (electric-layout-mode 1)
@@ -721,7 +721,7 @@ Extend executable path.
 
 ** Highlight changes
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'prog-mode-hook
   (lambda ()
     (highlight-changes-mode)))
@@ -733,7 +733,7 @@ Extend executable path.
 
 Flymake is used to check code on the fly.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
   (add-hook 'flymake-mode-hook
 	    (lambda ()
 	      (local-set-key "\C-cfd" 'flymake-show-diagnostics-buffer)
@@ -747,7 +747,7 @@ When writing code source, I like to have comments, documentation and
 string checked for right spelling. But before one must check whether
 there is a spell checker in path or not.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
   (require 'ispell)
   (setq has-spell-checker
 	(not (eq (executable-find ispell-program-name) nil)))
@@ -769,12 +769,12 @@ there is a spell checker in path or not.
 Visited buffers will always be parsed for their semantic content and a
 list of most recently used tags is maintained.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-to-list 'semantic-default-submodes 'global-semantic-mru-bookmark-mode)
 (semantic-mode)
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
   (defun create-tags (dir-name)
       "Create tags file."
       (interactive "DDirectory: ")
@@ -791,7 +791,7 @@ list of most recently used tags is maintained.
 
 ** Long lines and buffer boundaries
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'prog-mode-hook
           (lambda ()
              (setq truncate-lines t
@@ -804,7 +804,7 @@ Another way to browse tags found in the current buffer is to use the
 index menu. A key binding is addded to programming modes to present to
 the user the buffer indexes.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setq imenu-auto-rescan t
       imenu-max-items 35)
 (add-hook 'prog-mode-hook
@@ -819,13 +819,13 @@ behavior is to complete as much as possible, then pause waiting for
 further input. Then if TAB is hit again, show a list of possible
 completions.'
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setq pcomplete-cycle-completions nil)
 #+end_src
 
 By the way when reading file or buffer names the case will be ignored.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setq read-file-name-completion-ignore-case t
       read-buffer-completion-ignore-case t)
 #+end_src
@@ -833,7 +833,7 @@ By the way when reading file or buffer names the case will be ignored.
 The [[http://cx4a.org/software/auto-complete/][Auto Complete Mode]] rocks: Thus it is enabled wherever it is
 possible.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (when (locate-library "auto-complete")
   (require 'auto-complete)
   (global-auto-complete-mode))
@@ -841,11 +841,11 @@ possible.
 
 ** Abbreviations
 
-The file =~/.emacs.d/abbrev_defs= (or whatever the value of
+The file =~/.config/emacs/abbrev_defs= (or whatever the value of
 =abbrev-file-name= is) defines abbreviations and their expansions. It
 is read and saved silently.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (let ((file abbrev-file-name))
   (when (file-readable-p file)
     (read-abbrev-file file t)))
@@ -855,7 +855,7 @@ is read and saved silently.
 While editing buffers in programming modes, insertion of an
 abbreviation is automatically expanded and replaced by its expansion.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'prog-mode-hook
           (lambda ()
              (abbrev-mode)))
@@ -868,7 +868,7 @@ To limit the number of dynamic expansions when editing files using
 naming conventions mixing uppercase and lowercase letters, case is
 significant while searching for expansions.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setq dabbrev-case-fold-search nil)
 #+end_src
 
@@ -877,7 +877,7 @@ significant while searching for expansions.
 Key bindings to report and cleanup blank problems in all buffer or at
 region.
 
-#+begin_src emacs-lisp :tangle .emacs 
+#+begin_src emacs-lisp :tangle init.el 
 (define-prefix-command 'ctl-cw-map)
 (global-set-key "\C-cw" 'ctl-cw-map)
 (define-key ctl-cw-map "t" 'whitespace-mode)
@@ -894,7 +894,7 @@ region.
         (tab-mark 9 [8594 9] [92 9])))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'prog-mode-hook
   (lambda ()
     (setq show-trailing-whitespace t)))
@@ -905,7 +905,7 @@ region.
 Glasses help reading Camel case. I prefer parentheses to stick to the
 preceding identifier and embedded capitals to be downcase.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (require 'glasses)
 (setq glasses-separate-parentheses-p nil
       glasses-uncapitalize-p t)
@@ -917,7 +917,7 @@ I sometimes have directories both under [[http://subversion.apache.org/][Subvers
 preferred version control backend is Git, the list of version control
 backends must be reordered.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setq vc-handled-backends (cons 'Git (remove 'Git vc-handled-backends)))
 #+end_src
 
@@ -926,7 +926,7 @@ binding, an alternative to the usefull =C-xvD= (binded to
 =vc-root-diff=). Same remark for the command that grep in Git
 repositories.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (global-set-key "\C-xv=" 'ediff-revision)
 (require 'vc-git)
 (global-set-key "\C-xvG" 'vc-git-grep)
@@ -941,7 +941,7 @@ edit a log message has =default-generic-mode= enabled because its
 content match =generic-find-file-regexp= and
 =generic-use-find-file-hook= default value is =t= .
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (when has-spell-checker
   (add-hook 'find-file-hook
             (lambda ()
@@ -963,7 +963,7 @@ content match =generic-find-file-regexp= and
 
 Shorten the display of the current branch name in the modeline.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (load-library "vc-hooks")
 (defun vc-git-mode-line-string (file)
   "Return a string for `vc-mode-line' to put in the mode line for FILE."
@@ -984,7 +984,7 @@ Shorten the display of the current branch name in the modeline.
 When using Git in an shell buffer I prefer not to have a pager
 filtering the output.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setenv "GIT_PAGER" "")
 #+end_src
 
@@ -992,14 +992,14 @@ While merging changes, when the last conflic is resolved, don't leave
 automaticaly =smerge-mode=; Otherwise I tend to use =smerge-mode= key
 bindings after the mode has been deactivated.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (eval-after-load "smerge-mode"
   (setq smerge-auto-leave nil))
 #+end_src
 
 ** Command interpreter
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'comint-mode-hook
 	  (lambda ()
 	     (if (fboundp 'ansi-color-for-comint-mode-on)
@@ -1017,7 +1017,7 @@ bindings after the mode has been deactivated.
 
 ** Interactive shell
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'shell-mode-hook 
 	  (lambda ()
 	     (ansi-color-for-comint-mode-on)
@@ -1031,11 +1031,11 @@ bindings after the mode has been deactivated.
 
 An abbreviation is defined for =&> /dev/null=.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (define-abbrev-table 'shell-mode-abbrev-table '(("null" "&> /dev/null")))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'sh-mode-hook
 	  (lambda ()
 	     (define-key sh-mode-map "'" 'self-insert-command)))
@@ -1045,7 +1045,7 @@ An abbreviation is defined for =&> /dev/null=.
 
 ** Terminal emulation
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'term-mode-hook
 	  (lambda ()
 	     (term-pager-toggle)))
@@ -1061,7 +1061,7 @@ An abbreviation is defined for =&> /dev/null=.
 
 I use the =f8= key to compile and recompile.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (global-set-key [f8] 'recompile)
 (global-set-key [C-f8] 'compile)
 #+end_src
@@ -1072,7 +1072,7 @@ Only if the compilation was lengthy.
 
 ** Make
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'makefile-gmake-mode-hook
 	  (lambda ()
 	     (setq tab-width 3)))
@@ -1083,7 +1083,7 @@ Only if the compilation was lengthy.
 Prefer to run the visual interface to diff in a single frame and split
 that frame vertically or horizontally according to the frame geometry.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'ediff-mode-hook
           (lambda ()
              (setq ediff-window-setup-function 'ediff-setup-windows-plain)
@@ -1093,7 +1093,7 @@ that frame vertically or horizontally according to the frame geometry.
 
 White space visualization is useful when inspecting diffs.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'diff-mode-hook
           (lambda ()
              (whitespace-mode)))
@@ -1101,7 +1101,7 @@ White space visualization is useful when inspecting diffs.
 
 ** Debugger, GDB
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (global-set-key [S-f8] 'gdb)
 
 (add-hook 'gdb-mode-hook
@@ -1116,7 +1116,7 @@ White space visualization is useful when inspecting diffs.
 		   gud-gdb-command-name "gdb --silent --annotate=3")))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (defun alt-valgrind (file)
   (interactive "fEnter file: ")
   (shell-command (concat
@@ -1135,7 +1135,7 @@ to privilege C++ usual extensions rather than C ones (see
 =ff-find-other-file= binded to =C-co= for a way to switch between
 implementation and declaration on a file name basis).
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 
 (require 'find-file)
@@ -1145,7 +1145,7 @@ implementation and declaration on a file name basis).
 
 Some abbreviation definitions for preprocessor directives are added.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (define-skeleton cc-preprocessor-conditional-group
   "Insert a C preprocessor conditional group"
   "Group macro: " "#ifdef " str ?\n _ ?\n"#endif // " str ?\n)
@@ -1169,7 +1169,7 @@ Some abbreviation definitions for preprocessor directives are added.
     ("ppi" "" cc-preprocessor-include-directive)))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (require 'hideshow)
 (add-hook 'c++-mode-hook
 	  (lambda ()
@@ -1195,7 +1195,7 @@ Some abbreviation definitions for preprocessor directives are added.
 
 Update default text to insert into new files.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-to-list 'auto-insert-alist
              '(("\\.\\([Hh]\\|hh\\|hpp\\)\\'" . "C / C++ header")
   t "#pragma once\n\n"))
@@ -1203,14 +1203,14 @@ Update default text to insert into new files.
 
 ** Qt
 
- #+begin_src emacs-lisp :tangle .emacs
+ #+begin_src emacs-lisp :tangle init.el
 (add-to-list 'auto-mode-alist '("\\.qrc\\'" . xml-mode))
 (add-to-list 'auto-mode-alist '("\\.qss\\'" . css-mode))
  #+end_src
 
 ** Support for Emacs Lisp
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'emacs-lisp-mode-hook
 	  (lambda ()
 	     (set (make-local-variable 'comment-auto-fill-only-comments) t)
@@ -1225,7 +1225,7 @@ To speedup Emacs Lisp execution, code can be compiled. The following
 will compile a buffer on save if and only if an associated
 byte-compiled file already exists.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (defun byte-compile-current-buffer ()
   "Compile the current buffer if its major mode is
 `emacs-lisp-mode' and an associated compiled file already
@@ -1245,7 +1245,7 @@ Some Linux distributions (e.g. Arch Linux) ship with both Python 2.x
 and 3.x, thus the list of interpreters must be expanded accordingly
 for file mode determination.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (eval-after-load "python"
   (when (executable-find "python3")
     (setq python-shell-interpreter "python3")))
@@ -1253,7 +1253,7 @@ for file mode determination.
 
 The style used for docstring is the one found in Django code source.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'python-mode-hook
           (lambda ()
              (setq tab-width 4
@@ -1268,7 +1268,7 @@ using Sphinx; Such files are easy to find on the web (if you don't
 want to generate them by yourself...). The =info-look= setting for
 =python-mode= must be updated to those new files.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (eval-after-load "info-look" 
   '(info-lookup-add-help
     :mode 'python-mode
@@ -1278,21 +1278,21 @@ want to generate them by yourself...). The =info-look= setting for
 
 Always check code on the fly.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'python-mode-hook 'flymake-mode)
 #+end_src
 
 Common skeletons and abbreviations are defined (PDB call, =import=
 statement, etc).
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (define-abbrev-table 'python-mode-abbrev-table
   '(("pdb" "import pdb; pdb.set_trace()")))
 #+end_src
 
 Set the name of the Python template to insert at file creation. 
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (let ((filename "python_template.py"))
   (when (file-exists-p (expand-file-name filename auto-insert-directory))
     (add-to-list 'auto-insert-alist
@@ -1301,7 +1301,7 @@ Set the name of the Python template to insert at file creation.
 
 ** Support for Scheme
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'scheme-mode-hook
 	  (lambda ()
 	     (setq scheme-program-name "umb-scheme")))
@@ -1309,7 +1309,7 @@ Set the name of the Python template to insert at file creation.
 
 ** Support for JavaScript
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'js-mode-hook
           (lambda ()
              (setq indent-tabs-mode nil)
@@ -1320,7 +1320,7 @@ Set the name of the Python template to insert at file creation.
 When available, load the package =flymake-jslint= to check code on the
 fly.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (when (locate-library "flymake-jslint")
   (load-library "flymake-jslint")
   (add-hook 'js-mode-hook 'flymake-jslint-load))
@@ -1331,7 +1331,7 @@ fly.
 Most of the databases I use are PostgreSQL databases. Buffers in SQL
 mode will be properly highlighted thanks to the following setting.
 
-#+begin_src emacs-lisp :tangle .emacs 
+#+begin_src emacs-lisp :tangle init.el 
 (require 'sql)
 (setq sql-product 'postgres)
 #+end_src
@@ -1339,13 +1339,13 @@ mode will be properly highlighted thanks to the following setting.
 Hitting =;= in an interactive SQL buffer will send the current input
 to the process.
 
-#+begin_src emacs-lisp :tangle .emacs 
+#+begin_src emacs-lisp :tangle init.el 
 (setq sql-electric-stuff t)
 #+end_src
 
 ** Support for PHP
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (when (locate-library "php-mode")
   (load-library "php-mode")
   (add-hook 'php-mode-hook 'flymake-mode))
@@ -1353,7 +1353,7 @@ to the process.
 
 * Text edition
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'text-mode-hook
 	  (lambda ()
 	     (setq sentence-end 
@@ -1367,7 +1367,7 @@ to the process.
 I found that on-the-fly reindentation is confusing in text modes, so
 it is disabled.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'text-mode-hook
           (lambda ()
              (set (make-local-variable 'electric-indent-functions)
@@ -1377,7 +1377,7 @@ it is disabled.
 Sometime I refer to my bibliography database outside of a TeX/LaTeX
 buffer.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'text-mode-hook
           (lambda ()
              (local-set-key "\C-c["
@@ -1390,7 +1390,7 @@ buffer.
 
 Don’t replace double quotes with curved quotes in YAML mode.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
   (add-hook 'yaml-mode-hook
 	    (lambda ()
 	      (electric-quote-mode -1)))
@@ -1401,7 +1401,7 @@ Don’t replace double quotes with curved quotes in YAML mode.
 It is difficult to avoid long lines when writing SGML files, thus
 automatic line breaking is turned off.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'html-mode-hook
           (lambda ()
              (auto-fill-mode -1)
@@ -1412,7 +1412,7 @@ automatic line breaking is turned off.
 
 An abbreviation is defined for the Lorem Ipsum.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (define-abbrev-table 'html-mode-abbrev-table
   '(("lorem" 
      "<p>Lorem ipsum dolor sit amet, consectetur adipisicing
@@ -1428,7 +1428,7 @@ anim id est laborum.</p>")))
 When available, load the package =flymake-csslint= to check code on the
 fly.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (when (locate-library "flymake-csslint")
   (require 'flymake-csslint)
   (add-hook 'css-mode-hook 'flymake-mode))
@@ -1437,7 +1437,7 @@ fly.
 When available, load the package =irfc= providing an interface to IETF
 RFC documents.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (when (locate-library "irfc")
   (require 'irfc)
   (setq irfc-assoc-mode t))
@@ -1446,7 +1446,7 @@ RFC documents.
 When available, load the package =rainbow-mode= to colorize strings
 that represent colors.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (when (locate-library "rainbow-mode")
   (require 'rainbow-mode)
   (add-hook 'css-mode-hook 'rainbow-mode))
@@ -1454,7 +1454,7 @@ that represent colors.
 
 ** Support for MarkDown
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
   (when (locate-library "markdown-mode")
     (load-library "markdown-mode")
     (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
@@ -1470,7 +1470,7 @@ the list of regions to be skipped while spell checking a buffer in TeX
 mode is extended (most of the time =\ref= and =\label= parameters are
 acronyms not recognized by the spell checker).
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setq tex-default-mode 'latex-mode)
 (setq ispell-tex-skip-alists
       (cons
@@ -1479,7 +1479,7 @@ acronyms not recognized by the spell checker).
        (cdr ispell-tex-skip-alists)))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setq latex-run-command "latex -src-specials -interaction=nonstopmode")
 (add-hook 'latex-mode-hook
 	  (lambda ()
@@ -1514,7 +1514,7 @@ acronyms not recognized by the spell checker).
 	     (define-key latex-mode-map "\C-cM" 'alt-latex-displaymath-env)))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'tex-shell-hook
 	  (lambda ()
 	     (add-to-list 'shell-font-lock-keywords
@@ -1522,7 +1522,7 @@ acronyms not recognized by the spell checker).
 	     (define-key tex-shell-map "\C-c\C-p" 'comint-previous-prompt)))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (defun alt-auto-insert-latex ()
   "Ask the user for a LaTeX class and a language name, then
 insert the corresponding template file in current buffer.
@@ -1567,7 +1567,7 @@ inserted."
 	     '(latex-mode . alt-auto-insert-latex))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'reftex-mode-hook
 	  (lambda ()
 	     (setq reftex-extra-bindings t
@@ -1604,14 +1604,14 @@ inserted."
 	 (add-to-list 'reftex-default-bibliography name)))))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (defcustom latex-outline-max-level 4
   "Maximum level of outline headings used by imenu."
   :type 'integer
   :group 'tex)
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (defadvice latex-imenu-create-index (before cut-section-alist activate)
   "Cut `latex-section-alist' to have max `latex-outline-max-level' in
 `imenu' menu."
@@ -1624,7 +1624,7 @@ inserted."
 	 list)))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (defadvice latex-imenu-create-index (before cut-metasection-list activate)
   "Cut `latex-metasection-alist' to get rid of \\end{document} entries
 in `imenu' menu."
@@ -1633,21 +1633,21 @@ in `imenu' menu."
        (remove "end{document}" latex-metasection-list)))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (defadvice latex-imenu-create-index 
   (after restore-latex-metasection-list activate)
   "Restore `latex-metasection-list' default value."
   (setq latex-metasection-list temp-latex-metasection-list))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (defadvice latex-imenu-create-index 
   (after restore-latex-section-alist activate)
   "Restore `latex-section-alist' default value."
   (setq latex-section-alist temp-latex-section-alist))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (defvar tex-alt-dvi-view-command nil)
 
 (defun alt-tex-view (&optional alt)
@@ -1678,7 +1678,7 @@ If prefix argument is provided, use the alternative command,
 
 ** Support for dict protocol
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (when (locate-library "dictionary")
   (load-library "dictionary")
   (define-key dictionary-mode-map [backtab] 'dictionary-prev-link))
@@ -1688,7 +1688,7 @@ If prefix argument is provided, use the alternative command,
 
 Auto fill mode may break the indentation.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'rst-mode-hook
           (lambda ()
             (auto-fill-mode -1)))
@@ -1700,14 +1700,14 @@ Auto fill mode may break the indentation.
 #+end_src
 ** Org mode
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setq org-hide-leading-stars t
       org-log-done 'time
-      org-directory (expand-file-name "~/.emacs.d/org")
+      org-directory (expand-file-name "~/.config/emacs/org")
       org-default-notes-file (expand-file-name "notes.org" org-directory))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (when (featurep 'windmove)
   (add-hook 'org-shiftup-final-hook 'windmove-up)
   (add-hook 'org-shiftleft-final-hook 'windmove-left)
@@ -1715,7 +1715,7 @@ Auto fill mode may break the indentation.
   (add-hook 'org-shiftright-final-hook 'windmove-right))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (define-key global-map "\C-cr" 'org-capture)
 (define-key global-map "\C-ca" 'org-agenda)
 #+end_src
@@ -1725,7 +1725,7 @@ while exporting to HTML. When this option is set, one can deduce the
 dictionary to use for spell checking. By the way I like to spell check
 Org buffers on the fly.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (when has-spell-checker
   (add-hook 'org-mode-hook
    (lambda ()
@@ -1740,7 +1740,7 @@ Org buffers on the fly.
 
 Various types of capture items are defined.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (require 'org-capture)
 (add-to-list 'org-capture-templates
       '("t" "Todo" entry (file+headline "notes.org" "Tasks")
@@ -1754,13 +1754,13 @@ Various types of capture items are defined.
 
 ** Replace deletion by move to trash
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setq delete-by-moving-to-trash t)
 #+end_src
 
 ** Jumping and viewing
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (autoload 'dired-jump "dired" "\
      Jump to Dired buffer corresponding to current buffer.
      If in a file, Dired the current directory and move to file's line.
@@ -1782,7 +1782,7 @@ Various types of capture items are defined.
 
 ** Enhancing file manager
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (require 'dired-x)
 (add-hook 'dired-load-hook
 	  (lambda ()
@@ -1794,7 +1794,7 @@ Various types of capture items are defined.
 	     (setq dired-isearch-filenames t)))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (when (locate-library "gnus-dired")
   (require 'gnus-dired))
 
@@ -1827,18 +1827,18 @@ Various types of capture items are defined.
 ** Usenet, RSS and electronic mail
 
 I use Gnus for Usenet forums, RSS feeds and electronic mail. All
-configuration files goes into =~/.emacs.d=.
+configuration files goes into =~/.config/emacs=.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setq read-mail-command 'gnus
       mail-user-agent 'gnus-user-agent
-      message-directory (expand-file-name "~/.emacs.d/Mail")
-      gnus-home-directory (expand-file-name "~/.emacs.d/"))
+      message-directory (expand-file-name "~/.config/emacs/Mail")
+      gnus-home-directory (expand-file-name "~/.config/emacs/"))
 #+end_src
 
 Quit reading news before killing emacs.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'kill-emacs-hook
 	  (lambda ()
 	     (when (and (fboundp 'gnus-alive-p) (gnus-alive-p))
@@ -1847,13 +1847,13 @@ Quit reading news before killing emacs.
 
 Group topics are enabled by default.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
 #+end_src
 
 Maill servers are scanned every 2 minutes.
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (require 'gnus-demon)
 (gnus-demon-add-scanmail)
 #+end_src
@@ -1886,7 +1886,7 @@ image/jpeg; eog %s
 #+end_src
 
 Atom feeds must be converted before Gnus can parsed them. The
-file:~/.emacs.d/atom2rss.xsl can be downloaded from
+file:~/.config/emacs/atom2rss.xsl can be downloaded from
 http://atom.geekhood.net/.
 
 #+begin_src 
@@ -1900,7 +1900,7 @@ http://atom.geekhood.net/.
     (call-process-region (point-min) (point-max)
 			 "xsltproc"
 			 t t nil
-			 (expand-file-name "~/.emacs.d/atom2rss.xsl") "-")
+			 (expand-file-name "~/.config/emacs/atom2rss.xsl") "-")
     (goto-char (point-min))
     (message "Converting Atom to RSS... done")))
 
@@ -1909,12 +1909,12 @@ http://atom.geekhood.net/.
 
 ** Message writing
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setq user-mail-address "orontee@gmail.com"
       user-full-name "Matthias Meulien")
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (require 'message)
 (add-hook 'message-mode-hook
 	  (lambda ()
@@ -1931,7 +1931,7 @@ http://atom.geekhood.net/.
 		     ("^Newsgroups:[ \t]*[^f]" . "english")))))
 #+end_src
 
-#+begin_src emacs-lisp :tangle .emacs
+#+begin_src emacs-lisp :tangle init.el
 (setq gnus-posting-styles
       '((".*"
          (signature "Matthias"))
@@ -1943,7 +1943,7 @@ http://atom.geekhood.net/.
 
 * Code sources 							   :noexport:
 
-#+name: .emacs_header
+#+name: init.el_header
 #+begin_src emacs-lisp
 ;;; -*- coding: utf-8; -*-
 ;;; GNU Emacs Startup file
@@ -1951,17 +1951,17 @@ http://atom.geekhood.net/.
 ;;; WARNING This file was automatically generated: Do not edit
 #+end_src
 
-#+name: .emacs_custom-file_loading
-#+begin_src emacs-lisp :tangle .emacs
+#+name: init.el_custom-file_loading
+#+begin_src emacs-lisp :tangle init.el
 (require 'cus-edit)
 (setq custom-file (expand-file-name 
-                   (concat  "~/.emacs.d/" system-name "-custom.el")))
+                   (concat  "~/.config/emacs/" system-name "-custom.el")))
 (when (file-exists-p custom-file)
   (load custom-file))
 #+end_src
    
-#+name: .emacs_system-name_loading
-#+begin_src emacs-lisp :tangle .emacs
+#+name: init.el_system-name_loading
+#+begin_src emacs-lisp :tangle init.el
 (let ((file (locate-library (concat (system-name) ".el"))))
   (if file
       (load file t)

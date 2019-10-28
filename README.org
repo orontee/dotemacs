@@ -1480,7 +1480,7 @@ acronyms not recognized by the spell checker).
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-(setq latex-run-command "latex -src-specials -interaction=nonstopmode")
+(setq latex-run-command "latex -synctex=1 -interaction=nonstopmode")
 (add-hook 'latex-mode-hook
 	  (lambda ()
 	     (setq comment-style 'plain

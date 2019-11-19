@@ -183,6 +183,11 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
         (text-scale-set -1))))
 #+end_src
 
+#+begin_src emacs-lisp :tangle init.el
+(setq window-divider-default-places t)
+(window-divider-mode)
+#+end_src
+
 ** Generic modes
 
 From the docstring: Generic modes provide basic comment and font-lock
@@ -484,6 +489,25 @@ Highlight the current line in table based buffers and alike ones.
   (add-hook hook
             (lambda ()
               (hl-line-mode))))
+#+end_src
+
+** Tab bar
+
+I like tabs but want them to use the same keybindings as GTK-based
+applications.
+
+#+begin_src emacs-lisp :tangle init.el
+(when (featurep 'tab-bar)
+  (setq tab-bar-close-button-show t
+        tab-bar-close-last-tab-choice 'delete-frame
+        tab-bar-close-tab-select 'left
+        tab-bar-new-tab-choice 'bookmark-bmenu-list
+        tab-bar-select-tab-modifiers '(meta))
+  (define-key tab-prefix-map "1" nil)
+  (global-set-key [C-next] 'tab-bar-switch-to-next-tab)
+  (global-set-key [C-prior] 'tab-bar-switch-to-prev-tab)
+  (global-set-key [C-S-next] (lambda () (interactive) (tab-bar-move-tab 1)))
+  (global-set-key [C-S-prior] (lambda () (interactive) (tab-bar-move-tab -1))))
 #+end_src
 
 ** Frame customization definitions
@@ -1096,7 +1120,8 @@ White space visualization is useful when inspecting diffs.
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'diff-mode-hook
           (lambda ()
-             (whitespace-mode)))
+             (whitespace-mode)
+             (setq diff-font-lock-prettify t)))
 #+end_src
 
 ** Debugger, GDB

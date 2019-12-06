@@ -842,6 +842,38 @@ the user the buffer indexes.
              (local-set-key "\C-ci" 'imenu)))
 #+end_src
 
+** Projects
+
+The project feature rocks. It'll scope your find file, regexp search and
+query replace searches to the right set of files, deduced from the
+underlying project API implementation (in my case `project-vc').
+
+For ease of use, a prefix keymap is provided which binds the
+`project-find-file', `project-find-regexp', `project-search' and
+`project-query-replace-regexp' commands.
+
+What's more the `compile' command is adviced to always run in the
+first root of the current project.
+
+#+begin_src emacs-lisp :tangle init.el
+(when (locate-library "project")
+  (require 'project)
+
+  (defvar project-prefix-map (make-sparse-keymap)
+    "Keymap for project related commands.")
+  (define-key ctl-x-map "p" project-prefix-map)
+  (define-key project-prefix-map "c" 'compile)
+  (define-key project-prefix-map "f" 'project-find-file)
+  (define-key project-prefix-map "g" 'project-find-regexp)
+  (define-key project-prefix-map "s" 'project-search)
+  (define-key project-prefix-map "%" 'project-query-replace-regexp)
+
+  (defun my-compile-advice (orig &rest args)
+    (let ((default-directory (or (cdr (project-current)) default-directory)))
+	(apply orig args)))
+  (advice-add 'compile :around #'my-compile-advice))
+#+end_src
+
 ** Completion
 
 The typical Emacs behavior when completing is preferred: `Typical Emacs

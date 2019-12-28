@@ -640,16 +640,14 @@ is_command emacs      && alias     em='emacsclient -t'
 
 ** Desktop
 
-The desktop file is saved in the user home directory. Only ten buffers
-are restored immediately in order not to slow down start up. Tramp,
-ftp and log buffers are not restored.
+The desktop file is saved in the user home directory. All buffers are
+restored immediately since a limited number of buffers doesn't play
+well when restoring tabs. Tramp, ftp and log buffers are not restored.
 
 #+begin_src emacs-lisp :tangle init.el
 (load-library "desktop")
 (desktop-save-mode)
-(setq desktop-dirname (expand-file-name "~")
-      desktop-restore-eager 10
-      desktop-lazy-verbose nil
+(setq desktop-restore-eager t
       desktop-files-not-to-save
       "\\(^/[^/:]*:\\|(ftp)$\\|.*\.log\\)")
 #+end_src
@@ -876,29 +874,11 @@ first root of the current project.
 
 ** Completion
 
-The typical Emacs behavior when completing is preferred: `Typical Emacs
-behavior is to complete as much as possible, then pause waiting for
-further input. Then if TAB is hit again, show a list of possible
-completions.'
-
-#+begin_src emacs-lisp :tangle init.el
-(setq pcomplete-cycle-completions nil)
-#+end_src
-
-By the way when reading file or buffer names the case will be ignored.
+When reading file or buffer names the case will be ignored.
 
 #+begin_src emacs-lisp :tangle init.el
 (setq read-file-name-completion-ignore-case t
       read-buffer-completion-ignore-case t)
-#+end_src
-
-The [[http://cx4a.org/software/auto-complete/][Auto Complete Mode]] rocks: Thus it is enabled wherever it is
-possible.
-
-#+begin_src emacs-lisp :tangle init.el
-(when (locate-library "auto-complete")
-  (require 'auto-complete)
-  (global-auto-complete-mode))
 #+end_src
 
 ** Abbreviations
@@ -1854,7 +1834,8 @@ Various types of capture items are defined.
              (dired-bind-find-file)
 	     (setq dired-free-space-args "-Pk"
 		   dired-listing-switches "-al")
-	     (setq dired-isearch-filenames t)))
+	     (setq dired-isearch-filenames t
+	           dired-vc-rename-file t)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el

@@ -1044,32 +1044,13 @@ bindings after the mode has been deactivated.
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'comint-mode-hook
 	  (lambda ()
-	     (if (fboundp 'ansi-color-for-comint-mode-on)
-		 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t))
-	     (setq comint-scroll-show-maximum-output t
-		   indicate-empty-lines nil
-		   comint-password-prompt-regexp 
-		   "\\(\\([Ee]nter \\(?:same \\|the \\)?\\|[Oo]ld \\|[Nn]ew \\|'s \\|login \\|Kerberos \\|CVS \\|UNIX \\| SMB \\|LDAP \\|\\[sudo] \\|^\\)[Pp]assword\\( (again)\\)?\\|pass phrase\\|Mot de passe \\|\\(Enter \\|Repeat \\|Bad \\)?[Pp]assphrase\\)\\(?:, try again\\)?\\(?: for [^:]+\\)?:\\s *\\'")
+	     (setq indicate-empty-lines nil)
 	     (define-key comint-mode-map "\C-c\C-k" 'comint-kill-subjob)
 	     (when (eq system-type 'windows-nt)
 	       (setq comint-process-echoes 'on))))
-
-(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 #+end_src
 
 ** Interactive shell
-
-#+begin_src emacs-lisp :tangle init.el
-(add-hook 'shell-mode-hook 
-	  (lambda ()
-	     (ansi-color-for-comint-mode-on)
-	     (setq shell-prompt-pattern "^\[[^$#\n]*\][$#] *"
-		   shell-font-lock-keywords
-		   '(("[ \t]\\([+-][^ \t\n]+\\)" 1 font-lock-comment-face)
-		     ("^\\[[1-9][0-9]*\\]" . font-lock-string-face))
-		   comint-password-prompt-regexp
-		   "\\(\\([Ee]nter \\(?:same \\|the \\)?\\|[Oo]ld \\|[Nn]ew \\|'s \\|login \\|Kerberos \\|CVS \\|UNIX \\| SMB \\|LDAP \\|\\[sudo] \\|^\\)[Pp]assword\\( (again)\\)?\\|pass phrase\\|Mot de passe \\|\\(Enter \\|Repeat \\|Bad \\)?[Pp]assphrase\\)\\(?:, try again\\)?\\(?: for [^:]+\\)?:\\s *\\'")))
-#+end_src
 
 An abbreviation is defined for =&> /dev/null=.
 
@@ -1081,8 +1062,6 @@ An abbreviation is defined for =&> /dev/null=.
 (add-hook 'sh-mode-hook
 	  (lambda ()
 	     (define-key sh-mode-map "'" 'self-insert-command)))
-
-(global-set-key [f9] 'shell)
 #+end_src
 
 ** Terminal emulation
@@ -1099,13 +1078,6 @@ An abbreviation is defined for =&> /dev/null=.
 (add-hook 'compilation-mode-hook
 	  (lambda ()
 	     (setq truncate-partial-width-windows nil)))
-#+end_src
-
-I use the =f8= key to compile and recompile.
-
-#+begin_src emacs-lisp :tangle init.el
-(global-set-key [f8] 'recompile)
-(global-set-key [C-f8] 'compile)
 #+end_src
 
 *** TODO Send a D-BUS notification at the end of compilation	   :noexport:
@@ -1145,8 +1117,6 @@ White space visualization is useful when inspecting diffs.
 ** Debugger, GDB
 
 #+begin_src emacs-lisp :tangle init.el
-(global-set-key [S-f8] 'gdb)
-
 (add-hook 'gdb-mode-hook
 	  (lambda ()
 	     (setq gdb-show-changed-values t

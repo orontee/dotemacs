@@ -1052,6 +1052,13 @@ bindings after the mode has been deactivated.
 
 ** Interactive shell
 
+#+begin_src emacs-lisp :tangle init.el
+(add-hook 'shell-mode-hook
+	  (lambda ()
+	     (setq shell-font-lock-keywords nil)))
+#+end_src
+
+
 An abbreviation is defined for =&> /dev/null=.
 
 #+begin_src emacs-lisp :tangle init.el

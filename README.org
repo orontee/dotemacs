@@ -1046,6 +1046,7 @@ bindings after the mode has been deactivated.
 	  (lambda ()
 	     (setq indicate-empty-lines nil)
 	     (define-key comint-mode-map "\C-c\C-k" 'comint-kill-subjob)
+	     (setq comint-terminfo-terminal "ansi")
 	     (when (eq system-type 'windows-nt)
 	       (setq comint-process-echoes 'on))))
 #+end_src
@@ -1392,20 +1393,6 @@ it is disabled.
           (lambda ()
              (set (make-local-variable 'electric-indent-functions)
                   (list (lambda (arg) 'no-indent)))))
-#+end_src
-
-Sometime I refer to my bibliography database outside of a TeX/LaTeX
-buffer.
-
-#+begin_src emacs-lisp :tangle init.el
-(add-hook 'text-mode-hook
-          (lambda ()
-             (local-set-key "\C-c["
-                            (lambda ()
-                               (interactive)
-                               (require 'reftex)
-                               (let ((reftex-cite-format 'locally)) 
-                                 (reftex-citation))))))
 #+end_src
 
 Don’t replace double quotes with curved quotes in YAML mode.

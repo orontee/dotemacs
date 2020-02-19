@@ -268,6 +268,11 @@ all. No =ido=, =icycle=, etc.
 (setq confirm-nonexistent-file-or-buffer t)
 #+end_src
 
+Completion of bookmarks names uses substring style.
+#+begin_src emacs-lisp :tangle init.el
+(add-to-list 'completion-category-overrides '(bookmark (styles substring)))
+#+end_src
+
 When I am working on multiple projects, I switch of windows
 configurations using registers (use =C-xrw= to store a window
 configuration in a register and =C-xrj= to jump back to it). But
@@ -1710,8 +1715,8 @@ Auto fill mode may break the indentation.
 #+begin_src emacs-lisp :tangle init.el
 (setq org-hide-leading-stars t
       org-log-done 'time
-      org-directory (expand-file-name "~/.config/emacs/org")
-      org-default-notes-file (expand-file-name "notes.org" org-directory))
+      org-directory (expand-file-name "~/Documents/Notes/")
+      org-default-notes-file (expand-file-name "todo.org" org-directory))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1750,11 +1755,8 @@ Various types of capture items are defined.
 #+begin_src emacs-lisp :tangle init.el
 (require 'org-capture)
 (add-to-list 'org-capture-templates
-      '("t" "Todo" entry (file+headline "notes.org" "Tasks")
+      '("t" "Todo" entry (file+headline "todo.org" "Tasks")
         "* TODO %?\n  %i\n  %a"))
-(add-to-list 'org-capture-templates
-             `("f" "Film" entry (file+headline "films.org" ,(format-time-string "%Y"))
-               "** %?\n   :PROPERTIES:\n   :Date: %u\n   :END:\n%i "))
 #+end_src
 
 * File management

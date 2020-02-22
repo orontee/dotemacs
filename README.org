@@ -655,9 +655,10 @@ well when restoring tabs. Tramp, ftp and log buffers are not restored.
 #+begin_src emacs-lisp :tangle init.el
 (load-library "desktop")
 (desktop-save-mode)
-(setq desktop-restore-eager t
-      desktop-files-not-to-save
-      "\\(^/[^/:]*:\\|(ftp)$\\|.*\.log\\)")
+(setq desktop-restore-eager 10
+      desktop-lazy-verbose nil
+      desktop-restore-frames nil
+      desktop-files-not-to-save "\\(^/[^/:]*:\\|(ftp)$\\|.*\\.log\\)")
 #+end_src
 
 ** MinGW

@@ -253,6 +253,12 @@ followed.
                (auto-revert-tail-mode))))
 #+end_src
 
+** Handle long lines
+
+#+begin_src emacs-lisp :tangle init.el
+(global-so-long-mode 1)
+#+end_src
+
 ** Moving between windows and selecting buffers
 
 Usually the frame is split at most twice. I find =C-xo= sufficient to

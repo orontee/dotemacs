@@ -1881,13 +1881,14 @@ Maill servers are scanned every 2 minutes.
 #+begin_src emacs-lisp :tangle .gnus.el
 (setq gnus-nntp-server nil
       gnus-select-method
-      '(nnimap "gmail" 
+      '(nnimap "gmail"
 	       (nnimap-address "imap.gmail.com")
-	       (nnimap-server-port 993)
+	       (nnimap-server-port "imaps")
 	       (nnimap-stream ssl))
       gnus-secondary-select-methods
       '((nntp "free"
-	     (nntp-address "news.free.fr"))))
+	     (nntp-address "news.free.fr")))
+      gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
 
 (setq message-send-mail-function 'smtpmail-send-it
       smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
@@ -1954,11 +1955,7 @@ http://atom.geekhood.net/.
 #+begin_src emacs-lisp :tangle init.el
 (setq gnus-posting-styles
       '((".*"
-         (signature "Matthias"))
-        ("^CELAD"
-         (address "matthias.meulien@celad.com")
-         (signature "Matthias Meulien\nIngénieur d'Étude - CELAD")
-         (organization "CELAD"))))
+         (signature "Matthias"))))
 #+end_src
 
 * Code sources 							   :noexport:

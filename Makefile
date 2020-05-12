@@ -8,32 +8,34 @@ export_cmd = \
   (find-file \"$<\") \
   (org-html-export-as-html))"
 
-build_files = init.el emacs.html
+build_files = init.el .gnus.el
 
 EMACSCLIENT ?= emacsclient
 
-all: init.el
+all: init.el .gnus.el
 
 html: emacs.html
 
-init.el: README.org
+init.el .gnus.el: README.org
 	$(EMACSCLIENT) -e $(tangle_cmd)
 
 emacs.html: README.org
 	$(EMACSCLIENT) -e $(export_cmd)
 
-install: init.el
-	mv $^ $(HOME)/.config/emacs/
+install: $(build_files)
+	for FILE in $(build_files); do \
+		mv $$FILE $(HOME)/.config/emacs/; \
+	done
 
 distclean:
-	for FILE in $(build_files); do \
-		[ -f $$FILE ] && rm $$FILE; \
+	for FILE in $(build_files) emacs.html; do \
+		rm --force $$FILE; \
 	done
 
 help:
 	@echo "Build targets:"
-	@echo "  all         - Build Emacs configuration file"
-	@echo "  install     - Copy Emacs configuration file to home directory"
+	@echo "  all         - Build Emacs configuration files"
+	@echo "  install     - Copy Emacs configuration files to config directory"
 	@echo "  html        - Export to html"
 	@echo ""
 	@echo "Cleaning targets:"

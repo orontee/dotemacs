@@ -389,15 +389,14 @@ Enable pairing to insert pairs of matching characters.
 Automatically save place of cursor in each file.
 
 #+begin_src emacs-lisp :tangle init.el
-(require 'saveplace)
-(save-place-mode t)
+(save-place-mode 1)
 #+end_src
 
 ** Archives display
 
 #+begin_src emacs-lisp :tangle init.el
-(require 'tar-mode)
-(setq tar-mode-show-date t)
+(eval-after-load 'tar-mode
+  (setq tar-mode-show-date t))
 #+end_src
 
 ** Time and date
@@ -959,9 +958,9 @@ Glasses help reading Camel case. I prefer parentheses to stick to the
 preceding identifier and embedded capitals to be downcase.
 
 #+begin_src emacs-lisp :tangle init.el
-(require 'glasses)
-(setq glasses-separate-parentheses-p nil
-      glasses-uncapitalize-p t)
+(eval-after-load 'glasses
+  (setq glasses-separate-parentheses-p nil
+        glasses-uncapitalize-p t))
 #+end_src
 
 ** Version control
@@ -1168,11 +1167,11 @@ to privilege C++ usual extensions rather than C ones (see
 implementation and declaration on a file name basis).
 
 #+begin_src emacs-lisp :tangle init.el
-(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+  (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 
-(require 'find-file)
-(setcdr (assoc "\\.h\\'" cc-other-file-alist)
-	(list (list ".cpp" ".cc" ".C" ".CC" ".cxx" ".c")))
+  (require 'find-file)
+  (setcdr (assoc "\\.h\\'" cc-other-file-alist)
+    (list (list ".cpp" ".cc" ".C" ".CC" ".cxx" ".c")))
 #+end_src
 
 Some abbreviation definitions for preprocessor directives are added.
@@ -1202,7 +1201,6 @@ Some abbreviation definitions for preprocessor directives are added.
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-(require 'hideshow)
 (add-hook 'c++-mode-hook
 	  (lambda ()
 	     (setq comment-style 'extra-line)
@@ -1364,8 +1362,8 @@ Most of the databases I use are PostgreSQL databases. Buffers in SQL
 mode will be properly highlighted thanks to the following setting.
 
 #+begin_src emacs-lisp :tangle init.el 
-(require 'sql)
-(setq sql-product 'postgres)
+(eval-after-load 'sql
+  (setq sql-product 'postgres))
 #+end_src
 
 Hitting =;= in an interactive SQL buffer will send the current input
@@ -1798,12 +1796,11 @@ Various types of capture items are defined.
 ** Enhancing file manager
 
 #+begin_src emacs-lisp :tangle init.el
-(require 'dired-x)
 (add-hook 'dired-load-hook
 	  (lambda ()
-             (load-library "dired-x")
+             (require 'dired-x)
 	     (setq dired-x-hands-off-my-keys nil)
-             (dired-bind-find-file)
+             (dired-x-bind-find-file)
 	     (setq dired-free-space-args "-Pk"
 		   dired-listing-switches "-al")
 	     (setq dired-isearch-filenames t
@@ -1933,7 +1930,6 @@ http://atom.geekhood.net/.
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-(require 'message)
 (add-hook 'message-mode-hook
 	  (lambda ()
 	     (setq message-elide-ellipsis "\n> (...)\n"

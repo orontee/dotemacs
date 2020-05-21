@@ -750,6 +750,12 @@ Extend executable path.
 (add-to-list 'exec-path (expand-file-name "~/.local/bin"))
 #+end_src
 
+Display current working directory in `shell-command` and
+`async-shell-command`.
+#+begin_src emacs-lisp :tangle init.el
+(setq shell-command-prompt-show-cwd t)
+#+end_src
+
 * Programming
 
 ** Edition

@@ -169,6 +169,7 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
   (when (require 'face-remap)
     (dolist (hook '(gdb-breakpoints-mode-hook gdb-inferior-io-mode-hook
                                               gdb-mode-hook gdb-locals-mode-hook gdb-frames-mode-hook
+					      flymake-diagnostics-buffer-mode-hook
                                               speedbar-mode-hook vc-dir-mode-hook
                                               occur-mode-hook apropos-mode-hook grep-mode-hook 
                                               xref--xref-buffer-mode-hook))

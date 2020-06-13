@@ -756,6 +756,12 @@ Display current working directory in `shell-command` and
 (setq shell-command-prompt-show-cwd t)
 #+end_src
 
+Use single character to indicate string truncation.
+
+#+begin_src emacs-lisp :tangle init.el
+(setq truncate-string-ellipsis "…")
+#+end_src
+
 * Programming
 
 ** Edition

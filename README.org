@@ -877,8 +877,9 @@ query replace searches to the right set of files, deduced from the
 underlying project API implementation (in my case `project-vc').
 
 For ease of use, a prefix keymap is provided which binds the
-`project-compile', `project-find-file', `project-find-regexp',
-`project-search' and `project-query-replace-regexp' commands.
+`project-compile', `project-dired', `project-find-file',
+`project-find-regexp', `project-shell' and
+`project-query-replace-regexp' commands.
 
 #+begin_src emacs-lisp :tangle init.el
 (when (locate-library "project")
@@ -886,9 +887,10 @@ For ease of use, a prefix keymap is provided which binds the
     "Keymap for project related commands.")
   (define-key ctl-x-map "p" project-prefix-map)
   (define-key project-prefix-map "c" 'project-compile)
+  (define-key project-prefix-map "d" 'project-dired)
   (define-key project-prefix-map "f" 'project-find-file)
-  (define-key project-prefix-map "g" 'project-find-regexp)
-  (define-key project-prefix-map "s" 'project-search)
+  (define-key project-prefix-map "r" 'project-find-regexp)
+  (define-key project-prefix-map "s" 'project-shell)
   (define-key project-prefix-map "%" 'project-query-replace-regexp))
 #+end_src
 

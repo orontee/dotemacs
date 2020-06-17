@@ -889,7 +889,7 @@ For ease of use, a prefix keymap is provided which binds the
   (define-key project-prefix-map "c" 'project-compile)
   (define-key project-prefix-map "d" 'project-dired)
   (define-key project-prefix-map "f" 'project-find-file)
-  (define-key project-prefix-map "r" 'project-find-regexp)
+  (define-key project-prefix-map "g" 'project-find-regexp)
   (define-key project-prefix-map "s" 'project-shell)
   (define-key project-prefix-map "%" 'project-query-replace-regexp))
 #+end_src

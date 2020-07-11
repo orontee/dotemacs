@@ -799,6 +799,15 @@ Flymake is used to check code on the fly.
 	      (local-set-key "\C-cfp" 'flymake-goto-prev-error)))
 #+end_src
 
+** Display of documentation
+
+Prevent Eldoc mode from resizing echo area.
+
+#+begin_src emacs-lisp :tangle init.el
+(eval-after-load 'eldoc
+  (setq eldoc-echo-area-use-multiline-p nil))
+#+end_src
+
 ** Spell checking
 
 When writing code source, I like to have comments, documentation and

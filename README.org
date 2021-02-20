@@ -833,12 +833,11 @@ there is a spell checker in path or not.
 
 ** File parser
 
-Visited buffers will always be parsed for their semantic content and a
-list of most recently used tags is maintained.
+Trying LSP servers through Eglot, thus default is to keep Semantic disabled.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-to-list 'semantic-default-submodes 'global-semantic-mru-bookmark-mode)
-(semantic-mode)
+;; (semantic-mode)
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el

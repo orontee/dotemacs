@@ -171,8 +171,7 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
                                               gdb-mode-hook gdb-locals-mode-hook gdb-frames-mode-hook
 					      flymake-diagnostics-buffer-mode-hook
                                               speedbar-mode-hook vc-dir-mode-hook
-                                              occur-mode-hook apropos-mode-hook grep-mode-hook 
-                                              xref--xref-buffer-mode-hook))
+                                              occur-mode-hook apropos-mode-hook grep-mode-hook))
       (add-hook hook
                 (lambda ()
                   (setq truncate-lines t)
@@ -855,22 +854,6 @@ Trying LSP servers through Eglot, thus default is to keep Semantic disabled.
           (message "Exuberant Ctags not found in path..."))))
 #+end_src
 
-** Cross-references
-
-#+begin_src emacs-lisp :tangle init.el
-(eval-after-load "xref"
-  (progn
-    (defun xref-forward-header ()
-	(interactive)
-	(xref--search-property 'xref-group))
-
-    (defun xref-backward-header ()
-	(interactive)
-	(xref--search-property 'xref-group t))
-
-    (define-key xref--xref-buffer-mode-map (kbd "C-M-p") #'xref-backward-header)
-    (define-key xref--xref-buffer-mode-map (kbd "C-M-n") #'xref-forward-header)))
-#+end_src
 
 ** Long lines and buffer boundaries
 

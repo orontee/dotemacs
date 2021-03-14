@@ -1872,9 +1872,6 @@ Maill servers are scanned every 2 minutes.
 	       (nnimap-address "imap.gmail.com")
 	       (nnimap-server-port "imaps")
 	       (nnimap-stream ssl))
-      gnus-secondary-select-methods
-      '((nntp "free"
-	     (nntp-address "news.free.fr")))
       gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
 
 (setq message-send-mail-function 'smtpmail-send-it

@@ -1394,22 +1394,7 @@ to the process.
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'text-mode-hook
 	  (lambda ()
-	     (setq sentence-end 
-		   "[.?!]\\($\\| $\\|	\\| \\)[ 	\n]*"
-		   sentence-end-double-space nil)
- 	     (auto-fill-mode)
-	     (goto-address-mode)
-	     (use-hard-newlines 1 'never)))
-#+end_src
-
-I found that on-the-fly reindentation is confusing in text modes, so
-it is disabled.
-
-#+begin_src emacs-lisp :tangle init.el
-(add-hook 'text-mode-hook
-          (lambda ()
-             (set (make-local-variable 'electric-indent-functions)
-                  (list (lambda (arg) 'no-indent)))))
+	     (goto-address-mode)))
 #+end_src
 
 Don’t replace double quotes with curved quotes in YAML mode.

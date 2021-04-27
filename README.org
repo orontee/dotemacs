@@ -978,6 +978,7 @@ repositories.
 (global-set-key "\C-xv=" 'ediff-revision)
 (require 'vc-git)
 (global-set-key "\C-xvG" 'vc-git-grep)
+(global-set-key "\C-xvd" 'vc-dir-root)
 #+end_src
 
 Spell checking is automatically enabled when editing log messages,

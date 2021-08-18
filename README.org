@@ -1063,7 +1063,8 @@ bindings after the mode has been deactivated.
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'shell-mode-hook
 	  (lambda ()
-	     (setq shell-font-lock-keywords nil)))
+	     (setq shell-font-lock-keywords nil)
+	     (goto-address-mode)))
 #+end_src
 
 

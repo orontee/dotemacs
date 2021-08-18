@@ -42,7 +42,7 @@ Most of the following code snippets I have written myself. Some were
 copied from the [[https://lists.gnu.org/mailman/listinfo/help-gnu-emacs][gnu.emacs.help newsgroup]] or the [[http://www.emacswiki.org/][Emacs wiki]].
 
 * General use
-** Header							   :noexport:
+** Header                                                          :noexport:
 
 #+begin_src emacs-lisp :tangle init.el :noweb tangle
 <<init.el_header>>
@@ -93,7 +93,7 @@ At the time of writing, I have activated the following packages:
     (let ((name (car package))
           (desc (package-desc-summary (cadr package))))
     (setq descriptions 
-	  (concat descriptions (format "|%s|%s|\n" name desc))))))
+          (concat descriptions (format "|%s|%s|\n" name desc))))))
 #+end_src
 
 #+RESULTS:
@@ -169,7 +169,7 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
   (when (require 'face-remap)
     (dolist (hook '(gdb-breakpoints-mode-hook gdb-inferior-io-mode-hook
                                               gdb-mode-hook gdb-locals-mode-hook gdb-frames-mode-hook
-					      flymake-diagnostics-buffer-mode-hook
+                                              flymake-diagnostics-buffer-mode-hook
                                               speedbar-mode-hook vc-dir-mode-hook
                                               occur-mode-hook apropos-mode-hook grep-mode-hook))
       (add-hook hook
@@ -205,8 +205,8 @@ line...
 (load "generic-x")
 (setq generic-extras-enable-list
       (append generic-default-modes
-	      generic-mswindows-modes
-	      generic-unix-modes))
+              generic-mswindows-modes
+              generic-unix-modes))
 (load "generic-x")
 #+end_src
 
@@ -296,10 +296,10 @@ he is about to overwrite a window configuration."
   (let ((val (get-register register)))
     (cond
      ((or (not (consp val))
-	      (not (frame-configuration-p (car val)))
-	      (yes-or-no-p "Overwrite window configuration? "))
+              (not (frame-configuration-p (car val)))
+              (yes-or-no-p "Overwrite window configuration? "))
       (set-register register
-		    (list (current-frame-configuration) (point-marker))))
+                    (list (current-frame-configuration) (point-marker))))
      (t
       (error "Register already contains a window configuration")))))
 #+end_src
@@ -333,15 +333,15 @@ The calendar is configured to match the french standards.
 (setq european-calendar-style t
       calendar-time-display-form 
       '(24-hours ":" minutes
-		 (if time-zone " (") time-zone (if time-zone ")"))
+                 (if time-zone " (") time-zone (if time-zone ")"))
       calendar-week-start-day 1
       calendar-intermonth-text
       '(propertize
-	(format "%2d"
-		(car
-		 (calendar-iso-from-absolute
-		  (calendar-absolute-from-gregorian (list month day year)))))
-	'font-lock-face 'font-lock-function-name-face))
+        (format "%2d"
+                (car
+                 (calendar-iso-from-absolute
+                  (calendar-absolute-from-gregorian (list month day year)))))
+        'font-lock-face 'font-lock-function-name-face))
 
 (setq view-diary-entries-initially t
       number-of-diary-entries [0 2 2 2 2 4 1]
@@ -407,23 +407,23 @@ is =display-time-mode=.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'display-time-mode-hook
-	  (lambda ()
-	     (setq display-time-day-and-date nil
-		   display-time-24hr-format t 
-		   display-time-use-mail-icon nil
-		   display-time-format "%A,%e %B %Y %R")))
+          (lambda ()
+             (setq display-time-day-and-date nil
+                   display-time-24hr-format t 
+                   display-time-use-mail-icon nil
+                   display-time-format "%A,%e %B %Y %R")))
 #+end_src
 
 ** Syntax highlighting
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'font-lock-mode-hook
-	  (lambda ()
-	     (show-paren-mode)))
+          (lambda ()
+             (show-paren-mode)))
 
 (add-hook 'show-paren-mode-hook
-	  (lambda ()
-	     (setq show-paren-style 'parenthesis)))
+          (lambda ()
+             (setq show-paren-style 'parenthesis)))
 #+end_src
 
 ** Final new line
@@ -469,8 +469,8 @@ Key sequences are defined to easily set the input methods I need.
 
 #+begin_src emacs-lisp :tangle init.el
 (dolist (elt '(("1" . "latin-1-prefix")
-	       ("9" . "latin-9-prefix")
-	       ("u" . "TeX")))
+               ("9" . "latin-9-prefix")
+               ("u" . "TeX")))
   (define-key mule-keymap (car elt)
     `(lambda ()
        (interactive)
@@ -500,8 +500,8 @@ based buffers and alike ones.
   (add-hook hook
             (lambda ()
               (hl-line-mode)
-	      (setq indicate-buffer-boundaries 
-	            '((top . left) (bottom . right))))))
+              (setq indicate-buffer-boundaries 
+                    '((top . left) (bottom . right))))))
 #+end_src
 
 ** Tab bar
@@ -515,15 +515,15 @@ applications. Also I want new tabs to display bookmarks.
   (cond
    ((get-buffer bookmark-bmenu-buffer))
    (t (save-excursion
-	(save-window-excursion
-	  (bookmark-bmenu-list)
-	  (get-buffer bookmark-bmenu-buffer))))))
+        (save-window-excursion
+          (bookmark-bmenu-list)
+          (get-buffer bookmark-bmenu-buffer))))))
 
 (when (featurep 'tab-bar)
   (setq tab-bar-close-button-show t
         tab-bar-close-last-tab-choice 'delete-frame
         tab-bar-close-tab-select 'left
-	tab-bar-new-tab-choice 'get-or-build-bookmark-buffer
+        tab-bar-new-tab-choice 'get-or-build-bookmark-buffer
         tab-bar-select-tab-modifiers '(meta))
   (define-key tab-prefix-map "1" nil)
   (global-set-key [C-next] 'tab-bar-switch-to-next-tab)
@@ -537,17 +537,17 @@ applications. Also I want new tabs to display bookmarks.
 #+begin_src emacs-lisp
 (setq default-frame-alist
       '((height . 40)
-	(width . 80)
-	(menu-bar-lines . nil)
-	(tool-bar-lines . nil)
-	(vertical-scroll-bars . nil)
+        (width . 80)
+        (menu-bar-lines . nil)
+        (tool-bar-lines . nil)
+        (vertical-scroll-bars . nil)
         (horizontal-scroll-bars . nil)
-	(background-color . "#2e3434")
-	(background-mode . dark)
-	(foreground-color . "#eeeeec")
-	(mouse-color . "#8ae234")
-	(font . "Consolas-12")
-	(cursor-color . "#fce94f")))
+        (background-color . "#2e3434")
+        (background-mode . dark)
+        (foreground-color . "#eeeeec")
+        (mouse-color . "#8ae234")
+        (font . "Consolas-12")
+        (cursor-color . "#fce94f")))
 #+end_src
 
 For X Window frames, it is better to customize the [[file:~/.Xresources][resources file]]:
@@ -584,8 +584,8 @@ Emacs.link.attributeUnderline: false
 (define-key ctl-x-4-map "i" 'info-other-window)
 
 (add-hook 'Info-mode-hook
-	  (lambda ()
-	     (setq truncate-lines t)))
+          (lambda ()
+             (setq truncate-lines t)))
 
 (when (file-directory-p "~/.local/share/info")
   (add-to-list 'Info-additional-directory-list "~/.local/share/info"))
@@ -603,15 +603,15 @@ key.
 Only intended for interactive use."
   (interactive)
   (let* ((win (selected-window))
-	 (wdp (window-dedicated-p win))
-	 value)
+         (wdp (window-dedicated-p win))
+         value)
     (unwind-protect
-	(progn
-	  (set-window-dedicated-p win nil)
-	  (switch-to-buffer-other-frame
-	   (save-window-excursion
-	     (setq value (call-interactively 'info))
-	     (current-buffer))))
+        (progn
+          (set-window-dedicated-p win nil)
+          (switch-to-buffer-other-frame
+           (save-window-excursion
+             (setq value (call-interactively 'info))
+             (current-buffer))))
       (set-window-dedicated-p win wdp))
     value))
 #+end_src
@@ -714,7 +714,7 @@ Similar tweaks are done for Ghostscript, GNU Aspell, Visual Studio.
         (setenv "PATH" (concat aspell-root "\\bin" ";" (getenv "PATH")))
         (add-to-list 'exec-path (expand-file-name "bin" aspell-root))))
     (let ((visual-studio-root "C:\\Program Files (x86)\\Microsoft Visual Studio 10.0")
-	  (dotnet-framework-root "C:\\Windows\\Microsoft.NET\\Framework\v4.0.30319"))
+          (dotnet-framework-root "C:\\Windows\\Microsoft.NET\\Framework\v4.0.30319"))
       (when (file-exists-p visual-studio-root)
         (setenv "PATH" (concat visual-studio-root "\\Common7\\IDE" ";" (getenv "PATH")))
         (add-to-list 'exec-path (expand-file-name "Common7/IDE" visual-studio-root))
@@ -772,8 +772,8 @@ Use single character to indicate string truncation.
   (add-hook 'prog-mode-hook
             (lambda ()
               (electric-layout-mode 1)
-	      (display-line-numbers-mode 1)
-	      (setq display-line-numbers-widen t)))
+              (display-line-numbers-mode 1)
+              (setq display-line-numbers-widen t)))
 #+end_src
 
 ** Highlight changes
@@ -792,10 +792,10 @@ Flymake is used to check code on the fly.
 
 #+begin_src emacs-lisp :tangle init.el
   (add-hook 'flymake-mode-hook
-	    (lambda ()
-	      (local-set-key "\C-cfd" 'flymake-show-diagnostics-buffer)
-	      (local-set-key "\C-cfn" 'flymake-goto-next-error)
-	      (local-set-key "\C-cfp" 'flymake-goto-prev-error)))
+            (lambda ()
+              (local-set-key "\C-cfd" 'flymake-show-diagnostics-buffer)
+              (local-set-key "\C-cfn" 'flymake-goto-next-error)
+              (local-set-key "\C-cfp" 'flymake-goto-prev-error)))
 #+end_src
 
 ** Display of documentation
@@ -816,19 +816,19 @@ there is a spell checker in path or not.
 #+begin_src emacs-lisp :tangle init.el
   (require 'ispell)
   (setq has-spell-checker
-	(not (eq (executable-find ispell-program-name) nil)))
+        (not (eq (executable-find ispell-program-name) nil)))
   (when has-spell-checker
     (add-hook 'prog-mode-hook
-	      (lambda ()
-		 (setq ispell-local-dictionary "english"
-		       flyspell-persistent-highlight nil)))
+              (lambda ()
+                 (setq ispell-local-dictionary "english"
+                       flyspell-persistent-highlight nil)))
     (add-hook 'rst-mode-hook
-	      (lambda ()
-		(setq ispell-local-dictionary "english")
-		(flyspell-mode))))
+              (lambda ()
+                (setq ispell-local-dictionary "english")
+                (flyspell-mode))))
 #+end_src
 
-*** TODO Disable spell menu when no spell program is found 	   :noexport:
+*** TODO Disable spell menu when no spell program is found         :noexport:
 
 ** File parser
 
@@ -1019,9 +1019,9 @@ Shorten the display of the current branch name in the modeline.
   (let* ((rev (vc-working-revision file 'Git))
          (disp-rev (or (vc-git--symbolic-ref file)
                        (substring rev 0 7)))
-	 (short-rev (if (<= (length disp-rev) 8)
-			disp-rev
-		      (concat (substring disp-rev 0 7) "…")))
+         (short-rev (if (<= (length disp-rev) 8)
+                        disp-rev
+                      (concat (substring disp-rev 0 7) "…")))
          (def-ml (vc-default-mode-line-string 'Git file))
          (help-echo (get-text-property 0 'help-echo def-ml))
          (face   (get-text-property 0 'face def-ml)))
@@ -1050,21 +1050,21 @@ bindings after the mode has been deactivated.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'comint-mode-hook
-	  (lambda ()
-	     (setq indicate-empty-lines nil)
-	     (define-key comint-mode-map "\C-c\C-k" 'comint-kill-subjob)
-	     (setq comint-terminfo-terminal "ansi")
-	     (when (eq system-type 'windows-nt)
-	       (setq comint-process-echoes 'on))))
+          (lambda ()
+             (setq indicate-empty-lines nil)
+             (define-key comint-mode-map "\C-c\C-k" 'comint-kill-subjob)
+             (setq comint-terminfo-terminal "ansi")
+             (when (eq system-type 'windows-nt)
+               (setq comint-process-echoes 'on))))
 #+end_src
 
 ** Interactive shell
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'shell-mode-hook
-	  (lambda ()
-	     (setq shell-font-lock-keywords nil)
-	     (goto-address-mode)))
+          (lambda ()
+             (setq shell-font-lock-keywords nil)
+             (goto-address-mode)))
 #+end_src
 
 
@@ -1076,19 +1076,19 @@ An abbreviation is defined for =&> /dev/null=.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'sh-mode-hook
-	  (lambda ()
-	     (define-key sh-mode-map "'" 'self-insert-command)))
+          (lambda ()
+             (define-key sh-mode-map "'" 'self-insert-command)))
 #+end_src
 
 ** Terminal emulation
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'term-mode-hook
-	  (lambda ()
-	     (term-pager-toggle)))
+          (lambda ()
+             (term-pager-toggle)))
 #+end_src
 
-** Compilation							   :noexport:
+** Compilation                                                     :noexport:
 
 Colorize compilation output.
 
@@ -1104,11 +1104,11 @@ Colorize compilation output.
           #'colorize-compilation)
 
 (add-hook 'compilation-mode-hook
-	  (lambda ()
-	     (setq truncate-partial-width-windows nil)))
+          (lambda ()
+             (setq truncate-partial-width-windows nil)))
 #+end_src
 
-*** TODO Send a D-BUS notification at the end of compilation	   :noexport:
+*** TODO Send a D-BUS notification at the end of compilation       :noexport:
 
 Only if the compilation was lengthy.
 
@@ -1116,8 +1116,8 @@ Only if the compilation was lengthy.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'makefile-gmake-mode-hook
-	  (lambda ()
-	     (setq tab-width 3)))
+          (lambda ()
+             (setq tab-width 3)))
 #+end_src
 
 ** Visual interface to diff and patch
@@ -1146,22 +1146,22 @@ White space visualization is useful when inspecting diffs.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'gdb-mode-hook
-	  (lambda ()
-	     (setq gdb-show-changed-values t
-		   gdb-use-colon-colon-notation nil
-		   gdb-use-separate-io-buffer t)))
+          (lambda ()
+             (setq gdb-show-changed-values t
+                   gdb-use-colon-colon-notation nil
+                   gdb-use-separate-io-buffer t)))
 
 (add-hook 'gud-mode-hook
-	  (lambda ()
-	     (setq gud-tooltip-mode nil
-		   gud-gdb-command-name "gdb --silent --annotate=3")))
+          (lambda ()
+             (setq gud-tooltip-mode nil
+                   gud-gdb-command-name "gdb --silent --annotate=3")))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
 (defun alt-valgrind (file)
   (interactive "fEnter file: ")
   (shell-command (concat
-		  "valgrind --leak-check=full  " file))
+                  "valgrind --leak-check=full  " file))
   (switch-to-buffer-other-window "*Shell Command Output*")
   (compilation-shell-minor-mode t))
 #+end_src
@@ -1212,25 +1212,25 @@ Some abbreviation definitions for preprocessor directives are added.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'c++-mode-hook
-	  (lambda ()
-	     (setq comment-style 'extra-line)
-	     (setq indent-tabs-mode nil)
+          (lambda ()
+             (setq comment-style 'extra-line)
+             (setq indent-tabs-mode nil)
              (c-set-style "ellemtel")
-	     (setq c-cleanup-list '(empty-defun-braces
-				    one-liner-defun
-				    defun-close-semi
-				    scope-operator
-				    list-close-comma)
-		   c-basic-offset 3)
-	     ;(c-toggle-electric-state)
-	     (c-toggle-hungry-state 1)
-	     (subword-mode)
-	     (cwarn-mode)
-	     (require 'find-file)
-	     (add-to-list ff-search-directories ".")
-	     (define-key c++-mode-map "\C-co" 'ff-find-other-file)
-	     (define-key c++-mode-map "\C-ck" 'tags-apropos)
-	     (define-key c++-mode-map "\C-m" 'c-context-line-break)))
+             (setq c-cleanup-list '(empty-defun-braces
+                                    one-liner-defun
+                                    defun-close-semi
+                                    scope-operator
+                                    list-close-comma)
+                   c-basic-offset 3)
+             ;(c-toggle-electric-state)
+             (c-toggle-hungry-state 1)
+             (subword-mode)
+             (cwarn-mode)
+             (require 'find-file)
+             (add-to-list ff-search-directories ".")
+             (define-key c++-mode-map "\C-co" 'ff-find-other-file)
+             (define-key c++-mode-map "\C-ck" 'tags-apropos)
+             (define-key c++-mode-map "\C-m" 'c-context-line-break)))
 #+end_src
 
 Update default text to insert into new files.
@@ -1252,13 +1252,13 @@ Update default text to insert into new files.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'emacs-lisp-mode-hook
-	  (lambda ()
-	     (set (make-local-variable 'comment-auto-fill-only-comments) t)
-	     (set (make-local-variable 'imenu-sort-function) 
-		  'imenu--sort-by-name)
-	     (outline-minor-mode t)
-	     (define-key emacs-lisp-mode-map "\C-c\C-f" 
-	       'emacs-lisp-byte-compile)))
+          (lambda ()
+             (set (make-local-variable 'comment-auto-fill-only-comments) t)
+             (set (make-local-variable 'imenu-sort-function) 
+                  'imenu--sort-by-name)
+             (outline-minor-mode t)
+             (define-key emacs-lisp-mode-map "\C-c\C-f" 
+               'emacs-lisp-byte-compile)))
 #+end_src
 
 To speedup Emacs Lisp execution, code can be compiled. The following
@@ -1343,8 +1343,8 @@ Set the name of the Python template to insert at file creation.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'scheme-mode-hook
-	  (lambda ()
-	     (setq scheme-program-name "umb-scheme")))
+          (lambda ()
+             (setq scheme-program-name "umb-scheme")))
 #+end_src
 
 ** Support for JavaScript
@@ -1395,8 +1395,8 @@ to the process.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'text-mode-hook
-	  (lambda ()
-	     (goto-address-mode)))
+          (lambda ()
+             (goto-address-mode)))
 #+end_src
 
 Don’t replace double quotes with curved quotes in YAML mode.
@@ -1404,7 +1404,7 @@ Don’t replace double quotes with curved quotes in YAML mode.
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'yaml-mode-hook
           (lambda ()
-	     (electric-quote-mode -1)))
+             (electric-quote-mode -1)))
 #+end_src
 
 ** Support for SGML, HTML, CSS
@@ -1486,51 +1486,51 @@ acronyms not recognized by the spell checker).
 (setq ispell-tex-skip-alists
       (cons
        (let ((list (car ispell-tex-skip-alists)))
-	 (add-to-list 'list '("\\\\\\(ref\\|label\\)" ispell-tex-arg-end)))
+         (add-to-list 'list '("\\\\\\(ref\\|label\\)" ispell-tex-arg-end)))
        (cdr ispell-tex-skip-alists)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
 (setq latex-run-command "latex -synctex=1 -interaction=nonstopmode")
 (add-hook 'latex-mode-hook
-	  (lambda ()
-	     (setq comment-style 'plain
-		   comment-column 0
-		   indent-tabs-mode nil
-		   ispell-check-comments nil
-		   tex-trailer "\\end{document}"
-		   latex-block-default "theorem"
-		   latex-block-names
-		   '("theorem" "proposition" "definition" "lemma" "multline")
-		   tex-open-quote "\\og "
-		   tex-close-quote "\\fg"
-		   tex-alt-dvi-view-command
-		   `(let ((line (count-lines 1 (point)))
-			  (source (file-name-nondirectory (buffer-file-name))))
-		      (concat "xdvi -sourceposition " 
-			      (number-to-string line) source " *")))
-	     (define-skeleton alt-latex-math-env
-	       "Create a matching pair of parenthesis."
-	       nil 92 40 _ 92 41)
-	     (define-skeleton alt-latex-displaymath-env
-	       "Create a matching pair of brackets."
-	       nil 92 91 _ 92 93)
-	     (add-to-list 'tex-compile-commands
-			  '("xdg-open %r.pdf &" "%r.pdf"))
-	     (reftex-mode t)
-	     (outline-minor-mode 1)
-	     (define-key latex-mode-map [M-tab] 'info-complete-symbol)
-	     (define-key latex-mode-map "\C-c\C-s" 'alt-latex-section)
-	     (define-key latex-mode-map "\C-cm" 'alt-latex-math-env)
-	     (define-key latex-mode-map "\C-cM" 'alt-latex-displaymath-env)))
+          (lambda ()
+             (setq comment-style 'plain
+                   comment-column 0
+                   indent-tabs-mode nil
+                   ispell-check-comments nil
+                   tex-trailer "\\end{document}"
+                   latex-block-default "theorem"
+                   latex-block-names
+                   '("theorem" "proposition" "definition" "lemma" "multline")
+                   tex-open-quote "\\og "
+                   tex-close-quote "\\fg"
+                   tex-alt-dvi-view-command
+                   `(let ((line (count-lines 1 (point)))
+                          (source (file-name-nondirectory (buffer-file-name))))
+                      (concat "xdvi -sourceposition " 
+                              (number-to-string line) source " *")))
+             (define-skeleton alt-latex-math-env
+               "Create a matching pair of parenthesis."
+               nil 92 40 _ 92 41)
+             (define-skeleton alt-latex-displaymath-env
+               "Create a matching pair of brackets."
+               nil 92 91 _ 92 93)
+             (add-to-list 'tex-compile-commands
+                          '("xdg-open %r.pdf &" "%r.pdf"))
+             (reftex-mode t)
+             (outline-minor-mode 1)
+             (define-key latex-mode-map [M-tab] 'info-complete-symbol)
+             (define-key latex-mode-map "\C-c\C-s" 'alt-latex-section)
+             (define-key latex-mode-map "\C-cm" 'alt-latex-math-env)
+             (define-key latex-mode-map "\C-cM" 'alt-latex-displaymath-env)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'tex-shell-hook
-	  (lambda ()
-	     (add-to-list 'shell-font-lock-keywords
-		    '("^\\(LaTeX Warning:\\|\\!\\)" . font-lock-warning-face))
-	     (define-key tex-shell-map "\C-c\C-p" 'comint-previous-prompt)))
+          (lambda ()
+             (add-to-list 'shell-font-lock-keywords
+                    '("^\\(LaTeX Warning:\\|\\!\\)" . font-lock-warning-face))
+             (define-key tex-shell-map "\C-c\C-p" 'comint-previous-prompt)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1547,72 +1547,72 @@ multi-file document; The user is asked for the name of the main
 document, then a skeleton with a reference to that name is
 inserted."
   (let* ((class (completing-read "Document class: "
-				 '(("article" 1) ("report" 2) ("book" 3)
-				   ("letter" 4) ("slides" 5) ("exam" 6))))
-	 (lang (when (not (equal class ""))
-		 (completing-read "Main language: "
-				  '(("french" 1) ("english" 2))))))
+                                 '(("article" 1) ("report" 2) ("book" 3)
+                                   ("letter" 4) ("slides" 5) ("exam" 6))))
+         (lang (when (not (equal class ""))
+                 (completing-read "Main language: "
+                                  '(("french" 1) ("english" 2))))))
     (if (not (equal class ""))
-	(let ((name (expand-file-name 
-		     (concat auto-insert-directory "LaTeX/" class
-			     (when (not (equal lang "")) 
-			       (concat "-" lang)) ".tex"))))
-	  (if (file-readable-p name)
-	      (progn
-		(insert "% Time-stamp: <" (current-time-string)
-			" " (user-login-name) ">\n% Author: "
-			(user-full-name) " <" (progn user-mail-address) ">\n\n")
-		(insert-file-contents name))
-	    (message "No template file %s found" name)))
+        (let ((name (expand-file-name 
+                     (concat auto-insert-directory "LaTeX/" class
+                             (when (not (equal lang "")) 
+                               (concat "-" lang)) ".tex"))))
+          (if (file-readable-p name)
+              (progn
+                (insert "% Time-stamp: <" (current-time-string)
+                        " " (user-login-name) ">\n% Author: "
+                        (user-full-name) " <" (progn user-mail-address) ">\n\n")
+                (insert-file-contents name))
+            (message "No template file %s found" name)))
       (let ((name (read-file-name "Main file: " default-directory "")))
-	(insert "% Time-stamp: <" (current-time-string)
-		" " (user-login-name) ">\n% Author: " (user-full-name)
-		" <" (progn user-mail-address) ">\n\n")
-	(goto-char (point))
-	(when (not (equal name ""))
-	  (save-excursion
-	    (insert "\n\n% Local Variables:\n% tex-main-file: \""
-		    name "\"\n% End:\n")))))))
+        (insert "% Time-stamp: <" (current-time-string)
+                " " (user-login-name) ">\n% Author: " (user-full-name)
+                " <" (progn user-mail-address) ">\n\n")
+        (goto-char (point))
+        (when (not (equal name ""))
+          (save-excursion
+            (insert "\n\n% Local Variables:\n% tex-main-file: \""
+                    name "\"\n% End:\n")))))))
 
 (add-to-list 'auto-insert-alist
-	     '(latex-mode . alt-auto-insert-latex))
+             '(latex-mode . alt-auto-insert-latex))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'reftex-mode-hook
-	  (lambda ()
-	     (setq reftex-extra-bindings t
-		   reftex-enable-partial-scans t
-		   reftex-save-parse-info nil
-		   reftex-use-multiple-selection-buffers t
-		   reftex-label-alist
-		   (setq reftex-label-alist
-			 '(("theorem" ?h "thr:" "~\\ref{%s}" t 
-			    (regexp "th\\\(\\\(é\\\|\'e\\\)or\\\(è\\\|\`e\\\)mes?\\\|m\\\.\\\)") nil)
-			   ("proposition" ?p "pro:" "~\\ref{%s}" t 
-			    (regexp "prop\\\(ositions?\\\|.\\\)") nil)
-			   ("lemma" ?l "lem:" "~\\ref{%s}" t 
-			    (regexp "lem\\\(mes?\\\|.\\\)") nil)
-			   ("equation" 101 "eq:" "~(\\ref{%s})" t
-			    (regexp "\\\(l'\\\)?\\\(é\\\|\'e\\\)quations?") nil)
-			   ("example" ?x "exm:" "~\\ref{%s}" t 
-			    (regexp "exemp\\\(les?\\\|.\\\)")))))
-	     (defun reftex-page-reference ()
-	       "Make a LaTeX reference to a page number."
-	       (interactive)
-	       (let ((reftex-format-ref-function
-		      `(lambda (label format)
-			 (concat "~\\pageref{" label "}"))))
-		 (reftex-reference)))
-	     (define-key reftex-mode-map "\C-c]" 'reftex-page-reference)
-	     (define-key-after reftex-mode-menu [pageref]
-	       '(menu-item "\\pageref" reftex-page-reference) '\\cite)))
+          (lambda ()
+             (setq reftex-extra-bindings t
+                   reftex-enable-partial-scans t
+                   reftex-save-parse-info nil
+                   reftex-use-multiple-selection-buffers t
+                   reftex-label-alist
+                   (setq reftex-label-alist
+                         '(("theorem" ?h "thr:" "~\\ref{%s}" t 
+                            (regexp "th\\\(\\\(é\\\|\'e\\\)or\\\(è\\\|\`e\\\)mes?\\\|m\\\.\\\)") nil)
+                           ("proposition" ?p "pro:" "~\\ref{%s}" t 
+                            (regexp "prop\\\(ositions?\\\|.\\\)") nil)
+                           ("lemma" ?l "lem:" "~\\ref{%s}" t 
+                            (regexp "lem\\\(mes?\\\|.\\\)") nil)
+                           ("equation" 101 "eq:" "~(\\ref{%s})" t
+                            (regexp "\\\(l'\\\)?\\\(é\\\|\'e\\\)quations?") nil)
+                           ("example" ?x "exm:" "~\\ref{%s}" t 
+                            (regexp "exemp\\\(les?\\\|.\\\)")))))
+             (defun reftex-page-reference ()
+               "Make a LaTeX reference to a page number."
+               (interactive)
+               (let ((reftex-format-ref-function
+                      `(lambda (label format)
+                         (concat "~\\pageref{" label "}"))))
+                 (reftex-reference)))
+             (define-key reftex-mode-map "\C-c]" 'reftex-page-reference)
+             (define-key-after reftex-mode-menu [pageref]
+               '(menu-item "\\pageref" reftex-page-reference) '\\cite)))
 
 (eval-after-load "reftex"
   '(let ((dir (expand-file-name "~/Documents/Mathématiques/Bibliographie")))
      (when (file-exists-p dir)
        (dolist (name (directory-files dir t ".*\.bib$"))
-	 (add-to-list 'reftex-default-bibliography name)))))
+         (add-to-list 'reftex-default-bibliography name)))))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1629,10 +1629,10 @@ inserted."
   (setq temp-latex-section-alist latex-section-alist)
   (set (make-local-variable 'latex-section-alist)
        (let (list)
-	 (dolist (elt (default-value 'latex-section-alist))
-	   (if (<= (cdr elt) latex-outline-max-level)
-	       (push elt list)))
-	 list)))
+         (dolist (elt (default-value 'latex-section-alist))
+           (if (<= (cdr elt) latex-outline-max-level)
+               (push elt list)))
+         list)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1670,8 +1670,8 @@ If prefix argument is provided, use the alternative command,
   (or tex-dvi-view-command
       (error "You must set `tex-dvi-view-command'"))
   (let ((tex-dvi-print-command
-	 (if alt tex-alt-dvi-view-command
-	   tex-dvi-view-command)))
+         (if alt tex-alt-dvi-view-command
+           tex-dvi-view-command)))
     (tex-print)))
 
 (defvar alt-latex-section-default "paragraph")
@@ -1679,10 +1679,10 @@ If prefix argument is provided, use the alternative command,
 (define-skeleton alt-latex-section
   "Create a sectionning command \\SECTION{TITLE} at point."
   (let ((section (completing-read 
-		  (format "LaTeX section name [%s]: " 
-			  alt-latex-section-default)
-		  latex-section-alist nil nil nil nil 
-		  alt-latex-section-default)))
+                  (format "LaTeX section name [%s]: " 
+                          alt-latex-section-default)
+                  latex-section-alist nil nil nil nil 
+                  alt-latex-section-default)))
     (setq alt-latex-section-default section))
   \n "\\" str ?\{ (skeleton-read "Title: ") ?\} \n \n)
 #+end_src
@@ -1792,14 +1792,14 @@ Various types of capture items are defined.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'dired-load-hook
-	  (lambda ()
+          (lambda ()
              (require 'dired-x)
-	     (setq dired-x-hands-off-my-keys nil)
+             (setq dired-x-hands-off-my-keys nil)
              (dired-x-bind-find-file)
-	     (setq dired-free-space-args "-Pk"
-		   dired-listing-switches "-al")
-	     (setq dired-isearch-filenames t
-	           dired-vc-rename-file t)))
+             (setq dired-free-space-args "-Pk"
+                   dired-listing-switches "-al")
+             (setq dired-isearch-filenames t
+                   dired-vc-rename-file t)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1826,7 +1826,7 @@ Various types of capture items are defined.
              (setq dired-omit-size-limit nil
                    truncate-lines t)
              (dired-omit-mode 1)
-	     (dired-hide-details-mode 1)
+             (dired-hide-details-mode 1)
              (set (make-local-variable 'transient-mark-mode) nil)
              (define-key dired-mode-map "w" 'dired-copy-filename-as-kill)))
 #+end_src
@@ -1849,9 +1849,9 @@ Quit reading news before killing emacs.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'kill-emacs-hook
-	  (lambda ()
-	     (when (and (fboundp 'gnus-alive-p) (gnus-alive-p))
-	       (gnus-group-exit))))
+          (lambda ()
+             (when (and (fboundp 'gnus-alive-p) (gnus-alive-p))
+               (gnus-group-exit))))
 #+end_src
 
 Group topics are enabled by default.
@@ -1871,9 +1871,9 @@ Maill servers are scanned every 2 minutes.
 (setq gnus-nntp-server nil
       gnus-select-method
       '(nnimap "gmail"
-	       (nnimap-address "imap.gmail.com")
-	       (nnimap-server-port "imaps")
-	       (nnimap-stream ssl))
+               (nnimap-address "imap.gmail.com")
+               (nnimap-server-port "imaps")
+               (nnimap-stream ssl))
       gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
 
 (setq message-send-mail-function 'smtpmail-send-it
@@ -1901,13 +1901,13 @@ http://atom.geekhood.net/.
 (defadvice mm-url-insert (after DE-convert-atom-to-rss () )
   "Converts atom to RSS by calling xsltproc."
   (when (re-search-forward "xmlns=\"http://www.w3.org/.*/Atom\""
-			   nil t)
+                           nil t)
     (goto-char (point-min))
     (message "Converting Atom to RSS... ")
     (call-process-region (point-min) (point-max)
-			 "xsltproc"
-			 t t nil
-			 (expand-file-name "~/.config/emacs/atom2rss.xsl") "-")
+                         "xsltproc"
+                         t t nil
+                         (expand-file-name "~/.config/emacs/atom2rss.xsl") "-")
     (goto-char (point-min))
     (message "Converting Atom to RSS... done")))
 
@@ -1923,18 +1923,18 @@ http://atom.geekhood.net/.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'message-mode-hook
-	  (lambda ()
-	     (setq message-elide-ellipsis "\n> (...)\n"
-		   message-signature t) 
-	     (setq message-completion-alist
-		   '(("^\\(Newsgroups\\|Followup-To\\|Posted-To\\|Gcc\\):" . message-expand-group)
-		     ("^\\(Resent-\\)?\\(To\\|B?Cc\\):" . eudc-expand-inline)
-		     ("^\\(Reply-To\\|From\\|Mail-Followup-To\\|Mail-Copies-To\\):" . eudc-expand-inline)
-		     ("^\\(Disposition-Notification-To\\|Return-Receipt-To\\):" . message-expand-name)))
-	     (setq ispell-message-dictionary-alist
-		   '(("^To:[^\n,]+\\.fr[ \t\n,>]" . "francais")
-		     ("^Newsgroups:[ \t]*fr\\." . "francais")
-		     ("^Newsgroups:[ \t]*[^f]" . "english")))))
+          (lambda ()
+             (setq message-elide-ellipsis "\n> (...)\n"
+                   message-signature t) 
+             (setq message-completion-alist
+                   '(("^\\(Newsgroups\\|Followup-To\\|Posted-To\\|Gcc\\):" . message-expand-group)
+                     ("^\\(Resent-\\)?\\(To\\|B?Cc\\):" . eudc-expand-inline)
+                     ("^\\(Reply-To\\|From\\|Mail-Followup-To\\|Mail-Copies-To\\):" . eudc-expand-inline)
+                     ("^\\(Disposition-Notification-To\\|Return-Receipt-To\\):" . message-expand-name)))
+             (setq ispell-message-dictionary-alist
+                   '(("^To:[^\n,]+\\.fr[ \t\n,>]" . "francais")
+                     ("^Newsgroups:[ \t]*fr\\." . "francais")
+                     ("^Newsgroups:[ \t]*[^f]" . "english")))))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1943,7 +1943,7 @@ http://atom.geekhood.net/.
          (signature "Matthias"))))
 #+end_src
 
-* Code sources 							   :noexport:
+* Code sources                                                             :noexport:
 
 #+name: init.el_header
 #+begin_src emacs-lisp

@@ -495,13 +495,14 @@ Highlight the current line and indicates buffer boundaries in table
 based buffers and alike ones.
 
 #+begin_src emacs-lisp :tangle init.el
-(dolist (hook '(tabulated-list-mode-hook
-                bookmark-bmenu-mode-hook))
-  (add-hook hook
-            (lambda ()
-              (hl-line-mode)
-              (setq indicate-buffer-boundaries 
-                    '((top . left) (bottom . right))))))
+  (dolist (hook '(tabulated-list-mode-hook
+                  bookmark-bmenu-mode-hook
+                  log-view-mode-hook))
+    (add-hook hook
+              (lambda ()
+                (hl-line-mode)
+                (setq indicate-buffer-boundaries 
+                      '((top . left) (bottom . right))))))
 #+end_src
 
 ** Tab bar

@@ -536,43 +536,23 @@ applications. Also I want new tabs to display bookmarks.
 
 #+begin_src emacs-lisp
 (setq default-frame-alist
-      '((height . 40)
-        (width . 80)
-        (menu-bar-lines . nil)
+      '((menu-bar-lines . nil)
         (tool-bar-lines . nil)
         (vertical-scroll-bars . nil)
         (horizontal-scroll-bars . nil)
-        (background-color . "#2e3434")
-        (background-mode . dark)
-        (foreground-color . "#eeeeec")
-        (mouse-color . "#8ae234")
-        (font . "Consolas-12")
-        (cursor-color . "#fce94f")))
+        (font . "Inconsolata-10")
+        (cursor-color . "red3")))
 #+end_src
 
 For X Window frames, it is better to customize the [[file:~/.Xresources][resources file]]:
 
 #+begin_src x-resource-generic-mode
-!Emacs colors
-Emacs.foreground: #eeeeec
-Emacs.background: #2e3434
-Emacs.cursorColor: #fce94f
-Emacs.borderColor: #2e3434
-Emacs.pointerColor: #8ae234
-Emacs.mouseColor: #8ae234
-
 ! Emacs frame customization
-!Emacs.fullscreen: maximized
 Emacs.menuBar: off
 Emacs.toolBar: off
 Emacs.verticalScrollBars: off
-!Emacs.font: Inconsolata-13
-
-! Emacs faces customization
-Emacs.fringe.attributeBackground: grey20
-Emacs.header-line.attributeBackground: grey30
-Emacs.link.attributeForeground: cyan
-Emacs.link.attributeUnderline: false
+Emacs.font: Inconsolata-10
+Emacs
 #+end_src
 
 *** TODO Add the equivalent for MS Windows

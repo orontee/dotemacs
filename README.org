@@ -1114,16 +1114,13 @@ that frame vertically or horizontally according to the frame geometry.
                (setq ediff-split-window-function 'split-window-horizontally))))
 #+end_src
 
-White space visualization is useful when inspecting diffs.  Disable
-=diff-font-lock-prettify= since it breaks =outline-minor-mode=.
+White space visualization is useful when inspecting diffs.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'diff-mode-hook
           (lambda ()
              (whitespace-mode)
-             (setq diff-font-lock-prettify nil
-                   outline-minor-mode-cycle t)
-             (outline-minor-mode)))
+             (setq diff-font-lock-prettify t)))
 #+end_src
 
 ** Debugger, GDB

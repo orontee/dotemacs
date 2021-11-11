@@ -1117,10 +1117,11 @@ that frame vertically or horizontally according to the frame geometry.
 White space visualization is useful when inspecting diffs.
 
 #+begin_src emacs-lisp :tangle init.el
-(add-hook 'diff-mode-hook
-          (lambda ()
-             (whitespace-mode)
-             (setq diff-font-lock-prettify t)))
+  (add-hook 'diff-mode-hook
+            (lambda ()
+               (setq diff-font-lock-prettify t)
+               (whitespace-mode)
+               (outline-minor-mode)))
 #+end_src
 
 ** Debugger, GDB

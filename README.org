@@ -483,6 +483,7 @@ Group buffers by their major modes when using the contextual menu to
 select a buffer.
 
 #+begin_src emacs-lisp :tangle init.el
+(context-menu-mode)
 (eval-after-load "mouse"
   (progn        
     (setq mouse-buffer-menu-mode-mult 2)
@@ -503,6 +504,12 @@ based buffers and alike ones.
                 (hl-line-mode)
                 (setq indicate-buffer-boundaries 
                       '((top . left) (bottom . right))))))
+#+end_src
+
+Silent bell.
+
+#+begin_src emacs-lisp :tangle init.el
+(setq visible-bell t)
 #+end_src
 
 ** Tab bar
@@ -1117,11 +1124,12 @@ that frame vertically or horizontally according to the frame geometry.
 White space visualization is useful when inspecting diffs.
 
 #+begin_src emacs-lisp :tangle init.el
-  (add-hook 'diff-mode-hook
-            (lambda ()
-               (setq diff-font-lock-prettify t)
-               (whitespace-mode)
-               (outline-minor-mode)))
+(add-hook 'diff-mode-hook
+          (lambda ()
+             (setq diff-font-lock-prettify t
+                   outline-minor-mode-cycle t)
+             (whitespace-mode)
+             (outline-minor-mode)))
 #+end_src
 
 ** Debugger, GDB
@@ -1238,7 +1246,6 @@ Update default text to insert into new files.
              (set (make-local-variable 'comment-auto-fill-only-comments) t)
              (set (make-local-variable 'imenu-sort-function) 
                   'imenu--sort-by-name)
-             (outline-minor-mode t)
              (define-key emacs-lisp-mode-map "\C-c\C-f" 
                'emacs-lisp-byte-compile)))
 #+end_src

@@ -188,6 +188,17 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
 (window-divider-mode)
 #+end_src
 
+** Bookmarks
+
+Lighter bookmark menu: Filenames are hidden and more horizontal space
+is dedicated to bookmark names.
+
+#+begin_src emacs-lisp :tangle init.el
+(eval-after-load 'bookmark-bmenu-mode
+  (setq bookmark-bmenu-file-column 60
+        bookmark-bmenu-toggle-filenames nil))
+#+end_src
+
 ** Generic modes
 
 From the docstring: Generic modes provide basic comment and font-lock

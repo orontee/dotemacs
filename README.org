@@ -1079,6 +1079,26 @@ An abbreviation is defined for =&> /dev/null=.
              (define-key sh-mode-map "'" 'self-insert-command)))
 #+end_src
 
+Make comint process output to interpret OSC commands and configure
+Bash prompt to emit such commands to make sure default directory is
+updated in shell buffers.
+
+#+begin_src emacs-lisp :tangle init.el
+(add-to-list 'comint-output-filter-functions #'comint-osc-process-output)
+(add-hook 'sh-mode-hook
+          (lambda ()
+             (setq 'shell-dirtrack-mode nil)))
+#+end_src
+
+#+begin_src sh :tangle init_bash.sh
+set -x
+osc7_cwd() {
+    printf "\e]7;file://%s%s\e\\" "$HOSTNAME" "$PWD"
+}
+PROMPT_COMMAND=${PROMPT_COMMAND:+$PROMPT_COMMAND; }osc7_cwd
+set +x
+#+end_src
+
 ** Terminal emulation
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1367,14 +1387,6 @@ fly.
 #+end_src
    
 ** Support for SQL
-
-Most of the databases I use are PostgreSQL databases. Buffers in SQL
-mode will be properly highlighted thanks to the following setting.
-
-#+begin_src emacs-lisp :tangle init.el 
-(eval-after-load 'sql
-  (setq sql-product 'postgres))
-#+end_src
 
 Hitting =;= in an interactive SQL buffer will send the current input
 to the process.

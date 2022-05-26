@@ -97,31 +97,54 @@ At the time of writing, I have activated the following packages:
 #+end_src
 
 #+RESULTS:
-| Package             | Description                                               |
-|---------------------+-----------------------------------------------------------|
-| minions             | A minor-mode menu for the mode line                       |
-| restclient          | An interactive HTTP client for Emacs                      |
-| inf-mongo           | Run a MongoDB shell process in a buffer                   |
-| nodejs-repl         | Run Node.js REPL                                          |
-| yaml-mode           | Major mode for editing YAML files                         |
-| tablist             | Extended tabulated-list-mode                              |
-| s                   | The long lost Emacs string manipulation library.          |
-| material-theme      | A Theme based on the colors of the Google Material Design |
-| markdown-mode       | Major mode for Markdown-formatted text                    |
-| magit-popup         | Define prefix-infix-suffix command combos                 |
-| json-snatcher       | Grabs the path to JSON values in a JSON file              |
-| json-reformat       | Reformatting tool for JSON                                |
-| json-mode           | Major mode for editing JSON files.                        |
-| hcl-mode            | Major mode for Hashicorp                                  |
-| flymake-yaml        | A flymake handler for YAML                                |
-| flymake-easy        | Helpers for easily building flymake checkers              |
-| dockerfile-mode     | Major mode for editing Docker's Dockerfiles               |
-| docker-tramp        | TRAMP integration for docker containers                   |
-| docker-compose-mode | Major mode for editing docker-compose files               |
-| docker              | Emacs interface to Docker                                 |
-| dash                | A modern list library for Emacs                           |
-| async               | Asynchronous processing in Emacs                          |
-| Python-doc          | Info documentation for Python                             |
+| Package            | Description                                                  |
+|--------------------+--------------------------------------------------------------|
+| yasnippet-snippets | Collection of yasnippet snippets                             |
+| yasnippet          | Yet another snippet extension for Emacs                      |
+| yaml-mode          | Major mode for editing YAML files                            |
+| wkt-mode           | Support for Well Known Text format                           |
+| uuidgen            | Provides various UUID generating functions                   |
+| typescript-mode    | Major mode for editing typescript                            |
+| terraform-mode     | Major mode for terraform configuration file                  |
+| sympy-doc          | Info documentation for sympy                                 |
+| sudoku             | Simple sudoku game, can download puzzles                     |
+| soap-client        | Access SOAP web services                                     |
+| salt-mode          | Major mode for Salt States                                   |
+| rfc-mode           | RFC document browser and viewer                              |
+| restclient         | An interactive HTTP client for Emacs                         |
+| proof-general      | A generic Emacs interface for proof assistants               |
+| project            | Operations on the current project                            |
+| nodejs-repl        | Run Node.js REPL                                             |
+| mmm-mode           | Allow Multiple Major Modes in a buffer                       |
+| mmm-jinja2         | MMM submode class for Jinja2 Templates                       |
+| minions            | A minor-mode menu for the mode line                          |
+| meson-mode         | Major mode for the Meson build system files                  |
+| markdown-mode      | Major mode for Markdown-formatted text                       |
+| link               | Hypertext links in text buffers                              |
+| jsonrpc            | JSON-RPC library                                             |
+| inf-mongo          | Run a MongoDB shell process in a buffer                      |
+| httpcode           | explains the meaning of an HTTP status code                  |
+| hcl-mode           | Major mode for Hashicorp                                     |
+| go-mode            | Major mode for the Go programming language                   |
+| git-link           | Get the GitHub/Bitbucket/GitLab URL for a buffer location    |
+| gap-mode           | Major mode for editing files in the GAP programing language. |
+| flymake-json       | A flymake handler for json using jsonlint                    |
+| flymake-easy       | Helpers for easily building flymake checkers                 |
+| flymake            | A universal on-the-fly syntax checker                        |
+| feature-mode       | Major mode for editing Gherkin (i.e. Cucumber) user stories  |
+| eglot              | Client for Language Server Protocol (LSP) servers            |
+| dockerfile-mode    | Major mode for editing Docker's Dockerfiles                  |
+| dictionary         | Client for rfc2229 dictionary servers                        |
+| debbugs            | SOAP library to access debbugs servers                       |
+| dash               | A modern list library for Emacs                              |
+| csv-mode           | Major mode for editing comma/char separated values           |
+| connection         | TCP-based client connection                                  |
+| compat             | Compatibility Library                                        |
+| company            | Modular text completion framework                            |
+| caml               | Caml mode for GNU Emacs                                      |
+| auto-correct       | Remembers and automatically fixes past corrections           |
+| Python-doc         | Info documentation for Python                                |
+| 2048-game          | play 2048 in Emacs                                           |
 
 All settings written using the customize library go to a dedicated
 file that is loaded when the loading of the [[file:.init.el][configuration file]] ends.

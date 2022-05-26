@@ -546,6 +546,12 @@ Silent bell.
 (setq visible-bell t)
 #+end_src
 
+Use pixel precision scrolling.
+
+#+begin_src emacs-lisp :tangle init.el
+(pixel-scroll-precision-mode)
+#+end_src
+
 ** Tab bar
 
 I like tabs but want them to use the same keybindings as GTK-based

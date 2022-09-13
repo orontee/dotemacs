@@ -1140,16 +1140,8 @@ set +x
 
 Colorize compilation output.
 
-#+begin_src emacs-lisp
-(require 'ansi-color)
-(defun colorize-compilation ()
-  "Colorize from `compilation-filter-start' to `point'."
-  (let ((inhibit-read-only t))
-    (ansi-color-apply-on-region
-     compilation-filter-start (point))))
-
-(add-hook 'compilation-filter-hook
-          #'colorize-compilation)
+#+begin_src emacs-lisp :tangle init.el
+(add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
 
 (add-hook 'compilation-mode-hook
           (lambda ()
@@ -2010,8 +2002,6 @@ http://atom.geekhood.net/.
       (load file t)
     (message "No machine specific initialization")))
 #+end_src
-
-
 
 # Local Variables:
 # Mode: org

@@ -80,9 +80,8 @@ repository. There are usefull packages in other places like [[http://tromey.com/
 [[http://marmalade-repo.org/][Marmalade]].
 
 #+begin_src emacs-lisp :tangle init.el
-(eval-after-load "package"
-  '(progn
-     (add-to-list 'package-archives '("melpa". "https://melpa.org/packages/"))))
+(with-eval-after-load "package"
+  (add-to-list 'package-archives '("melpa". "https://melpa.org/packages/")))
 #+end_src
 
 At the time of writing, I have activated the following packages:
@@ -92,7 +91,7 @@ At the time of writing, I have activated the following packages:
   (dolist (package package-alist descriptions)
     (let ((name (car package))
           (desc (package-desc-summary (cadr package))))
-    (setq descriptions 
+    (setq descriptions
           (concat descriptions (format "|%s|%s|\n" name desc))))))
 #+end_src
 
@@ -217,7 +216,7 @@ Lighter bookmark menu: Filenames are hidden and more horizontal space
 is dedicated to bookmark names.
 
 #+begin_src emacs-lisp :tangle init.el
-(eval-after-load 'bookmark-bmenu-mode
+(with-eval-after-load "bookmark"
   (setq bookmark-bmenu-file-column 60
         bookmark-bmenu-toggle-filenames nil))
 #+end_src
@@ -365,7 +364,7 @@ The calendar is configured to match the french standards.
 
 #+begin_src emacs-lisp :tangle init.el
 (setq european-calendar-style t
-      calendar-time-display-form 
+      calendar-time-display-form
       '(24-hours ":" minutes
                  (if time-zone " (") time-zone (if time-zone ")"))
       calendar-week-start-day 1
@@ -406,7 +405,7 @@ holidays are already present into the calendar since we have set
         (holiday-fixed 11 1 "Toussaint")
         (holiday-fixed 11 11 "Armistice 1918")))
 
-(setq holiday-other-holidays 
+(setq holiday-other-holidays
       (append french-holiday holiday-other-holidays))
 #+end_src
 
@@ -429,7 +428,7 @@ Automatically save place of cursor in each file.
 ** Archives display
 
 #+begin_src emacs-lisp :tangle init.el
-(eval-after-load 'tar-mode
+(with-eval-after-load "tar-mode"
   (setq tar-mode-show-date t))
 #+end_src
 
@@ -443,7 +442,7 @@ is =display-time-mode=.
 (add-hook 'display-time-mode-hook
           (lambda ()
              (setq display-time-day-and-date nil
-                   display-time-24hr-format t 
+                   display-time-24hr-format t
                    display-time-use-mail-icon nil
                    display-time-format "%A,%e %B %Y %R")))
 #+end_src
@@ -518,12 +517,10 @@ select a buffer.
 
 #+begin_src emacs-lisp :tangle init.el
 (context-menu-mode)
-(eval-after-load "mouse"
-  (progn        
-    (setq mouse-buffer-menu-mode-mult 2)
-    (add-to-list 'mouse-buffer-menu-mode-groups '("Dired" . "Dired"))
-    (add-to-list 'mouse-buffer-menu-mode-groups '("tex" . "TeX/LaTeX"))
-    t))    
+(with-eval-after-load "mouse"
+  (setq mouse-buffer-menu-mode-mult 2)
+  (add-to-list 'mouse-buffer-menu-mode-groups '("Dired" . "Dired"))
+  (add-to-list 'mouse-buffer-menu-mode-groups '("tex" . "TeX/LaTeX")))
 #+end_src
 
 Highlight the current line and indicates buffer boundaries in table
@@ -536,7 +533,7 @@ based buffers and alike ones.
     (add-hook hook
               (lambda ()
                 (hl-line-mode)
-                (setq indicate-buffer-boundaries 
+                (setq indicate-buffer-boundaries
                       '((top . left) (bottom . right))))))
 #+end_src
 
@@ -668,7 +665,7 @@ To have =emacsclient= called by =sudoedit=, =git= and other programs
 when they are tell to edit a file, [[file:~/.bashrc][Bash configuration file]] contains
 the following snippet:
 
-#+begin_src shell-script-mode 
+#+begin_src shell-script-mode
 builtin type -p emacsclient &>/dev/null
 [ -n $@ ] && export EDITOR=emacsclient
 #+end_src
@@ -831,7 +828,7 @@ Flymake is used to check code on the fly.
 Prevent Eldoc mode from resizing echo area.
 
 #+begin_src emacs-lisp :tangle init.el
-(eval-after-load 'eldoc
+(with-eval-after-load "eldoc"
   (setq eldoc-echo-area-use-multiline-p nil))
 #+end_src
 
@@ -873,12 +870,12 @@ Trying LSP servers through Eglot, thus default is to keep Semantic disabled.
       (interactive "DDirectory: ")
       (let ((etags (executable-find "etags")))
         (if etags
-            (progn (shell-command (concat "find " dir-name 
+            (progn (shell-command (concat "find " dir-name
                                           " \\( -name '*.cpp' -or -name '*.h' \\)"
                                           " -print | " "etags -l c++ - "))
-                   (shell-command (concat "find " dir-name 
+                   (shell-command (concat "find " dir-name
                                    " -name '*.py' -print | etags -a -l python - ")))
-          
+
           (message "Exuberant Ctags not found in path..."))))
 #+end_src
 
@@ -891,7 +888,7 @@ Trying LSP servers through Eglot, thus default is to keep Semantic disabled.
              (setq truncate-lines t
                    indicate-buffer-boundaries '((top . left) (bottom . right)))))
 #+end_src
-   
+
 ** Buffer indexes
 
 Another way to browse tags found in the current buffer is to use the
@@ -953,7 +950,7 @@ significant while searching for expansions.
 Key bindings to report and cleanup blank problems in all buffer or at
 region.
 
-#+begin_src emacs-lisp :tangle init.el 
+#+begin_src emacs-lisp :tangle init.el
 (define-prefix-command 'ctl-cw-map)
 (global-set-key "\C-cw" 'ctl-cw-map)
 (define-key ctl-cw-map "t" 'whitespace-mode)
@@ -966,7 +963,7 @@ region.
 
 (setq whitespace-display-mappings
       '((space-mark 32 [183] [46])
-        (newline-mark 10 [182 10]) 
+        (newline-mark 10 [182 10])
         (tab-mark 9 [8594 9] [92 9])))
 #+end_src
 
@@ -982,7 +979,7 @@ Glasses help reading Camel case. I prefer parentheses to stick to the
 preceding identifier and embedded capitals to be downcase.
 
 #+begin_src emacs-lisp :tangle init.el
-(eval-after-load 'glasses
+(with-eval-after-load "glasses"
   (setq glasses-separate-parentheses-p nil
         glasses-uncapitalize-p t))
 #+end_src
@@ -1070,7 +1067,7 @@ automaticaly =smerge-mode=; Otherwise I tend to use =smerge-mode= key
 bindings after the mode has been deactivated.
 
 #+begin_src emacs-lisp :tangle init.el
-(eval-after-load "smerge-mode"
+(with-eval-after-load "smerge-mode"
   (setq smerge-auto-leave nil))
 #+end_src
 
@@ -1296,9 +1293,9 @@ Update default text to insert into new files.
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()
              (set (make-local-variable 'comment-auto-fill-only-comments) t)
-             (set (make-local-variable 'imenu-sort-function) 
+             (set (make-local-variable 'imenu-sort-function)
                   'imenu--sort-by-name)
-             (define-key emacs-lisp-mode-map "\C-c\C-f" 
+             (define-key emacs-lisp-mode-map "\C-c\C-f"
                'emacs-lisp-byte-compile)))
 #+end_src
 
@@ -1311,7 +1308,7 @@ byte-compiled file already exists.
   "Compile the current buffer if its major mode is
 `emacs-lisp-mode' and an associated compiled file already
 exists."
-  (interactive) 
+  (interactive)
   (when
       (and (eq major-mode 'emacs-lisp-mode)
            (file-exists-p (byte-compile-dest-file buffer-file-name)))
@@ -1327,7 +1324,7 @@ and 3.x, thus the list of interpreters must be expanded accordingly
 for file mode determination.
 
 #+begin_src emacs-lisp :tangle init.el
-(eval-after-load "python"
+(with-eval-after-load "python"
   (when (executable-find "python3")
     (setq python-shell-interpreter "python3")))
 #+end_src
@@ -1350,8 +1347,8 @@ want to generate them by yourself...). The =info-look= setting for
 =python-mode= must be updated to those new files.
 
 #+begin_src emacs-lisp :tangle init.el
-(eval-after-load "info-look" 
-  '(info-lookup-add-help
+(with-eval-after-load "info-look"
+  (info-lookup-add-help
     :mode 'python-mode
     :regexp "[[:alnum:]_]+"
     :doc-spec '(("(python)Index" nil ""))))
@@ -1371,7 +1368,7 @@ statement, etc).
   '(("pdb" "import pdb; pdb.set_trace()")))
 #+end_src
 
-Set the name of the Python template to insert at file creation. 
+Set the name of the Python template to insert at file creation.
 
 #+begin_src emacs-lisp :tangle init.el
 (let ((filename "python_template.py"))
@@ -1406,13 +1403,13 @@ fly.
   (load-library "flymake-jslint")
   (add-hook 'js-mode-hook 'flymake-jslint-load))
 #+end_src
-   
+
 ** Support for SQL
 
 Hitting =;= in an interactive SQL buffer will send the current input
 to the process.
 
-#+begin_src emacs-lisp :tangle init.el 
+#+begin_src emacs-lisp :tangle init.el
 (setq sql-electric-stuff t)
 #+end_src
 
@@ -1458,7 +1455,7 @@ An abbreviation is defined for the Lorem Ipsum.
 
 #+begin_src emacs-lisp :tangle init.el
 (define-abbrev-table 'html-mode-abbrev-table
-  '(("lorem" 
+  '(("lorem"
      "<p>Lorem ipsum dolor sit amet, consectetur adipisicing
 elit, sed do eiusmod tempor incididunt ut labore et dolore magna
 aliqua. Ut enim ad minim veniam, quis nostrud exercitation
@@ -1540,7 +1537,7 @@ acronyms not recognized by the spell checker).
                    tex-alt-dvi-view-command
                    `(let ((line (count-lines 1 (point)))
                           (source (file-name-nondirectory (buffer-file-name))))
-                      (concat "xdvi -sourceposition " 
+                      (concat "xdvi -sourceposition "
                               (number-to-string line) source " *")))
              (define-skeleton alt-latex-math-env
                "Create a matching pair of parenthesis."
@@ -1586,9 +1583,9 @@ inserted."
                  (completing-read "Main language: "
                                   '(("french" 1) ("english" 2))))))
     (if (not (equal class ""))
-        (let ((name (expand-file-name 
+        (let ((name (expand-file-name
                      (concat auto-insert-directory "LaTeX/" class
-                             (when (not (equal lang "")) 
+                             (when (not (equal lang ""))
                                (concat "-" lang)) ".tex"))))
           (if (file-readable-p name)
               (progn
@@ -1620,15 +1617,15 @@ inserted."
                    reftex-use-multiple-selection-buffers t
                    reftex-label-alist
                    (setq reftex-label-alist
-                         '(("theorem" ?h "thr:" "~\\ref{%s}" t 
+                         '(("theorem" ?h "thr:" "~\\ref{%s}" t
                             (regexp "th\\\(\\\(é\\\|\'e\\\)or\\\(è\\\|\`e\\\)mes?\\\|m\\\.\\\)") nil)
-                           ("proposition" ?p "pro:" "~\\ref{%s}" t 
+                           ("proposition" ?p "pro:" "~\\ref{%s}" t
                             (regexp "prop\\\(ositions?\\\|.\\\)") nil)
-                           ("lemma" ?l "lem:" "~\\ref{%s}" t 
+                           ("lemma" ?l "lem:" "~\\ref{%s}" t
                             (regexp "lem\\\(mes?\\\|.\\\)") nil)
                            ("equation" 101 "eq:" "~(\\ref{%s})" t
                             (regexp "\\\(l'\\\)?\\\(é\\\|\'e\\\)quations?") nil)
-                           ("example" ?x "exm:" "~\\ref{%s}" t 
+                           ("example" ?x "exm:" "~\\ref{%s}" t
                             (regexp "exemp\\\(les?\\\|.\\\)")))))
              (defun reftex-page-reference ()
                "Make a LaTeX reference to a page number."
@@ -1641,11 +1638,11 @@ inserted."
              (define-key-after reftex-mode-menu [pageref]
                '(menu-item "\\pageref" reftex-page-reference) '\\cite)))
 
-(eval-after-load "reftex"
-  '(let ((dir (expand-file-name "~/Documents/Mathématiques/Bibliographie")))
-     (when (file-exists-p dir)
-       (dolist (name (directory-files dir t ".*\.bib$"))
-         (add-to-list 'reftex-default-bibliography name)))))
+(with-eval-after-load "reftex"
+  (let ((dir (expand-file-name "~/Documents/Mathématiques/Bibliographie")))
+    (when (file-exists-p dir)
+      (dolist (name (directory-files dir t ".*\.bib$"))
+        (add-to-list 'reftex-default-bibliography name)))))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1678,14 +1675,14 @@ in `imenu' menu."
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-(defadvice latex-imenu-create-index 
+(defadvice latex-imenu-create-index
   (after restore-latex-metasection-list activate)
   "Restore `latex-metasection-list' default value."
   (setq latex-metasection-list temp-latex-metasection-list))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-(defadvice latex-imenu-create-index 
+(defadvice latex-imenu-create-index
   (after restore-latex-section-alist activate)
   "Restore `latex-section-alist' default value."
   (setq latex-section-alist temp-latex-section-alist))
@@ -1711,10 +1708,10 @@ If prefix argument is provided, use the alternative command,
 
 (define-skeleton alt-latex-section
   "Create a sectionning command \\SECTION{TITLE} at point."
-  (let ((section (completing-read 
-                  (format "LaTeX section name [%s]: " 
+  (let ((section (completing-read
+                  (format "LaTeX section name [%s]: "
                           alt-latex-section-default)
-                  latex-section-alist nil nil nil nil 
+                  latex-section-alist nil nil nil nil
                   alt-latex-section-default)))
     (setq alt-latex-section-default section))
   \n "\\" str ?\{ (skeleton-read "Title: ") ?\} \n \n)
@@ -1810,7 +1807,7 @@ Various types of capture items are defined.
      buffer and try again." t nil)
 
 (autoload 'dired-jump-other-window "dired" "\
-     Like \\[dired-jump] (dired-jump) but in other window." t nil) 
+     Like \\[dired-jump] (dired-jump) but in other window." t nil)
 
 (define-key ctl-x-map "\C-j" 'dired-jump)
 
@@ -1848,7 +1845,7 @@ Various types of capture items are defined.
    (t (setq dired-omit-files
       (concat dired-omit-files
               "\\|^\\..+\\|^CVS$\\|^lost\\+found")))))
-(setq dired-omit-files 
+(setq dired-omit-files
   (concat dired-omit-files "\\|^__pycache__$"))
 (add-to-list 'dired-omit-extensions ".egg-info")
 (setq dired-omit-extensions (delete ".pdf" dired-omit-extensions))
@@ -1921,7 +1918,7 @@ Maill servers are scanned every 2 minutes.
 To view images using Eye Of Gnome I have created the file:~/.mailcap
 with the following content.
 
-#+begin_src 
+#+begin_src
 image/jpeg; eog %s
 #+end_src
 
@@ -1929,7 +1926,7 @@ Atom feeds must be converted before Gnus can parsed them. The
 file:~/.config/emacs/atom2rss.xsl can be downloaded from
 http://atom.geekhood.net/.
 
-#+begin_src 
+#+begin_src
 (require 'mm-url)
 (defadvice mm-url-insert (after DE-convert-atom-to-rss () )
   "Converts atom to RSS by calling xsltproc."
@@ -1958,7 +1955,7 @@ http://atom.geekhood.net/.
 (add-hook 'message-mode-hook
           (lambda ()
              (setq message-elide-ellipsis "\n> (...)\n"
-                   message-signature t) 
+                   message-signature t)
              (setq message-completion-alist
                    '(("^\\(Newsgroups\\|Followup-To\\|Posted-To\\|Gcc\\):" . message-expand-group)
                      ("^\\(Resent-\\)?\\(To\\|B?Cc\\):" . eudc-expand-inline)
@@ -1989,12 +1986,12 @@ http://atom.geekhood.net/.
 #+name: init.el_custom-file_loading
 #+begin_src emacs-lisp :tangle init.el
 (require 'cus-edit)
-(setq custom-file (expand-file-name 
+(setq custom-file (expand-file-name
                    (concat  "~/.config/emacs/" system-name "-custom.el")))
 (when (file-exists-p custom-file)
   (load custom-file))
 #+end_src
-   
+
 #+name: init.el_system-name_loading
 #+begin_src emacs-lisp :tangle init.el
 (let ((file (locate-library (concat (system-name) ".el"))))

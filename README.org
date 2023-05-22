@@ -235,12 +235,12 @@ sometime have to work on script files for the MS Windows command
 line...
 
 #+begin_src emacs-lisp :tangle init.el
-(load "generic-x")
-(setq generic-extras-enable-list
-      (append generic-default-modes
-              generic-mswindows-modes
-              generic-unix-modes))
-(load "generic-x")
+  (load "generic-x")
+  (setq generic-extras-enable-list
+        (append generic-default-modes
+                generic-mswindows-modes
+                generic-unix-modes))
+  (load "generic-x")
 #+end_src
 
 The =systemd= configuration files are Conf files.
@@ -254,8 +254,10 @@ The =systemd= configuration files are Conf files.
 Bind =rc-generic-mode= to Visual Studio Resource files.
 
 #+begin_src emacs-lisp :tangle init.el
+  (add-to-list 'auto-mode-alist
+               '("\\.rc2\\'" . rc-generic-mode))
 (add-to-list 'auto-mode-alist
-             '("\\.rc2\\'" . rc-generic-mode))
+             '("\\git-rebase-todo\\'" . default-generic-mode))
 #+end_src
 
 ** Auto insertion at file creation
@@ -865,18 +867,20 @@ Trying LSP servers through Eglot, thus default is to keep Semantic disabled.
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-  (defun create-tags (dir-name)
-      "Create tags file."
-      (interactive "DDirectory: ")
-      (let ((etags (executable-find "etags")))
-        (if etags
-            (progn (shell-command (concat "find " dir-name
-                                          " \\( -name '*.cpp' -or -name '*.h' \\)"
-                                          " -print | " "etags -l c++ - "))
-                   (shell-command (concat "find " dir-name
-                                   " -name '*.py' -print | etags -a -l python - ")))
+(defun create-project-tags ()
+    "Create tags file."
+    (interactive)
+    (let* ((etags (executable-find "etags"))
+           (dir-name (project-root (project-current t)))
+           (default-directory (expand-file-name dir-name)))
+      (if etags
+          (progn (shell-command (concat "find " dir-name
+                                        " \\( -name '*.cpp' -or -name '*.h' \\)"
+                                        " -print | " "etags -l c++ - "))
+                 (shell-command (concat "find " dir-name
+                                 " -name '*.py' -print | etags -a -l python - ")))
 
-          (message "Exuberant Ctags not found in path..."))))
+        (message "Exuberant Ctags not found in path..."))))
 #+end_src
 
 
@@ -1176,7 +1180,8 @@ White space visualization is useful when inspecting diffs.
 (add-hook 'diff-mode-hook
           (lambda ()
              (setq diff-font-lock-prettify t
-                   outline-minor-mode-cycle t)
+                   outline-minor-mode-cycle t
+                   outline-minor-mode-use-margins t)
              (whitespace-mode)
              (outline-minor-mode)))
 #+end_src
@@ -1335,7 +1340,7 @@ The style used for docstring is the one found in Django code source.
 (add-hook 'python-mode-hook
           (lambda ()
              (setq tab-width 4
-                   gud-pdb-command-name (concat python-shell-interpreter "-m pdb ")
+                   gud-pdb-command-name (concat python-shell-interpreter " -m pdb ")
                    python-fill-docstring-style 'pep-257)))
 #+end_src
 

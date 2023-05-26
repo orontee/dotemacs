@@ -896,15 +896,11 @@ Trying LSP servers through Eglot, thus default is to keep Semantic disabled.
 ** Buffer indexes
 
 Another way to browse tags found in the current buffer is to use the
-index menu. A key binding is addded to programming modes to present to
-the user the buffer indexes.
+index menu.
 
 #+begin_src emacs-lisp :tangle init.el
 (setq imenu-auto-rescan t
       imenu-max-items 35)
-(add-hook 'prog-mode-hook
-          (lambda ()
-             (local-set-key "\C-ci" 'imenu)))
 #+end_src
 
 ** Completion

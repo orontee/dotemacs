@@ -1115,7 +1115,7 @@ updated in shell buffers.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-to-list 'comint-output-filter-functions #'comint-osc-process-output)
-(add-hook 'sh-mode-hook
+(add-hook 'shell-mode-hook
           (lambda ()
              (setq 'shell-dirtrack-mode nil)))
 #+end_src

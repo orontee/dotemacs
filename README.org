@@ -189,11 +189,18 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
 
 #+begin_src emacs-lisp :tangle init.el
   (when (require 'face-remap)
-    (dolist (hook '(gdb-breakpoints-mode-hook gdb-inferior-io-mode-hook
-                                              gdb-mode-hook gdb-locals-mode-hook gdb-frames-mode-hook
-                                              flymake-diagnostics-buffer-mode-hook
-                                              speedbar-mode-hook vc-dir-mode-hook
-                                              occur-mode-hook apropos-mode-hook grep-mode-hook))
+    (dolist (hook '(apropos-mode-hook
+                    gdb-breakpoints-mode-hook
+                    gdb-frames-mode-hook
+                    gdb-inferior-io-mode-hook
+                    gdb-locals-mode-hook
+                    vc-dir-mode-hook
+                    xref--xref-buffer-mode-hook
+                    flymake-diagnostics-buffer-mode-hook
+                    gdb-mode-hook
+                    grep-mode-hook
+                    occur-mode-hook
+                    speedbar-mode-hook))
       (add-hook hook
                 (lambda ()
                   (setq truncate-lines t)
@@ -203,11 +210,6 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
     (lambda ()
       (when (not text-scale-mode)
         (text-scale-set -1))))
-#+end_src
-
-#+begin_src emacs-lisp :tangle init.el
-(setq window-divider-default-places t)
-(window-divider-mode)
 #+end_src
 
 ** Bookmarks
@@ -681,19 +683,11 @@ is_command emacs      && alias     em='emacsclient -t'
 
 *** TODO Windows equivalent
 
-** Desktop
 
-The desktop file is saved in the user home directory. All buffers are
-restored immediately since a limited number of buffers doesn't play
-well when restoring tabs. Tramp, ftp and log buffers are not restored.
+** Minibuffer history
 
 #+begin_src emacs-lisp :tangle init.el
-(load-library "desktop")
-(desktop-save-mode)
-(setq desktop-restore-eager 10
-      desktop-lazy-verbose nil
-      desktop-restore-frames nil
-      desktop-files-not-to-save "\\(^/[^/:]*:\\|(ftp)$\\|.*\\.log\\)")
+(savehist-mode)
 #+end_src
 
 ** MinGW
@@ -751,6 +745,37 @@ Similar tweaks are done for Ghostscript, GNU Aspell, Visual Studio.
         (setenv "PATH" (concat dotnet-framework-root ";" (getenv "PATH"))))))
 #+end_src
 
+
+** Theme
+
+#+begin_src emacs-lisp :tangle init.el
+  (require 'modus-themes)
+
+  (defun personal-modus-themes-custom-faces ()
+    (modus-themes-with-colors
+      (custom-set-faces
+       ;; variable pitch face in info headings
+       `(info-title-1 ((,c :inherit info-title-2 :height 1.2 :foreground ,fg-heading-1)))
+       `(info-title-2 ((,c :inherit info-title-3 :height 1.2 :foreground ,fg-heading-2)))
+       `(info-title-3 ((,c :inherit info-title-4 :height 1.2 :foreground ,fg-heading-3)))
+       `(info-title-4 ((,c :inherit (bold variable-pitch) :height 1.0 :foreground ,fg-heading-4)))
+       ;; variable pitch face in markdown headings
+       `(markdown-header-face-1 ((,c :inherit markdown-header-face-2 :height 1.2 :foreground ,fg-heading-1)))
+       `(markdown-header-face-2 ((,c :inherit markdown-header-face-3 :height 1.2 :foreground ,fg-heading-2)))
+       `(markdown-header-face-3 ((,c :inherit markdown-header-face-4 :height 1.2 :foreground ,fg-heading-3)))
+       `(markdown-header-face-4 ((,c :inherit (bold variable-pitch) :height 1.0 :foreground ,fg-heading-4)))
+       ;; smaller line numbers
+       `(line-number  ((,c :inherit default :height 0.8 :foreground ,fg-dim))))))
+
+  (setq modus-themes-variable-pitch-ui nil
+        modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
+
+  (add-hook 'modus-themes-after-load-theme-hook #'personal-modus-themes-custom-faces)
+
+  (load-theme 'modus-operandi-tinted :no-confirm)
+  (personal-modus-themes-custom-faces)
+#+end_src
+
 ** Various
 
 Tired of typing =yes= and =no=? Prefer =y= and =n=!
@@ -791,7 +816,21 @@ Use single character to indicate string truncation.
 (setq truncate-string-ellipsis "…")
 #+end_src
 
+#+begin_src emacs-lisp :tangle init.el
+  (setq major-mode-remap-alist
+        '((bash-mode . bash-ts-mode)
+          (c++-mode . c++-ts-mode)
+          (c-mode . c-ts-mode)
+          (css-mode . css-ts-mode)
+          (js2-mode . js-ts-mode)
+          (json-mode . json-ts-mode)
+          (python-mode . python-ts-mode)
+          (typescript-mode . typescript-ts-mode)
+          (yaml-mode . yaml-ts-mode)))
+#+end_src
+
 * Programming
+
 
 ** Edition
 
@@ -893,7 +932,7 @@ Trying LSP servers through Eglot, thus default is to keep Semantic disabled.
                    indicate-buffer-boundaries '((top . left) (bottom . right)))))
 #+end_src
 
-** Buffer indexes
+** Code navigation
 
 Another way to browse tags found in the current buffer is to use the
 index menu.
@@ -901,6 +940,20 @@ index menu.
 #+begin_src emacs-lisp :tangle init.el
 (setq imenu-auto-rescan t
       imenu-max-items 35)
+#+end_src
+
+#+begin_src emacs-lisp :tangle init.el
+  (add-hook 'xref--xref-buffer-mode-hook
+              (lambda ()
+                (hl-line-mode)))
+
+  (add-hook 'xref-after-update-hook
+            #'(lambda ()
+                (setq outline-regexp (if (eq xref-file-name-display 'abs)
+                                         "/" "[^ 0-9]")
+                      outline-default-state 1
+                      outline-default-rules '((match-regexp . "ChangeLog\\|test/manual/etags")))
+                (outline-minor-mode)))
 #+end_src
 
 ** Completion
@@ -1071,6 +1124,14 @@ bindings after the mode has been deactivated.
   (setq smerge-auto-leave nil))
 #+end_src
 
+#+begin_src emacs-lisp :tangle init.el
+(add-hook 'vc-diff-finish-functions
+	  #'(lambda ()
+	      (when outline-minor-mode
+		(outline-apply-default-state))))
+#+end_src
+
+
 ** Command interpreter
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1111,9 +1172,6 @@ updated in shell buffers.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-to-list 'comint-output-filter-functions #'comint-osc-process-output)
-(add-hook 'shell-mode-hook
-          (lambda ()
-             (setq 'shell-dirtrack-mode nil)))
 #+end_src
 
 #+begin_src sh :tangle init_bash.sh
@@ -1143,6 +1201,11 @@ Colorize compilation output.
 (add-hook 'compilation-mode-hook
           (lambda ()
              (setq truncate-partial-width-windows nil)))
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle init.el
+(define-key compilation-mode-map "c" 'compile)
 #+end_src
 
 *** TODO Send a D-BUS notification at the end of compilation       :noexport:
@@ -1180,6 +1243,15 @@ White space visualization is useful when inspecting diffs.
                    outline-minor-mode-use-margins t)
              (whitespace-mode)
              (outline-minor-mode)))
+#+end_src
+
+#+begin_src emacs-lisp :tangle init.el
+(add-hook 'diff-mode-hook #'(lambda ()
+			      (setq outline-default-state 1
+				    outline-default-rules
+				    '(subtree-is-long
+				      subtree-has-long-lines
+				      (match-regexp . "NEWS\\|test\\|package-lock\\.json\\|poetry\\.lock")))))
 #+end_src
 
 ** Debugger, GDB
@@ -1333,11 +1405,11 @@ for file mode determination.
 The style used for docstring is the one found in Django code source.
 
 #+begin_src emacs-lisp :tangle init.el
-(add-hook 'python-mode-hook
-          (lambda ()
-             (setq tab-width 4
-                   gud-pdb-command-name (concat python-shell-interpreter " -m pdb ")
-                   python-fill-docstring-style 'pep-257)))
+  (add-hook 'python-ts-mode-hook
+            (lambda ()
+               (setq tab-width 4
+                     gud-pdb-command-name (concat python-shell-interpreter " -m pdb ")
+                     python-fill-docstring-style 'pep-257)))
 #+end_src
 
 The Python documentation used to be distributed in Texinfo format. It
@@ -1436,6 +1508,13 @@ Don’t replace double quotes with curved quotes in YAML mode.
 (add-hook 'yaml-mode-hook
           (lambda ()
              (electric-quote-mode -1)))
+#+end_src
+
+Insert double angle quotation marks in pairs.
+
+#+begin_src emacs-lisp :tangle init.el
+(add-to-list 'electric-pair-text-pairs
+	     '(171 . 187))
 #+end_src
 
 ** Support for SGML, HTML, CSS

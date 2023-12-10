@@ -1196,16 +1196,12 @@ set +x
 Colorize compilation output.
 
 #+begin_src emacs-lisp :tangle init.el
-(add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
+  (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
 
-(add-hook 'compilation-mode-hook
-          (lambda ()
-             (setq truncate-partial-width-windows nil)))
-#+end_src
-
-
-#+begin_src emacs-lisp :tangle init.el
-(define-key compilation-mode-map "c" 'compile)
+  (add-hook 'compilation-mode-hook
+            (lambda ()
+               (setq truncate-partial-width-windows nil)
+               (define-key compilation-mode-map "c" 'compile)))
 #+end_src
 
 *** TODO Send a D-BUS notification at the end of compilation       :noexport:
@@ -1926,7 +1922,7 @@ Various types of capture items are defined.
       (concat dired-omit-files
               "\\|^\\..+\\|^CVS$\\|^lost\\+found")))))
 (setq dired-omit-files
-  (concat dired-omit-files "\\|^__pycache__$"))
+  (concat dired-omit-files "\\|^__pycache__$" "\\|^\.mypy_cache$"))
 (add-to-list 'dired-omit-extensions ".egg-info")
 (setq dired-omit-extensions (delete ".pdf" dired-omit-extensions))
 (add-hook 'dired-mode-hook

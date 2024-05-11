@@ -551,6 +551,7 @@ Use pixel precision scrolling.
 
 #+begin_src emacs-lisp :tangle init.el
 (pixel-scroll-precision-mode)
+(setq pixel-scroll-precision-large-scroll-height 40.0)
 #+end_src
 
 ** Tab bar

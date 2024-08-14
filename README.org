@@ -212,6 +212,16 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
         (text-scale-set -1))))
 #+end_src
 
+I also like to have a clear mode line. Most of the time the minor
+modes indicators don't bring much information and I prefer to remove
+them:
+#+begin_src emacs-lisp :tangle init.el
+(setq flyspell-mode-line-string nil)
+(when (locate-library "which-key")
+  (load-library "which-key")
+  (setq which-key-lighter ""))
+#+end_src
+
 ** Bookmarks
 
 Lighter bookmark menu: Filenames are hidden and more horizontal space
@@ -308,6 +318,7 @@ all. No =ido=, =icycle=, etc.
 
 #+begin_src emacs-lisp :tangle init.el
 (icomplete-mode 1)
+(setq icomplete-in-buffer t)
 (setq confirm-nonexistent-file-or-buffer t)
 #+end_src
 
@@ -877,8 +888,8 @@ Prevent Eldoc mode from resizing echo area.
 ** Spell checking
 
 When writing code source, I like to have comments, documentation and
-string checked for right spelling. But before one must check whether
-there is a spell checker in path or not.
+string checked for right spelling. But one must check whether there is
+a spell checker in path or not.
 
 #+begin_src emacs-lisp :tangle init.el
   (require 'ispell)
@@ -1496,7 +1507,8 @@ to the process.
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'text-mode-hook
           (lambda ()
-             (goto-address-mode)))
+             (goto-address-mode)
+             (flyspell-mode)))
 #+end_src
 
 Don’t replace double quotes with curved quotes in YAML mode.
@@ -1853,7 +1865,7 @@ Org buffers on the fly.
       (let ((lang (plist-get (org-export-get-environment) :language)))
         (when (and lang (assoc lang ispell-dictionary-alist))
           (setq ispell-local-dictionary lang)))
-      (flyspell-mode 1))))
+      (flyspell-mode))))
 #+end_src
 
 Various types of capture items are defined.

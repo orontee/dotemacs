@@ -62,7 +62,7 @@ can be downloaded from http://ftp.gnu.org/pub/gnu/emacs/.
   file"))
 #+end_src
 
-** Extending Emacs, packages repositories, etc
+** TODO Extending Emacs, packages repositories, etc
 
 The easiest way to extend Emacs features is to use =list-package= and
 install packages from remote repositories. But =package.el= is rather
@@ -96,54 +96,29 @@ At the time of writing, I have activated the following packages:
 #+end_src
 
 #+RESULTS:
-| Package            | Description                                                  |
-|--------------------+--------------------------------------------------------------|
-| yasnippet-snippets | Collection of yasnippet snippets                             |
-| yasnippet          | Yet another snippet extension for Emacs                      |
-| yaml-mode          | Major mode for editing YAML files                            |
-| wkt-mode           | Support for Well Known Text format                           |
-| uuidgen            | Provides various UUID generating functions                   |
-| typescript-mode    | Major mode for editing typescript                            |
-| terraform-mode     | Major mode for terraform configuration file                  |
-| sympy-doc          | Info documentation for sympy                                 |
-| sudoku             | Simple sudoku game, can download puzzles                     |
-| soap-client        | Access SOAP web services                                     |
-| salt-mode          | Major mode for Salt States                                   |
-| rfc-mode           | RFC document browser and viewer                              |
-| restclient         | An interactive HTTP client for Emacs                         |
-| proof-general      | A generic Emacs interface for proof assistants               |
-| project            | Operations on the current project                            |
-| nodejs-repl        | Run Node.js REPL                                             |
-| mmm-mode           | Allow Multiple Major Modes in a buffer                       |
-| mmm-jinja2         | MMM submode class for Jinja2 Templates                       |
-| minions            | A minor-mode menu for the mode line                          |
-| meson-mode         | Major mode for the Meson build system files                  |
-| markdown-mode      | Major mode for Markdown-formatted text                       |
-| link               | Hypertext links in text buffers                              |
-| jsonrpc            | JSON-RPC library                                             |
-| inf-mongo          | Run a MongoDB shell process in a buffer                      |
-| httpcode           | explains the meaning of an HTTP status code                  |
-| hcl-mode           | Major mode for Hashicorp                                     |
-| go-mode            | Major mode for the Go programming language                   |
-| git-link           | Get the GitHub/Bitbucket/GitLab URL for a buffer location    |
-| gap-mode           | Major mode for editing files in the GAP programing language. |
-| flymake-json       | A flymake handler for json using jsonlint                    |
-| flymake-easy       | Helpers for easily building flymake checkers                 |
-| flymake            | A universal on-the-fly syntax checker                        |
-| feature-mode       | Major mode for editing Gherkin (i.e. Cucumber) user stories  |
-| eglot              | Client for Language Server Protocol (LSP) servers            |
-| dockerfile-mode    | Major mode for editing Docker's Dockerfiles                  |
-| dictionary         | Client for rfc2229 dictionary servers                        |
-| debbugs            | SOAP library to access debbugs servers                       |
-| dash               | A modern list library for Emacs                              |
-| csv-mode           | Major mode for editing comma/char separated values           |
-| connection         | TCP-based client connection                                  |
-| compat             | Compatibility Library                                        |
-| company            | Modular text completion framework                            |
-| caml               | Caml mode for GNU Emacs                                      |
-| auto-correct       | Remembers and automatically fixes past corrections           |
-| Python-doc         | Info documentation for Python                                |
-| 2048-game          | play 2048 in Emacs                                           |
+| Package          | Description                                               |
+|------------------+-----------------------------------------------------------|
+| which-key        | Display available keybindings in popup                    |
+| spacious-padding | Increase the padding/spacing of frames and windows        |
+| rfc-mode         | RFC document browser and viewer                           |
+| restclient       | An interactive HTTP client for Emacs                      |
+| nginx-mode       | major mode for editing nginx config files                 |
+| modus-themes     | Elegant, highly legible and customizable themes           |
+| meson-mode       | Major mode for the Meson build system files               |
+| markdown-mode    | Major mode for Markdown-formatted text                    |
+| guess-language   | Robust automatic language detection                       |
+| gpx              | Major mode for GPX files                                  |
+| git-link         | Get the GitHub/Bitbucket/GitLab URL for a buffer location |
+| edit-indirect    | Edit regions in separate buffers                          |
+| diminish         | Diminished modes are minor modes with no modeline display |
+| devhelp          | Browse documentation in Devhelp format                    |
+| darkroom         | Remove visual distractions and focus on writing           |
+| consult          | Consulting completing-read                                |
+| compat           | Emacs Lisp Compatibility Library                          |
+| cmake-mode       | major-mode for editing CMake sources                      |
+| breadcrumb       | project and imenu-based breadcrumb paths                  |
+| Python-doc       | Info documentation for Python                             |
+| CMake-doc        | Info documentation for CMake                              |
 
 All settings written using the customize library go to a dedicated
 file that is loaded when the loading of the [[file:.init.el][configuration file]] ends.
@@ -220,6 +195,16 @@ them:
 (when (locate-library "which-key")
   (load-library "which-key")
   (setq which-key-lighter ""))
+#+end_src
+
+Diminish mode-line display of minor modes.
+
+#+begin_src emacs-lisp :tangle init.el
+(when (locate-library "diminish")
+  (require 'diminish)
+  (diminish 'completion-preview-mode)
+  (diminish 'eldoc-mode)
+  (diminish 'abbrev-mode))
 #+end_src
 
 ** Bookmarks
@@ -325,31 +310,6 @@ all. No =ido=, =icycle=, etc.
 Completion of bookmarks names uses substring style.
 #+begin_src emacs-lisp :tangle init.el
 (add-to-list 'completion-category-overrides '(bookmark (styles substring)))
-#+end_src
-
-When I am working on multiple projects, I switch of windows
-configurations using registers (use =C-xrw= to store a window
-configuration in a register and =C-xrj= to jump back to it). But
-registers are named against single characters, so I need twice
-thinking before storing a new configuration. The following
-redefinition of =window-configuration-to-register= ask the user to
-confirm the overwrite when storing a configuration in a register
-already containing a window configuration.
-
-#+begin_src emacs-lisp :tangle init.el
-(defun window-configuration-to-register (register &optional _arg)
-  "Like `window-configuration-to-register' but warn the user that
-he is about to overwrite a window configuration."
-  (interactive "cWindow configuration to register: \nP")
-  (let ((val (get-register register)))
-    (cond
-     ((or (not (consp val))
-              (not (frame-configuration-p (car val)))
-              (yes-or-no-p "Overwrite window configuration? "))
-      (set-register register
-                    (list (current-frame-configuration) (point-marker))))
-     (t
-      (error "Register already contains a window configuration")))))
 #+end_src
 
 ** Cycling spacing
@@ -618,49 +578,32 @@ Emacs
 
 *** TODO Add the equivalent for MS Windows
 
-** Documentation reader
+** Documentation, help
 
 #+begin_src emacs-lisp :tangle init.el
-(require 'info)
-(define-key ctl-x-4-map "i" 'info-other-window)
-
 (add-hook 'Info-mode-hook
           (lambda ()
              (setq truncate-lines t)))
 
-(when (file-directory-p "~/.local/share/info")
-  (add-to-list 'Info-additional-directory-list "~/.local/share/info"))
-#+end_src
-
-I used to open frames to keep documentation away from the code; Thus
-the interactive function =info-other-frame= is defined and bind to a
-key.
-
-#+begin_src emacs-lisp :tangle init.el
-(define-key ctl-x-5-map "i" 'info-other-frame)
-
-(defun info-other-frame ()
-  "Like `info' but put Info buffer in another frame.
-Only intended for interactive use."
-  (interactive)
-  (let* ((win (selected-window))
-         (wdp (window-dedicated-p win))
-         value)
-    (unwind-protect
-        (progn
-          (set-window-dedicated-p win nil)
-          (switch-to-buffer-other-frame
-           (save-window-excursion
-             (setq value (call-interactively 'info))
-             (current-buffer))))
-      (set-window-dedicated-p win wdp))
-    value))
-#+end_src
-
-#+begin_src emacs-lisp :tangle init.el
 (let ((path (expand-file-name "~/.local/share/info/")))
   (when (file-accessible-directory-p path)
     (add-to-list 'Info-additional-directory-list path)))
+#+end_src
+
+#+begin_src emacs-lisp :tangle init.el
+  (when (locate-library "which-key")
+    (load-library "which-key")
+    (which-key-mode))
+#+end_src
+
+** Tab bar
+
+#+begin_src emacs-lisp :tangle init.el
+  (setq tab-bar-close-button-show 'selected
+        tab-bar-format
+  	'(tab-bar-format-menu-bar tab-bar-format-history tab-bar-format-tabs
+  				  tab-bar-separator)
+  	tab-bar-show t)
 #+end_src
 
 ** Server, daemon
@@ -760,6 +703,8 @@ Similar tweaks are done for Ghostscript, GNU Aspell, Visual Studio.
 
 ** Theme
 
+Apply Modus theme for accessible readability.
+
 #+begin_src emacs-lisp :tangle init.el
   (require 'modus-themes)
 
@@ -786,6 +731,36 @@ Similar tweaks are done for Ghostscript, GNU Aspell, Visual Studio.
 
   (load-theme 'modus-operandi-tinted :no-confirm)
   (personal-modus-themes-custom-faces)
+#+end_src
+
+Spacious padding make the UI even more readable.
+
+#+begin_src emacs-lisp :tangle init.el
+  (when (locate-library "spacious-padding")
+    (require 'spacious-padding)
+
+    (defun my-custom-faces-after-spacious-padding (&optional frame)
+      "Set face attributes after `spacious-padding-mode'.
+  Add this to the `spacious-padding-mode-hook'."
+      ;; Add more `set-face-attribute' calls here
+      (set-face-attribute 'line-number (or frame (window-frame)) :height 0.7))
+
+    (add-hook 'spacious-padding-mode-hook #'my-custom-faces-after-spacious-padding)
+    (add-hook 'after-make-frame-functions #'my-custom-faces-after-spacious-padding)
+
+    (spacious-padding-mode))
+#+end_src
+
+** Persistence
+
+Save Emacs state from one session to another.
+
+#+begin_src emacs-lisp :tangle init.el
+  (setq desktop-restore-frames nil
+ 	desktop-restore-eager nil
+ 	desktop-lazy-verbose t)
+
+  (desktop-save-mode)
 #+end_src
 
 ** Various
@@ -854,6 +829,13 @@ Use single character to indicate string truncation.
               (setq display-line-numbers-widen t)))
 #+end_src
 
+** Projects
+
+#+begin_src emacs-lisp :tangle init.el
+(setq project-kill-buffers-display-buffer-list t
+      project-vc-merge-submodules nil)
+#+end_src
+
 ** Highlight changes
 
 #+begin_src emacs-lisp :tangle init.el
@@ -907,6 +889,20 @@ a spell checker in path or not.
                 (flyspell-mode))))
 #+end_src
 
+Configure =guess-language-mode= to be less intrusive in mode-line.
+
+#+begin_src emacs-lisp :tangle init.el
+  (when (locate-library "guess-language")
+    (require 'guess-language)
+    (setq guess-language-languages '(en fr)
+  	guess-language-langcodes
+  	'((en "en" "English" "🖍️en" "English")
+  	  (fr "francais" "French" "🖍️fr" "French")))
+    (add-hook 'text-mode-hook
+  	    (lambda ()
+  	      (guess-language-mode))))
+#+end_src
+
 *** TODO Disable spell menu when no spell program is found         :noexport:
 
 
@@ -950,6 +946,10 @@ When reading file or buffer names the case will be ignored.
 #+begin_src emacs-lisp :tangle init.el
 (setq read-file-name-completion-ignore-case t
       read-buffer-completion-ignore-case t)
+#+end_src
+
+#+begin_src emacs-lisp :tangle init.el
+(global-completion-preview-mode t)
 #+end_src
 
 ** Abbreviations

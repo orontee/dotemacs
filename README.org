@@ -854,7 +854,7 @@ Flymake is used to check code on the fly.
 #+begin_src emacs-lisp :tangle init.el
   (add-hook 'flymake-mode-hook
             (lambda ()
-              (local-set-key "\C-cfd" 'flymake-show-diagnostics-buffer)
+              (local-set-key "\C-cfd" 'flymake-show-buffer-diagnostics)
               (local-set-key "\C-cfn" 'flymake-goto-next-error)
               (local-set-key "\C-cfp" 'flymake-goto-prev-error)))
 #+end_src

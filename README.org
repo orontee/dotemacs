@@ -861,7 +861,8 @@ Use single character to indicate string truncation.
   (lambda ()
     (highlight-changes-mode)))
 
-(setq highlight-changes-visibility-initial-state nil)
+(setq highlight-changes-visibility-initial-state nil
+      highlight-changes-invisibility-string "")
 #+end_src
 
 ** On the fly code check
@@ -907,32 +908,6 @@ a spell checker in path or not.
 #+end_src
 
 *** TODO Disable spell menu when no spell program is found         :noexport:
-
-** File parser
-
-Trying LSP servers through Eglot, thus default is to keep Semantic disabled.
-
-#+begin_src emacs-lisp :tangle init.el
-(add-to-list 'semantic-default-submodes 'global-semantic-mru-bookmark-mode)
-;; (semantic-mode)
-#+end_src
-
-#+begin_src emacs-lisp :tangle init.el
-(defun create-project-tags ()
-    "Create tags file."
-    (interactive)
-    (let* ((etags (executable-find "etags"))
-           (dir-name (project-root (project-current t)))
-           (default-directory (expand-file-name dir-name)))
-      (if etags
-          (progn (shell-command (concat "find " dir-name
-                                        " \\( -name '*.cpp' -or -name '*.h' \\)"
-                                        " -print | " "etags -l c++ - "))
-                 (shell-command (concat "find " dir-name
-                                 " -name '*.py' -print | etags -a -l python - ")))
-
-        (message "Exuberant Ctags not found in path..."))))
-#+end_src
 
 
 ** Long lines and buffer boundaries
@@ -1143,7 +1118,6 @@ bindings after the mode has been deactivated.
 		(outline-apply-default-state))))
 #+end_src
 
-
 ** Command interpreter
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1288,13 +1262,13 @@ White space visualization is useful when inspecting diffs.
 
 ** Support for C++
 
-It is common for C++ developpers and C developpers to name their
-header files with the =.h= extension. As I am more interested in C++,
-the default is to visit such files in C++ mode. Whats more, candidate
-extensions for the source file associated to a =.h= file are reordered
-to privilege C++ usual extensions rather than C ones (see
-=ff-find-other-file= binded to =C-co= for a way to switch between
-implementation and declaration on a file name basis).
+C++ developpers often name header files with the =.h= extension, like
+C developpers. As I am more interested in C++, the default is to visit
+such files in C++ mode. Whats more, candidate extensions for the
+source file associated to a =.h= file are reordered to privilege C++
+usual extensions rather than C ones (see =ff-find-other-file= binded
+to =C-co= for a way to switch between implementation and declaration
+on a file name basis).
 
 #+begin_src emacs-lisp :tangle init.el
   (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
@@ -1323,7 +1297,7 @@ Some abbreviation definitions for preprocessor directives are added.
   "Insert a C preprocessor include directive"
   "Header name: " "#include " str _)
 
-(define-abbrev-table 'c++-mode-abbrev-table
+(define-abbrev-table 'c++-ts-mode-abbrev-table
   '(("ppif" "" cc-preprocessor-conditional-group)
     ("ppnif" "" cc-preprocessor-not-conditional-group)
     ("ppd" "" cc-preprocessor-create-macro)
@@ -1331,26 +1305,12 @@ Some abbreviation definitions for preprocessor directives are added.
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-(add-hook 'c++-mode-hook
+(add-hook 'c++-ts-mode-hook
           (lambda ()
              (setq comment-style 'extra-line)
              (setq indent-tabs-mode nil)
-             (c-set-style "ellemtel")
-             (setq c-cleanup-list '(empty-defun-braces
-                                    one-liner-defun
-                                    defun-close-semi
-                                    scope-operator
-                                    list-close-comma)
-                   c-basic-offset 3)
-             ;(c-toggle-electric-state)
-             (c-toggle-hungry-state 1)
-             (subword-mode)
-             (cwarn-mode)
-             (require 'find-file)
-             (add-to-list ff-search-directories ".")
-             (define-key c++-mode-map "\C-co" 'ff-find-other-file)
-             (define-key c++-mode-map "\C-ck" 'tags-apropos)
-             (define-key c++-mode-map "\C-m" 'c-context-line-break)))
+             (define-key c++-ts-mode-map "\C-co" 'ff-find-other-file)
+             (define-key c++-ts-mode-map "\C-m" 'c-context-line-break)))
 #+end_src
 
 Update default text to insert into new files.
@@ -1430,19 +1390,12 @@ want to generate them by yourself...). The =info-look= setting for
 #+begin_src emacs-lisp :tangle init.el
 (with-eval-after-load "info-look"
   (info-lookup-add-help
-    :mode 'python-mode
+    :mode 'python-ts-mode
     :regexp "[[:alnum:]_]+"
     :doc-spec '(("(python)Index" nil ""))))
 #+end_src
 
-Always check code on the fly.
-
-#+begin_src emacs-lisp :tangle init.el
-(add-hook 'python-mode-hook 'flymake-mode)
-#+end_src
-
-Common skeletons and abbreviations are defined (PDB call, =import=
-statement, etc).
+Usefull abbreviations.
 
 #+begin_src emacs-lisp :tangle init.el
 (define-abbrev-table 'python-mode-abbrev-table
@@ -1455,7 +1408,7 @@ Set the name of the Python template to insert at file creation.
 (let ((filename "python_template.py"))
   (when (file-exists-p (expand-file-name filename auto-insert-directory))
     (add-to-list 'auto-insert-alist
-                 `(python-mode . ,filename))))
+                 `(python-ts-mode . ,filename))))
 #+end_src
 
 ** Support for Scheme
@@ -1469,20 +1422,10 @@ Set the name of the Python template to insert at file creation.
 ** Support for JavaScript
 
 #+begin_src emacs-lisp :tangle init.el
-(add-hook 'js-mode-hook
+(add-hook 'js-ts-mode-hook
           (lambda ()
              (setq indent-tabs-mode nil)
-             (subword-mode)
-             (hs-minor-mode)))
-#+end_src
-
-When available, load the package =flymake-jslint= to check code on the
-fly.
-
-#+begin_src emacs-lisp :tangle init.el
-(when (locate-library "flymake-jslint")
-  (load-library "flymake-jslint")
-  (add-hook 'js-mode-hook 'flymake-jslint-load))
+             (subword-mode)))
 #+end_src
 
 ** Support for SQL
@@ -1509,14 +1452,6 @@ to the process.
           (lambda ()
              (goto-address-mode)
              (flyspell-mode)))
-#+end_src
-
-Don’t replace double quotes with curved quotes in YAML mode.
-
-#+begin_src emacs-lisp :tangle init.el
-(add-hook 'yaml-mode-hook
-          (lambda ()
-             (electric-quote-mode -1)))
 #+end_src
 
 Insert double angle quotation marks in pairs.

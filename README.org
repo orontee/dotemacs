@@ -62,7 +62,7 @@ can be downloaded from http://ftp.gnu.org/pub/gnu/emacs/.
   file"))
 #+end_src
 
-** TODO Extending Emacs, packages repositories, etc
+** Extending Emacs, packages repositories, etc
 
 The easiest way to extend Emacs features is to use =list-package= and
 install packages from remote repositories. But =package.el= is rather
@@ -98,6 +98,7 @@ At the time of writing, I have activated the following packages:
 #+RESULTS:
 | Package          | Description                                               |
 |------------------+-----------------------------------------------------------|
+| corfu            | COmpletion in Region FUnction                             |
 | which-key        | Display available keybindings in popup                    |
 | spacious-padding | Increase the padding/spacing of frames and windows        |
 | rfc-mode         | RFC document browser and viewer                           |
@@ -108,6 +109,7 @@ At the time of writing, I have activated the following packages:
 | markdown-mode    | Major mode for Markdown-formatted text                    |
 | guess-language   | Robust automatic language detection                       |
 | gpx              | Major mode for GPX files                                  |
+| gptel            | Interact with ChatGPT or other LLMs                       |
 | git-link         | Get the GitHub/Bitbucket/GitLab URL for a buffer location |
 | edit-indirect    | Edit regions in separate buffers                          |
 | diminish         | Diminished modes are minor modes with no modeline display |
@@ -809,7 +811,8 @@ Use single character to indicate string truncation.
           (c++-mode . c++-ts-mode)
           (c-mode . c-ts-mode)
           (css-mode . css-ts-mode)
-          (js2-mode . js-ts-mode)
+          (js-mode . js-ts-mode)
+  	(javascript-mode . js-ts-mode)
           (json-mode . json-ts-mode)
           (python-mode . python-ts-mode)
           (typescript-mode . typescript-ts-mode)
@@ -948,8 +951,21 @@ When reading file or buffer names the case will be ignored.
       read-buffer-completion-ignore-case t)
 #+end_src
 
+Displays a completion suggestion for the symbol at point in an
+overlay after point.
+
 #+begin_src emacs-lisp :tangle init.el
 (global-completion-preview-mode t)
+#+end_src
+
+Make completion at point popup a small window with completion
+candidates in programming modes.
+
+#+begin_src emacs-lisp :tangle init.el
+  (when (locate-library "corfu")
+    (load-library "corfu")
+    (add-hook 'prog-mode-hook (lambda ()
+  			      (corfu-mode))))
 #+end_src
 
 ** Abbreviations

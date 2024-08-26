@@ -1837,40 +1837,20 @@ Various types of capture items are defined.
 (setq delete-by-moving-to-trash t)
 #+end_src
 
-** Jumping and viewing
-
-#+begin_src emacs-lisp :tangle init.el
-(autoload 'dired-jump "dired" "\
-     Jump to Dired buffer corresponding to current buffer.
-     If in a file, Dired the current directory and move to file's line.
-     If in Dired already, pop up a level and goto old directory's line.
-     In case the proper Dired file line cannot be found, refresh the Dired
-     buffer and try again." t nil)
-
-(autoload 'dired-jump-other-window "dired" "\
-     Like \\[dired-jump] (dired-jump) but in other window." t nil)
-
-(define-key ctl-x-map "\C-j" 'dired-jump)
-
-(define-key ctl-x-4-map "\C-j" 'dired-jump-other-window)
-(define-key ctl-x-4-map "v" 'view-file-other-window)
-
-(define-key ctl-x-5-map "v" 'view-file-other-frame)
-(define-key ctl-x-5-map "c" 'alt-clone-indirect-buffer-other-frame)
-#+end_src
 
 ** Enhancing file manager
 
 #+begin_src emacs-lisp :tangle init.el
-(add-hook 'dired-load-hook
-          (lambda ()
-             (require 'dired-x)
-             (setq dired-x-hands-off-my-keys nil)
-             (dired-x-bind-find-file)
-             (setq dired-free-space-args "-Pk"
-                   dired-listing-switches "-al")
-             (setq dired-isearch-filenames t
-                   dired-vc-rename-file t)))
+  (add-hook 'dired-load-hook
+            (lambda ()
+               (require 'dired-x)
+               (setq dired-x-hands-off-my-keys nil)
+               (dired-x-bind-find-file)
+               (setq dired-free-space-args "-Pk"
+  		   dired-free-space 'first
+                     dired-listing-switches "-al")
+               (setq dired-isearch-filenames t
+                     dired-vc-rename-file t)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el

@@ -745,7 +745,7 @@ Spacious padding make the UI even more readable.
       "Set face attributes after `spacious-padding-mode'.
   Add this to the `spacious-padding-mode-hook'."
       ;; Add more `set-face-attribute' calls here
-      (set-face-attribute 'line-number (or frame (window-frame)) :height 0.7))
+      (set-face-attribute 'line-number (or frame (window-frame)) :height 0.8))
 
     (add-hook 'spacious-padding-mode-hook #'my-custom-faces-after-spacious-padding)
     (add-hook 'after-make-frame-functions #'my-custom-faces-after-spacious-padding)

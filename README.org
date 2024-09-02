@@ -527,6 +527,12 @@ Use pixel precision scrolling.
 (setq pixel-scroll-precision-large-scroll-height 40.0)
 #+end_src
 
+Outline minor mode uses in-margins buttons.
+
+#+begin_src emacs-lisp :tangle init.el
+(setq outline-minor-mode-use-buttons 'in-margins)
+#+end_src
+
 ** Tab bar
 
 I like tabs but want them to use the same keybindings as GTK-based
@@ -726,7 +732,7 @@ Apply Modus theme for accessible readability.
        ;; smaller line numbers
        `(line-number  ((,c :inherit default :height 0.8 :foreground ,fg-dim))))))
 
-  (setq modus-themes-variable-pitch-ui nil
+  (setq modus-themes-variable-pitch-ui t
         modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
 
   (add-hook 'modus-themes-after-load-theme-hook #'personal-modus-themes-custom-faces)
@@ -741,12 +747,11 @@ Spacious padding make the UI even more readable.
   (when (locate-library "spacious-padding")
     (require 'spacious-padding)
 
-    (defun my-custom-faces-after-spacious-padding (&optional frame)
+    (defun my-custom-faces-after-spacious-padding (&rest _)
       "Set face attributes after `spacious-padding-mode'.
   Add this to the `spacious-padding-mode-hook'."
       ;; Add more `set-face-attribute' calls here
-      (dolist (frame (frame-list))
-        (set-face-attribute 'line-number frame :height 0.8)))
+      (set-face-attribute 'line-number nil :height 0.8))
 
     (add-hook 'spacious-padding-mode-hook #'my-custom-faces-after-spacious-padding)
     (add-hook 'after-make-frame-functions #'my-custom-faces-after-spacious-padding)

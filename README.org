@@ -527,10 +527,17 @@ Use pixel precision scrolling.
 (setq pixel-scroll-precision-large-scroll-height 40.0)
 #+end_src
 
-Outline minor mode uses in-margins buttons.
+Outline minor mode uses in-margins buttons. An unhidden blank line is
+kept before headings. And a key binding is defined to toggle outline
+minor mode.
 
 #+begin_src emacs-lisp :tangle init.el
-(setq outline-minor-mode-use-buttons 'in-margins)
+(setq outline-minor-mode-use-buttons 'in-margins
+      outline-blank-line t)
+
+(define-prefix-command 'ctl-c@-map)
+(global-set-key "\C-c@" 'ctl-c@-map)
+(define-key ctl-c@-map "t" 'outline-minor-mode)  
 #+end_src
 
 ** Tab bar
@@ -1595,7 +1602,7 @@ acronyms not recognized by the spell checker).
              (add-to-list 'tex-compile-commands
                           '("xdg-open %r.pdf &" "%r.pdf"))
              (reftex-mode t)
-             (outline-minor-mode 1)
+             (outline-minor-mode)
              (define-key latex-mode-map [M-tab] 'info-complete-symbol)
              (define-key latex-mode-map "\C-c\C-s" 'alt-latex-section)
              (define-key latex-mode-map "\C-cm" 'alt-latex-math-env)

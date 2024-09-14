@@ -736,6 +736,8 @@ Apply Modus theme for accessible readability.
        `(markdown-header-face-2 ((,c :inherit markdown-header-face-3 :height 1.2 :foreground ,fg-heading-2)))
        `(markdown-header-face-3 ((,c :inherit markdown-header-face-4 :height 1.2 :foreground ,fg-heading-3)))
        `(markdown-header-face-4 ((,c :inherit (bold variable-pitch) :height 1.0 :foreground ,fg-heading-4)))
+       ;; lighter fill column indicator
+       `(fill-column-indicator ((,c :background ,bg-dim)))
        ;; smaller line numbers
        `(line-number  ((,c :inherit default :height 0.8 :foreground ,fg-dim))))))
 

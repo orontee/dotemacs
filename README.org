@@ -1402,14 +1402,17 @@ for file mode determination.
     (setq python-shell-interpreter "python3")))
 #+end_src
 
-The style used for docstring is the one found in Django code source.
+The style used for docstring is the one found in Django code
+source. Outline minor mode put headings on classes and functions.
 
 #+begin_src emacs-lisp :tangle init.el
-  (add-hook 'python-ts-mode-hook
-            (lambda ()
-               (setq tab-width 4
-                     gud-pdb-command-name (concat python-shell-interpreter " -m pdb ")
-                     python-fill-docstring-style 'pep-257)))
+    (add-hook 'python-ts-mode-hook
+              (lambda ()
+                 (setq tab-width 4
+                       gud-pdb-command-name (concat python-shell-interpreter " -m pdb ")
+                       python-fill-docstring-style 'pep-257
+    		   outline-regexp (python-rx (* space) defun))
+  	       (outline-minor-mode)))
 #+end_src
 
 The Python documentation used to be distributed in Texinfo format. It

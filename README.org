@@ -293,6 +293,13 @@ followed.
 (global-so-long-mode 1)
 #+end_src
 
+To prevent long lines, enable display of the fill column indicator.
+
+#+begin_src emacs-lisp :tangle init.el
+(global-display-fill-column-indicator-mode t)
+(setq global-display-fill-column-indicator-modes '((not special-mode) prog-mode))
+#+end_src
+
 ** Moving between windows and selecting buffers
 
 Usually the frame is split at most twice. I find =C-xo= sufficient to

@@ -96,31 +96,38 @@ At the time of writing, I have activated the following packages:
 #+end_src
 
 #+RESULTS:
-| Package          | Description                                               |
-|------------------+-----------------------------------------------------------|
-| corfu            | COmpletion in Region FUnction                             |
-| which-key        | Display available keybindings in popup                    |
-| spacious-padding | Increase the padding/spacing of frames and windows        |
-| rfc-mode         | RFC document browser and viewer                           |
-| restclient       | An interactive HTTP client for Emacs                      |
-| nginx-mode       | major mode for editing nginx config files                 |
-| modus-themes     | Elegant, highly legible and customizable themes           |
-| meson-mode       | Major mode for the Meson build system files               |
-| markdown-mode    | Major mode for Markdown-formatted text                    |
-| guess-language   | Robust automatic language detection                       |
-| gpx              | Major mode for GPX files                                  |
-| gptel            | Interact with ChatGPT or other LLMs                       |
-| git-link         | Get the GitHub/Bitbucket/GitLab URL for a buffer location |
-| edit-indirect    | Edit regions in separate buffers                          |
-| diminish         | Diminished modes are minor modes with no modeline display |
-| devhelp          | Browse documentation in Devhelp format                    |
-| darkroom         | Remove visual distractions and focus on writing           |
-| consult          | Consulting completing-read                                |
-| compat           | Emacs Lisp Compatibility Library                          |
-| cmake-mode       | major-mode for editing CMake sources                      |
-| breadcrumb       | project and imenu-based breadcrumb paths                  |
-| Python-doc       | Info documentation for Python                             |
-| CMake-doc        | Info documentation for CMake                              |
+| Package                 | Description                                                |
+|-------------------------+------------------------------------------------------------|
+| which-key               | Display available keybindings in popup                     |
+| vertico                 | VERTical Interactive COmpletion.                           |
+| tldr                    | Tldr client for Emacs.                                     |
+| systemd                 | Major mode for editing systemd units                       |
+| spacious-padding        | Increase the padding/spacing of frames and windows         |
+| rfc-mode                | RFC document browser and viewer                            |
+| restclient              | An interactive HTTP client for Emacs                       |
+| powershell              | Mode for editing PowerShell scripts                        |
+| posframe                | Pop a posframe (just a frame) at point.                    |
+| nginx-mode              | major mode for editing nginx config files                  |
+| modus-themes            | Elegant, highly legible and customizable themes.           |
+| meson-mode              | Major mode for the Meson build system files                |
+| markdown-mode           | Major mode for Markdown-formatted text                     |
+| marginalia              | Enrich existing commands with completion annotations       |
+| guess-language          | Robust automatic language detection                        |
+| gnu-elpa-keyring-update | Update Emacs's GPG keyring for GNU ELPA                    |
+| git-link                | Get the GitHub/Bitbucket/GitLab URL for a buffer location. |
+| edit-indirect           | Edit regions in separate buffers                           |
+| diminish                | Diminished modes are minor modes with no modeline display  |
+| devhelp                 | Browse documentation in Devhelp format                     |
+| debbugs                 | SOAP library to access debbugs servers                     |
+| darkroom                | Remove visual distractions and focus on writing            |
+| corfu                   | COmpletion in Region FUnction.                             |
+| consult                 | Consulting completing-read.                                |
+| compat                  | Emacs Lisp Compatibility Library                           |
+| cmake-mode              | major-mode for editing CMake sources                       |
+| breadcrumb              | project and imenu-based breadcrumb paths                   |
+| Python-doc              | Info documentation for Python                              |
+| CMake-doc               | Info documentation for CMake                               |
+
 
 All settings written using the customize library go to a dedicated
 file that is loaded when the loading of the [[file:.init.el][configuration file]] ends.
@@ -220,6 +227,12 @@ is dedicated to bookmark names.
         bookmark-bmenu-toggle-filenames nil))
 #+end_src
 
+Completion of bookmark name uses substring style.
+
+#+begin_src emacs-lisp :tangle init.el
+(add-to-list 'completion-category-overrides '(bookmark (styles substring)))
+#+end_src
+
 ** Generic modes
 
 From the docstring: Generic modes provide basic comment and font-lock
@@ -303,22 +316,62 @@ To prevent long lines, enable display of the fill column indicator.
 ** Moving between windows and selecting buffers
 
 Usually the frame is split at most twice. I find =C-xo= sufficient to
-change the selected window along the three candidates.\
+change the selected window along the three candidates.
 
 To select a buffer I often use =C-xb= and completion. When my brain
 can't remember the buffer name, I use the default buffer menu
-(accessible from =C-xC-b= and =C-uC-xC-b=) or =icomplete-mode=. That's
-all. No =ido=, =icycle=, etc.
+(accessible from =C-xC-b= and =C-uC-xC-b=).
+
+When reading file or buffer names the case will be ignored.
 
 #+begin_src emacs-lisp :tangle init.el
-(icomplete-mode 1)
-(setq icomplete-in-buffer t)
+(setq read-file-name-completion-ignore-case t
+      read-buffer-completion-ignore-case t)
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle init.el
 (setq confirm-nonexistent-file-or-buffer t)
 #+end_src
 
-Completion of bookmarks names uses substring style.
+** Completion
+
+The vanilla completion window is hidden if not explicitly asked for.
+
 #+begin_src emacs-lisp :tangle init.el
-(add-to-list 'completion-category-overrides '(bookmark (styles substring)))
+  (setq completions-detailed t
+        completions-format 'horizontal
+        completions-group t
+        completions-max-height 15
+        completions-sort 'historical
+        completion-auto-select nil
+        completion-auto-help t)
+#+end_src
+
+Still not sure whether I want to use =vertico= or =icomplete= for
+incremental minibuffer completion.
+
+#+begin_src emacs-lisp :tangle init.el
+  (setq icomplete-in-buffer nil
+        icomplete-show-matches-on-no-input t
+        icomplete-tidy-shadowed-file-names t)
+  (if (locate-library "vertico")
+      (progn
+        (require 'vertico)
+        (keymap-set vertico-map "TAB" #'minibuffer-complete)
+        (vertico-mode 1)
+        (when (locate-library "marginalia")
+  	(marginalia-mode 1)))
+    (icomplete-mode 1))
+#+end_src
+
+When available, use =corfu= for completion in region.
+
+#+begin_src emacs-lisp :tangle init.el
+  (when (locate-library "corfu")
+    (require 'corfu)
+    (global-corfu-mode 1)
+    (setq corfu-auto t))
 #+end_src
 
 ** Cycling spacing
@@ -963,32 +1016,6 @@ index menu.
                 (setq outline-default-state 1
                       outline-default-rules '((match-regexp . "ChangeLog\\|test/manual/etags")))
                 (outline-minor-mode)))
-#+end_src
-
-** Completion
-
-When reading file or buffer names the case will be ignored.
-
-#+begin_src emacs-lisp :tangle init.el
-(setq read-file-name-completion-ignore-case t
-      read-buffer-completion-ignore-case t)
-#+end_src
-
-Displays a completion suggestion for the symbol at point in an
-overlay after point.
-
-#+begin_src emacs-lisp :tangle init.el
-(global-completion-preview-mode t)
-#+end_src
-
-Make completion at point popup a small window with completion
-candidates in programming modes.
-
-#+begin_src emacs-lisp :tangle init.el
-  (when (locate-library "corfu")
-    (load-library "corfu")
-    (add-hook 'prog-mode-hook (lambda ()
-  			      (corfu-mode))))
 #+end_src
 
 ** Abbreviations

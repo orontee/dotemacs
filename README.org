@@ -216,6 +216,13 @@ Diminish mode-line display of minor modes.
   (diminish 'abbrev-mode))
 #+end_src
 
+Hide title bar when window is maximized.
+
+#+begin_src emacs-lisp :tangle init.el
+(add-hook 'window-size-change-functions
+            #'frame-hide-title-bar-when-maximized)
+#+end_src
+
 ** Bookmarks
 
 Lighter bookmark menu: Filenames are hidden and more horizontal space

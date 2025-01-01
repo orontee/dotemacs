@@ -987,8 +987,9 @@ Use single character to indicate string truncation.
 ** Projects
 
 #+begin_src emacs-lisp :tangle init.el
-(setq project-kill-buffers-display-buffer-list t
-      project-vc-merge-submodules nil)
+  (setq project-kill-buffers-display-buffer-list t
+        project-vc-merge-submodules nil
+        project-mode-line t)
 #+end_src
 
 ** Highlight changes

@@ -297,7 +297,7 @@ with a date tag and a properly formatted link to buffer file.
   	    (markdown-date-tag remember-time-format) "\n\n"
   	    text)))
 
-  (global-set-key "\C-c\M-r" 'remember)
+  (keymap-global-set "C-c M-r" 'remember)
 
   (with-eval-after-load "remember"
     (setq remember-notes-initial-major-mode 'markdown-mode
@@ -453,7 +453,7 @@ When available, use =corfu= for completion in region.
 ** Cycling spacing
 
 #+begin_src emacs-lisp :tangle init.el
-(global-set-key (kbd "M-SPC") 'cycle-spacing)
+(keymap-global-set "M-SPC" 'cycle-spacing)
 #+end_src
 
 ** Empty scratch buffer
@@ -580,49 +580,6 @@ All files will have a newline at their end.
 (setq require-final-newline t)
 #+end_src
 
-** Language environment
-
-The preferred input method is set according to the current language
-environment. I prefer to use prefix modifiers (use =C-hI= to get a
-description of any input method). Note that the default language
-environment is set during startup, before the user init file is
-loaded; It explains the explicit call to our
-=choose-language-input-method=.
-
-#+begin_src emacs-lisp :tangle init.el
-(defun choose-language-input-method ()
-  "Set default input method according to current language
-environment."
-  (let* ((language-name current-language-environment)
-         (method (cond
-                  ((string= language-name "French")
-                   'french-prefix)
-                  ((or (string= language-name "Latin-1")
-                       (string= language-name "UTF-8"))
-                   'latin-1-prefix)
-                  (t nil))))
-    (setq default-input-method method)))
-
-(add-hook 'set-language-environment-hook
-          (lambda ()
-            (choose-language-input-method)))
-
-(choose-language-input-method)
-#+end_src
-
-But there are other input methods I use: For example the TeX method.
-Key sequences are defined to easily set the input methods I need.
-
-#+begin_src emacs-lisp :tangle init.el
-(dolist (elt '(("1" . "latin-1-prefix")
-               ("9" . "latin-9-prefix")
-               ("u" . "TeX")))
-  (define-key mule-keymap (car elt)
-    `(lambda ()
-       (interactive)
-       (set-input-method ,(cdr elt)))))
-#+end_src
-
 ** Display settings
 
 Group buffers by their major modes when using the contextual menu to
@@ -664,15 +621,15 @@ Use pixel precision scrolling.
 #+end_src
 
 Outline minor mode uses in-margins buttons. An unhidden blank line is
-kept before headings. And a key binding is defined to toggle outline
-minor mode.
+kept before headings. And the =C-c @= key binding is defined to toggle
+outline minor mode.
 
 #+begin_src emacs-lisp :tangle init.el
 (setq outline-minor-mode-use-buttons 'in-margins
       outline-blank-line t)
 
 (define-prefix-command 'ctl-c@-map)
-(global-set-key "\C-c@" 'ctl-c@-map)
+(keymap-global-set "C-c @" 'ctl-c@-map)
 (define-key ctl-c@-map "t" 'outline-minor-mode)  
 #+end_src
 
@@ -697,11 +654,11 @@ applications. Also I want new tabs to display bookmarks.
         tab-bar-close-tab-select 'left
         tab-bar-new-tab-choice 'get-or-build-bookmark-buffer
         tab-bar-select-tab-modifiers '(meta))
-  (define-key tab-prefix-map "1" nil)
-  (global-set-key [C-next] 'tab-bar-switch-to-next-tab)
-  (global-set-key [C-prior] 'tab-bar-switch-to-prev-tab)
-  (global-set-key [C-S-next] (lambda () (interactive) (tab-bar-move-tab 1)))
-  (global-set-key [C-S-prior] (lambda () (interactive) (tab-bar-move-tab -1))))
+  (keymap-set tab-prefix-map "1" nil)
+  (keymap-global-set "C-<next>" 'tab-bar-switch-to-next-tab)
+  (keymap-global-set "C-<prior>" 'tab-bar-switch-to-prev-tab)
+  (keymap-global-set "C-S-<next>" (lambda () (interactive) (tab-bar-move-tab 1)))
+  (keymap-global-set "C-S-<prior>" (lambda () (interactive) (tab-bar-move-tab -1))))
 #+end_src
 
 ** Frame customization definitions
@@ -1010,9 +967,9 @@ Flymake is used to check code on the fly.
 #+begin_src emacs-lisp :tangle init.el
   (add-hook 'flymake-mode-hook
             (lambda ()
-              (local-set-key "\C-cfd" 'flymake-show-buffer-diagnostics)
-              (local-set-key "\C-cfn" 'flymake-goto-next-error)
-              (local-set-key "\C-cfp" 'flymake-goto-prev-error)))
+              (keymap-local-set "C-c f d" 'flymake-show-buffer-diagnostics)
+              (keymap-local-set "C-c f n" 'flymake-goto-next-error)
+              (keymap-local-set "C-c f p" 'flymake-goto-prev-error)))
 #+end_src
 
 ** Display of documentation
@@ -1136,10 +1093,10 @@ region.
 
 #+begin_src emacs-lisp :tangle init.el
 (define-prefix-command 'ctl-cw-map)
-(global-set-key "\C-cw" 'ctl-cw-map)
-(define-key ctl-cw-map "t" 'whitespace-mode)
-(define-key ctl-cw-map "c" 'whitespace-cleanup)
-(define-key ctl-cw-map "r" 'whitespace-report)
+(keymap-global-set "C-c w" 'ctl-cw-map)
+(keymap-set ctl-cw-map "t" 'whitespace-mode)
+(keymap-set ctl-cw-map "c" 'whitespace-cleanup)
+(keymap-set ctl-cw-map "r" 'whitespace-report)
 
 (setq whitespace-style
       (quote (face empty spaces tabs newline space-mark trailing
@@ -1184,10 +1141,10 @@ binding, an alternative to the usefull =C-xvD= (binded to
 repositories.
 
 #+begin_src emacs-lisp :tangle init.el
-(global-set-key "\C-xv=" 'ediff-revision)
+(keymap-global-set "C-x v =" 'ediff-revision)
 (require 'vc-git)
-(global-set-key "\C-xvG" 'vc-git-grep)
-(global-set-key "\C-xvd" 'vc-dir-root)
+(keymap-global-set "C-x v G" 'vc-git-grep)
+(keymap-global-set "C-x v d" 'vc-dir-root)
 #+end_src
 
 Spell checking is automatically enabled when editing log messages,
@@ -1268,7 +1225,7 @@ bindings after the mode has been deactivated.
 (add-hook 'comint-mode-hook
           (lambda ()
              (setq indicate-empty-lines nil)
-             (define-key comint-mode-map "\C-c\C-k" 'comint-kill-subjob)
+             (keymap-set comint-mode-map "C-c C-k" 'comint-kill-subjob)
              (setq comint-terminfo-terminal "ansi")
              (when (eq system-type 'windows-nt)
                (setq comint-process-echoes 'on))))
@@ -1331,7 +1288,7 @@ Colorize compilation output.
   (add-hook 'compilation-mode-hook
             (lambda ()
                (setq truncate-partial-width-windows nil)
-               (define-key compilation-mode-map "c" 'compile)))
+               (keymap-set compilation-mode-map "c" 'compile)))
 #+end_src
 
 *** TODO Send a D-BUS notification at the end of compilation       :noexport:
@@ -1453,8 +1410,8 @@ Some abbreviation definitions for preprocessor directives are added.
           (lambda ()
              (setq comment-style 'extra-line)
              (setq indent-tabs-mode nil)
-             (define-key c++-ts-mode-map "\C-co" 'ff-find-other-file)
-             (define-key c++-ts-mode-map "\C-m" 'c-context-line-break)))
+             (keymap-set c++-ts-mode-map "C-c o" 'ff-find-other-file)
+             (keymap-set c++-ts-mode-map "C-m" 'c-context-line-break)))
 #+end_src
 
 Update default text to insert into new files.
@@ -1480,7 +1437,7 @@ Update default text to insert into new files.
              (set (make-local-variable 'comment-auto-fill-only-comments) t)
              (set (make-local-variable 'imenu-sort-function)
                   'imenu--sort-by-name)
-             (define-key emacs-lisp-mode-map "\C-c\C-f"
+             (keymap-set emacs-lisp-mode-map "C-c C-f"
                'emacs-lisp-byte-compile)))
 #+end_src
 
@@ -1719,10 +1676,10 @@ acronyms not recognized by the spell checker).
                           '("xdg-open %r.pdf &" "%r.pdf"))
              (reftex-mode t)
              (outline-minor-mode)
-             (define-key latex-mode-map [M-tab] 'info-complete-symbol)
-             (define-key latex-mode-map "\C-c\C-s" 'alt-latex-section)
-             (define-key latex-mode-map "\C-cm" 'alt-latex-math-env)
-             (define-key latex-mode-map "\C-cM" 'alt-latex-displaymath-env)))
+             (keymap-set latex-mode-map "M-<tab>" 'info-complete-symbol)
+             (keymap-set latex-mode-map "C-c C-s" 'alt-latex-section)
+             (keymap-set latex-mode-map "C-c m" 'alt-latex-math-env)
+             (keymap-set latex-mode-map "C-c M" 'alt-latex-displaymath-env)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1730,7 +1687,7 @@ acronyms not recognized by the spell checker).
           (lambda ()
              (add-to-list 'shell-font-lock-keywords
                     '("^\\(LaTeX Warning:\\|\\!\\)" . font-lock-warning-face))
-             (define-key tex-shell-map "\C-c\C-p" 'comint-previous-prompt)))
+             (keymap-set tex-shell-map "C-c C-p" 'comint-previous-prompt)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1804,7 +1761,7 @@ inserted."
                       `(lambda (label format)
                          (concat "~\\pageref{" label "}"))))
                  (reftex-reference)))
-             (define-key reftex-mode-map "\C-c]" 'reftex-page-reference)
+             (keymap-set reftex-mode-map "C-c ]" 'reftex-page-reference)
              (define-key-after reftex-mode-menu [pageref]
                '(menu-item "\\pageref" reftex-page-reference) '\\cite)))
 
@@ -1887,14 +1844,6 @@ If prefix argument is provided, use the alternative command,
   \n "\\" str ?\{ (skeleton-read "Title: ") ?\} \n \n)
 #+end_src
 
-** Support for dict protocol
-
-#+begin_src emacs-lisp :tangle init.el
-(when (locate-library "dictionary")
-  (load-library "dictionary")
-  (define-key dictionary-mode-map [backtab] 'dictionary-prev-link))
-#+end_src
-
 ** Support for reStructuredText
 
 Auto fill mode may break the indentation.
@@ -1959,7 +1908,7 @@ Auto fill mode may break the indentation.
              (dired-omit-mode 1)
              (dired-hide-details-mode 1)
              (set (make-local-variable 'transient-mark-mode) nil)
-             (define-key dired-mode-map "w" 'dired-copy-filename-as-kill)))
+             (keymap-set dired-mode-map "w" 'dired-copy-filename-as-kill)))
 #+end_src
 
 * Mail, newsgroup, RSS

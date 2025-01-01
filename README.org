@@ -65,11 +65,21 @@ can be downloaded from http://ftp.gnu.org/pub/gnu/emacs/.
 I usually build my own binary from a Git repository.
 
 #+begin_src sh
-  $ ./autogen.sh
-  $ ./configure --with-pgtk --no-create --no-recursion --prefix=/opt/emacs
-  $ CFLAGS='-O3' make -j 10 bootstrap configure=default
-  $ make
-  $ sudo make install
+    $ ./autogen.sh
+    $ ./configure --with-pgtk --no-create --no-recursion --prefix=/opt/emacs
+    $ CFLAGS='-O3' make -j 10 bootstrap
+    $ make
+    $ sudo make install
+    $ sudo update-alternatives \
+      --install /usr/bin/emacs emacs \
+                /usr/local/bin/emacs 99 \
+      --slave /usr/share/man/man1/emacs.1.gz emacs.1.gz \
+              /usr/local/share/man/man1/emacs.1.gz
+    $ sudo update-alternatives \
+      --install /usr/bin/emacsclient emacsclient \
+                /usr/local/bin/emacsclient 99 \
+      --slave /usr/share/man/man1/emacsclient.1.gz emacsclient.1.gz \
+              /usr/local/share/man/man1/emacsclient.1.gz
 #+end_src
 
 ** Extending Emacs, packages repositories, etc

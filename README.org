@@ -297,6 +297,8 @@ with a date tag and a properly formatted link to buffer file.
   	    (markdown-date-tag remember-time-format) "\n\n"
   	    text)))
 
+  (global-set-key "\C-c\M-r" 'remember)
+
   (with-eval-after-load "remember"
     (setq remember-notes-initial-major-mode 'markdown-mode
   	remember-annotation-functions '(markdown-buffer-file-name-as-link)
@@ -304,9 +306,7 @@ with a date tag and a properly formatted link to buffer file.
   	remember-data-file (expand-file-name "Remember.md" "~/Documents/Notes")
   	remember-text-format-function 'format-markdown-note
   	remember-time-format "%c"
-  	remember-leader-text nil)
-
-    (global-set-key "\C-c\M-r" 'remember))
+  	remember-leader-text nil))
 #+end_src
 
 ** Generic modes

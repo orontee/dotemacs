@@ -440,7 +440,7 @@ The vanilla completion window is hidden if not explicitly asked for.
 #+end_src
 
 Still not sure whether I want to use =vertico= or =icomplete= for
-incremental minibuffer completion.
+minibuffer completion.
 
 #+begin_src emacs-lisp :tangle init.el
   (setq icomplete-in-buffer nil
@@ -450,6 +450,7 @@ incremental minibuffer completion.
       (progn
         (require 'vertico)
         (keymap-set vertico-map "TAB" #'minibuffer-complete)
+        (setq vertico-preselect 'prompt)
         (vertico-mode 1)
         (when (locate-library "marginalia")
   	(require 'marginalia)

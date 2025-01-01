@@ -272,70 +272,94 @@ Notes are appended to a dedicated remember data file in Markdown mode,
 with a date tag and a properly formatted link to buffer file.
 
 #+begin_src emacs-lisp :tangle init.el
-  (defun markdown-buffer-file-name-as-link (&optional buffer)
-    "Return link to file BUFFER is visiting, or nil if none."
-    (let ((buffer (get-buffer (or buffer (current-buffer)))))
-      (let* ((buffer (or (buffer-base-buffer buffer) buffer))
-             (filepath (buffer-file-name buffer))
-             (name (buffer-name buffer)))
-        (when filepath
-          (concat "[" name "]("
-                  (url-encode-url (concat "file://" filepath))
-                  ")")))))
+      (defun markdown-buffer-file-name-as-link (&optional buffer)
+        "Return link to file BUFFER is visiting, or nil if none."
+        (let ((buffer (get-buffer (or buffer (current-buffer)))))
+          (let* ((buffer (or (buffer-base-buffer buffer) buffer))
+                 (filepath (buffer-file-name buffer))
+                 (name (buffer-name buffer)))
+            (when filepath
+              (concat "[" name "]("
+                      (url-encode-url (concat "file://" filepath))
+                      ")")))))
 
-  (defun markdown-insert-buffer-file-link (buffer)
-    "Insert link to file visited by BUFFER."
-    (interactive "bBuffer: ")
-    (insert (markdown-buffer-file-name-as-link buffer)))
+      (defun markdown-insert-buffer-file-link (buffer)
+        "Insert link to file visited by BUFFER."
+        (interactive "bBuffer: ")
+        (insert (markdown-buffer-file-name-as-link buffer)))
 
-  (defun markdown-date-tag (format-string)
-    "Return date tag."
-    (concat "[date]:# \"" (format-time-string format-string) "\""))
+      (defun markdown-date-tag (format-string)
+        "Return date tag."
+        (concat "[date]:# \"" (format-time-string format-string) "\""))
 
-  (defun markdown-insert-date-tag (&optional format-string)
-    "Insert a date tag.
-    Use FORMAT-STRING as format, see `format-time-string'; Default to the
-    locale's date and time format."
-    (insert (markdown-date-tag (or format-string "%c"))))
+      (defun markdown-insert-date-tag (&optional format-string)
+        "Insert a date tag.
+        Use FORMAT-STRING as format, see `format-time-string'; Default to the
+        locale's date and time format."
+        (insert (markdown-date-tag (or format-string "%c"))))
 
-  (require 'remember)
-  (defun format-markdown-note (text)
-    "Meant to be used with `remember-text-format-function'.
-    It returns the text to be remembered, formatted as a Markdown section of
-    level 2."
-    (let ((desc (remember-buffer-desc)))
-      (with-temp-buffer
-        (markdown-insert-header 2 desc)
-        (end-of-line)
-        (insert (concat "\n"
-                        (markdown-date-tag remember-time-format) "\n\n"
-                        text))
-        (buffer-string))))
+      (require 'remember)
+      (defun remember-format-markdown-note (text)
+        "Meant to be used with `remember-text-format-function'.
+        It returns the text to be remembered, formatted as a Markdown section of
+        level 2."
+        (let ((desc (remember-buffer-desc)))
+          (with-temp-buffer
+            (markdown-insert-header 2 desc)
+            (end-of-line)
+            (insert (concat "\n"
+                            (markdown-date-tag remember-time-format) "\n\n"
+                            text))
+            (buffer-string))))
 
-  (keymap-global-set "C-x M-r" 'remember)
-  (keymap-global-set "C-x M-n" 'remember-notes)
+      (defvar remember-data-files-regex "\\.md\\'")
 
-  (with-eval-after-load "remember"
-    (define-derived-mode remember-mode markdown-mode "Remember"
-      "Major mode for output from \\[remember].
-    This buffer is used to collect data written in Markdown format that you
-    want to remember.
-    \\<remember-mode-map>
-    Just hit \\[remember-finalize] when you're done entering, and it will file
-    the data away for latter retrieval, and possible indexing.
+      (defun remember-append-in-data-directory ()
+        "Append remember data to a file in `remember-data-directory'.
+      The file is read from minibuffer."
+        (let* ((name
+      	 (completing-read "Remember in file: "
+      			  (directory-files
+      			   (expand-file-name remember-data-directory)
+      			   nil
+      			   remember-data-files-regex)))
+              (remember-data-file (expand-file-name name remember-data-directory)))
+          (remember-append-to-file)))
 
-    \\{remember-mode-map}"
-      ;; restore Markdown mode keybindings overwritten in
-      ;; remember-mode-map
-      (keymap-local-set "C-c C-s" markdown-mode-style-map))
+      (define-prefix-command 'remember-prefix-map)
+      (keymap-global-set "C-x M-r" 'remember-prefix-map)
+      (keymap-set remember-prefix-map "r" 'remember)
+      (keymap-set remember-prefix-map "c" 'remember-clipboard)
+      (keymap-set remember-prefix-map "R" 'remember-region)
+      (keymap-set remember-prefix-map "n" 'remember-notes)
 
-    (setq remember-notes-initial-major-mode 'markdown-mode
-          remember-annotation-functions '(markdown-buffer-file-name-as-link)
-          remember-handler-functions '(remember-append-to-file)
-          remember-data-file (expand-file-name "Remember.md" "~/Documents/Notes")
-          remember-text-format-function 'format-markdown-note
-          remember-time-format "%c"
-          remember-leader-text nil))
+      (with-eval-after-load "remember"
+        (define-derived-mode remember-mode markdown-mode "Remember"
+  	"Major mode for output from \\[remember].
+  This buffer is used to collect data written in Markdown format that you
+  want to remember.
+  \\<remember-mode-map>
+  Just hit \\[remember-finalize] when you're done entering, and it will file
+  the data away for latter retrieval, and possible indexing.
+  \\{remember-mode-map}"
+  	;; restore Markdown mode keybindings overwritten in
+  	;; remember-mode-map
+  	(keymap-local-set "C-c C-s" markdown-mode-style-map)
+
+  	(setq header-line-format
+  	      (substitute-command-keys
+  	       "Edit, then exit with `\\[remember-finalize]' or abort with \
+  `\\[remember-destroy]'")))
+
+        (setq remember-notes-initial-major-mode 'markdown-mode
+              remember-annotation-functions '(markdown-buffer-file-name-as-link)
+              remember-handler-functions '(remember-append-in-data-directory)
+      	remember-data-directory "~/Documents/Notes"
+              remember-data-file (expand-file-name "Remember.md"
+      					     remember-data-directory)
+              remember-text-format-function 'remember-format-markdown-note
+              remember-time-format "%c"
+              remember-leader-text nil))
 #+end_src
 
 ** Generic modes
@@ -662,7 +686,7 @@ outline minor mode.
 
 (define-prefix-command 'ctl-c@-map)
 (keymap-global-set "C-c @" 'ctl-c@-map)
-(define-key ctl-c@-map "t" 'outline-minor-mode)  
+(keymap-set ctl-c@-map "t" 'outline-minor-mode)
 #+end_src
 
 ** Tab bar

@@ -288,6 +288,7 @@ with a date tag and a properly formatted link to buffer file.
   locale's date and time format."
     (insert (markdown-date-tag (or format-string "%c"))))
 
+  (require 'remember)
   (defun format-markdown-note (text)
     "Meant to be used with `remember-text-format-function'.
   It returns the text to be remembered, formatted as a Markdown section of
@@ -297,9 +298,23 @@ with a date tag and a properly formatted link to buffer file.
   	    (markdown-date-tag remember-time-format) "\n\n"
   	    text)))
 
-  (keymap-global-set "C-c M-r" 'remember)
+  (keymap-global-set "C-x M-r" 'remember)
+  (keymap-global-set "C-x M-n" 'remember-notes)
 
   (with-eval-after-load "remember"
+    (define-derived-mode remember-mode markdown-mode "Remember"
+      "Major mode for output from \\[remember].
+  This buffer is used to collect data written in Markdown format that you
+  want to remember.
+  \\<remember-mode-map>
+  Just hit \\[remember-finalize] when you're done entering, and it will file
+  the data away for latter retrieval, and possible indexing.
+
+  \\{remember-mode-map}"
+      ;; restore Markdown mode keybindings overwritten in
+      ;; remember-mode-map
+      (keymap-local-set "C-c C-s" markdown-mode-style-map))
+
     (setq remember-notes-initial-major-mode 'markdown-mode
   	remember-annotation-functions '(markdown-buffer-file-name-as-link)
   	remember-handler-functions '(remember-append-to-file)
@@ -437,6 +452,7 @@ incremental minibuffer completion.
         (keymap-set vertico-map "TAB" #'minibuffer-complete)
         (vertico-mode 1)
         (when (locate-library "marginalia")
+  	(require 'marginalia)
   	(marginalia-mode 1)))
     (icomplete-mode 1))
 #+end_src
@@ -541,8 +557,8 @@ Automatically save place of cursor in each file.
 ** Archives display
 
 #+begin_src emacs-lisp :tangle init.el
-(with-eval-after-load "tar-mode"
-  (setq tar-mode-show-date t))
+(require 'tar-mode)
+(setq tar-mode-show-date t)
 #+end_src
 
 ** Time and date
@@ -552,6 +568,7 @@ When working in a console, it is sometime usefull to get the time:
 is =display-time-mode=.
 
 #+begin_src emacs-lisp :tangle init.el
+(require 'time)
 (add-hook 'display-time-mode-hook
           (lambda ()
              (setq display-time-day-and-date nil
@@ -752,62 +769,6 @@ is_command emacs      && alias     em='emacsclient -t'
 #+begin_src emacs-lisp :tangle init.el
 (savehist-mode)
 #+end_src
-
-** MinGW
-
-In case there MinGW is installed, the list of directories where to
-search programs, the =PATH= environment variable and the list of
-directories where to search documentation files are extended.
-
-Similar tweaks are done for Ghostscript, GNU Aspell, Visual Studio.
-
-#+begin_src emacs-lisp :tangle init.el
-  (when (eq system-type 'windows-nt)
-    (setq find-ls-option '("-exec ls -ld {} +" . "-ld"))
-    (let ((mingw-root "C:\\GNU\\MinGW"))
-      (when (file-exists-p mingw-root)
-        ;; MinGW
-        (setenv "PATH" (concat mingw-root "\\bin" ";" (getenv "PATH")))
-        (add-to-list 'exec-path (expand-file-name "bin" mingw-root))
-        (add-to-list 'Info-directory-list
-                     (expand-file-name "share/info" mingw-root))
-        ;; MSYS
-        (let ((msys-root (concat mingw-root "\\msys\\1.0")))
-          (when (file-exists-p msys-root)
-            (setenv "PATH" (concat msys-root "\\bin" ";" (getenv "PATH")))
-            (add-to-list 'exec-path (expand-file-name "bin" msys-root))
-            (setenv "PATH" (concat msys-root "\\local\\bin"  ";" (getenv "PATH")))
-            (add-to-list 'exec-path (expand-file-name "local/bin" msys-root))
-            (add-to-list 'Info-directory-list
-                         (expand-file-name "share/info" msys-root))
-            (require 'grep)
-            (grep-apply-setting 'grep-command
-                                (expand-file-name "bin/grep.exe" msys-root))
-            (grep-apply-setting 'grep-find-command
-                                (expand-file-name "bin/find.exe" msys-root))))))
-    (let ((gs-root "C:\\Program Files (x86)\\gs\\gs9.14"))
-      (when (file-exists-p gs-root)
-        (setenv "PATH" (concat gs-root "\\bin" ";" (getenv "PATH")))
-        (setenv "PATH" (concat gs-root "\\lib" ";" (getenv "PATH")))
-        (add-to-list 'exec-path (expand-file-name "bin" gs-root))
-        (add-to-list 'exec-path (expand-file-name "lib" gs-root))
-        (require 'doc-view)
-        (setq doc-view-ghostscript-program "gswin32c.exe")))
-    (let ((aspell-root "C:\\GNU\\aspell"))
-      (when (file-exists-p aspell-root)
-        (setenv "PATH" (concat aspell-root "\\bin" ";" (getenv "PATH")))
-        (add-to-list 'exec-path (expand-file-name "bin" aspell-root))))
-    (let ((visual-studio-root "C:\\Program Files (x86)\\Microsoft Visual Studio 10.0")
-          (dotnet-framework-root "C:\\Windows\\Microsoft.NET\\Framework\v4.0.30319"))
-      (when (file-exists-p visual-studio-root)
-        (setenv "PATH" (concat visual-studio-root "\\Common7\\IDE" ";" (getenv "PATH")))
-        (add-to-list 'exec-path (expand-file-name "Common7/IDE" visual-studio-root))
-        (add-to-list 'auto-mode-alist
-               `(,(expand-file-name "VC/include" visual-studio-root) . c++-mode)))
-      (when (file-exists-p dotnet-framework-root)
-        (setenv "PATH" (concat dotnet-framework-root ";" (getenv "PATH"))))))
-#+end_src
-
 
 ** Theme
 
@@ -1092,6 +1053,7 @@ Key bindings to report and cleanup blank problems in all buffer or at
 region.
 
 #+begin_src emacs-lisp :tangle init.el
+(require 'whitespace)
 (define-prefix-command 'ctl-cw-map)
 (keymap-global-set "C-c w" 'ctl-cw-map)
 (keymap-set ctl-cw-map "t" 'whitespace-mode)
@@ -1120,9 +1082,9 @@ Glasses help reading Camel case. I prefer parentheses to stick to the
 preceding identifier and embedded capitals to be downcase.
 
 #+begin_src emacs-lisp :tangle init.el
-(with-eval-after-load "glasses"
-  (setq glasses-separate-parentheses-p nil
-        glasses-uncapitalize-p t))
+(require 'glasses)
+(setq glasses-separate-parentheses-p nil
+      glasses-uncapitalize-p t)
 #+end_src
 
 ** Version control
@@ -1208,6 +1170,7 @@ automaticaly =smerge-mode=; Otherwise I tend to use =smerge-mode= key
 bindings after the mode has been deactivated.
 
 #+begin_src emacs-lisp :tangle init.el
+(require 'smerge-mode)
 (with-eval-after-load "smerge-mode"
   (setq smerge-auto-leave nil))
 #+end_src
@@ -1270,13 +1233,6 @@ PROMPT_COMMAND=${PROMPT_COMMAND:+$PROMPT_COMMAND; }osc7_cwd
 set +x
 #+end_src
 
-** Terminal emulation
-
-#+begin_src emacs-lisp :tangle init.el
-(add-hook 'term-mode-hook
-          (lambda ()
-             (term-pager-toggle)))
-#+end_src
 
 ** Compilation                                                     :noexport:
 
@@ -1309,6 +1265,7 @@ Prefer to run the visual interface to diff in a single frame and split
 that frame vertically or horizontally according to the frame geometry.
 
 #+begin_src emacs-lisp :tangle init.el
+(require 'ediff)
 (add-hook 'ediff-mode-hook
           (lambda ()
              (setq ediff-window-setup-function 'ediff-setup-windows-plain)
@@ -1319,11 +1276,11 @@ that frame vertically or horizontally according to the frame geometry.
 White space visualization is useful when inspecting diffs.
 
 #+begin_src emacs-lisp :tangle init.el
+(require 'outline)
 (add-hook 'diff-mode-hook
           (lambda ()
              (setq diff-font-lock-prettify t
-                   outline-minor-mode-cycle t
-                   outline-minor-mode-use-margins t)
+                   outline-minor-mode-cycle t)
              (whitespace-mode)
              (outline-minor-mode)))
 #+end_src
@@ -1340,16 +1297,17 @@ White space visualization is useful when inspecting diffs.
 ** Debugger, GDB
 
 #+begin_src emacs-lisp :tangle init.el
-(add-hook 'gdb-mode-hook
-          (lambda ()
-             (setq gdb-show-changed-values t
-                   gdb-use-colon-colon-notation nil
-                   gdb-use-separate-io-buffer t)))
+  (require 'gdb-mi)
+  (add-hook 'gdb-mode-hook
+            (lambda ()
+               (setq gdb-show-changed-values t
+                     gdb-use-colon-colon-notation nil)))
 
-(add-hook 'gud-mode-hook
-          (lambda ()
-             (setq gud-tooltip-mode nil
-                   gud-gdb-command-name "gdb --silent --annotate=3")))
+  (require 'gud)
+  (add-hook 'gud-mode-hook
+            (lambda ()
+               (setq gud-tooltip-mode nil
+                     gud-gdb-command-name "gdb --silent --annotate=3")))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1406,12 +1364,13 @@ Some abbreviation definitions for preprocessor directives are added.
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-(add-hook 'c++-ts-mode-hook
-          (lambda ()
-             (setq comment-style 'extra-line)
-             (setq indent-tabs-mode nil)
-             (keymap-set c++-ts-mode-map "C-c o" 'ff-find-other-file)
-             (keymap-set c++-ts-mode-map "C-m" 'c-context-line-break)))
+  (require 'c-ts-mode)
+  (add-hook 'c++-ts-mode-hook
+            (lambda ()
+               (setq comment-style 'extra-line)
+               (setq indent-tabs-mode nil)
+               (keymap-set c++-ts-mode-map "C-c o" 'ff-find-other-file)
+               (keymap-set c++-ts-mode-map "C-m" 'c-context-line-break)))
 #+end_src
 
 Update default text to insert into new files.
@@ -1475,6 +1434,7 @@ The style used for docstring is the one found in Django code
 source. Outline minor mode put headings on classes and functions.
 
 #+begin_src emacs-lisp :tangle init.el
+(require 'python)
     (add-hook 'python-ts-mode-hook
               (lambda ()
                  (setq tab-width 4
@@ -1492,11 +1452,11 @@ want to generate them by yourself...). The =info-look= setting for
 =python-mode= must be updated to those new files.
 
 #+begin_src emacs-lisp :tangle init.el
-(with-eval-after-load "info-look"
+  (require 'info-look)
   (info-lookup-add-help
-    :mode 'python-ts-mode
-    :regexp "[[:alnum:]_]+"
-    :doc-spec '(("(python)Index" nil ""))))
+   :mode 'python-mode
+   :regexp "[[:alnum:]_]+"
+   :doc-spec '(("(python)Index" nil "")))
 #+end_src
 
 Usefull abbreviations.
@@ -1518,6 +1478,7 @@ Set the name of the Python template to insert at file creation.
 ** Support for Scheme
 
 #+begin_src emacs-lisp :tangle init.el
+(require 'scheme)
 (add-hook 'scheme-mode-hook
           (lambda ()
              (setq scheme-program-name "umb-scheme")))
@@ -1538,6 +1499,7 @@ Hitting =;= in an interactive SQL buffer will send the current input
 to the process.
 
 #+begin_src emacs-lisp :tangle init.el
+(require 'sql)
 (setq sql-electric-stuff t)
 #+end_src
 
@@ -1603,15 +1565,6 @@ fly.
   (add-hook 'css-mode-hook 'flymake-mode))
 #+end_src
 
-When available, load the package =irfc= providing an interface to IETF
-RFC documents.
-
-#+begin_src emacs-lisp :tangle init.el
-(when (locate-library "irfc")
-  (require 'irfc)
-  (setq irfc-assoc-mode t))
-#+end_src
-
 When available, load the package =rainbow-mode= to colorize strings
 that represent colors.
 
@@ -1633,53 +1586,42 @@ that represent colors.
 
 When a file with =.tex= extension is opened, it is parsed to identify
 if it is a TeX or a LaTeX file. The latter will be the default if the
-parsing fails to identify whether it is a TeX or a LaTeX file. Next,
-the list of regions to be skipped while spell checking a buffer in TeX
-mode is extended (most of the time =\ref= and =\label= parameters are
-acronyms not recognized by the spell checker).
+parsing fails to identify whether it is a TeX or a LaTeX file.
 
 #+begin_src emacs-lisp :tangle init.el
 (setq tex-default-mode 'latex-mode)
-(setq ispell-tex-skip-alists
-      (cons
-       (let ((list (car ispell-tex-skip-alists)))
-         (add-to-list 'list '("\\\\\\(ref\\|label\\)" ispell-tex-arg-end)))
-       (cdr ispell-tex-skip-alists)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-(setq latex-run-command "latex -synctex=1 -interaction=nonstopmode")
-(add-hook 'latex-mode-hook
-          (lambda ()
-             (setq comment-style 'plain
-                   comment-column 0
-                   indent-tabs-mode nil
-                   ispell-check-comments nil
-                   tex-trailer "\\end{document}"
-                   latex-block-default "theorem"
-                   latex-block-names
-                   '("theorem" "proposition" "definition" "lemma" "multline")
-                   tex-open-quote "\\og "
-                   tex-close-quote "\\fg"
-                   tex-alt-dvi-view-command
-                   `(let ((line (count-lines 1 (point)))
-                          (source (file-name-nondirectory (buffer-file-name))))
-                      (concat "xdvi -sourceposition "
-                              (number-to-string line) source " *")))
-             (define-skeleton alt-latex-math-env
-               "Create a matching pair of parenthesis."
-               nil 92 40 _ 92 41)
-             (define-skeleton alt-latex-displaymath-env
-               "Create a matching pair of brackets."
-               nil 92 91 _ 92 93)
-             (add-to-list 'tex-compile-commands
-                          '("xdg-open %r.pdf &" "%r.pdf"))
-             (reftex-mode t)
-             (outline-minor-mode)
-             (keymap-set latex-mode-map "M-<tab>" 'info-complete-symbol)
-             (keymap-set latex-mode-map "C-c C-s" 'alt-latex-section)
-             (keymap-set latex-mode-map "C-c m" 'alt-latex-math-env)
-             (keymap-set latex-mode-map "C-c M" 'alt-latex-displaymath-env)))
+  (require 'tex-mode)
+  (require 'reftex)
+  (setq latex-run-command "latex -synctex=1 -interaction=nonstopmode")
+  (add-hook 'latex-mode-hook
+            (lambda ()
+               (setq comment-style 'plain
+                     comment-column 0
+                     indent-tabs-mode nil
+                     ispell-check-comments nil
+                     tex-trailer "\\end{document}"
+                     latex-block-default "theorem"
+                     latex-block-names
+                     '("theorem" "proposition" "definition" "lemma" "multline")
+                     tex-open-quote "\\og "
+                     tex-close-quote "\\fg")
+               (define-skeleton alt-latex-math-env
+                 "Create a matching pair of parenthesis."
+                 nil 92 40 _ 92 41)
+               (define-skeleton alt-latex-displaymath-env
+                 "Create a matching pair of brackets."
+                 nil 92 91 _ 92 93)
+               (add-to-list 'tex-compile-commands
+                            '("xdg-open %r.pdf &" "%r.pdf"))
+               (reftex-mode t)
+               (outline-minor-mode)
+               (keymap-set latex-mode-map "M-<tab>" 'info-complete-symbol)
+               (keymap-set latex-mode-map "C-c C-s" 'alt-latex-section)
+               (keymap-set latex-mode-map "C-c m" 'alt-latex-math-env)
+               (keymap-set latex-mode-map "C-c M" 'alt-latex-displaymath-env)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1780,57 +1722,6 @@ inserted."
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-(defadvice latex-imenu-create-index (before cut-section-alist activate)
-  "Cut `latex-section-alist' to have max `latex-outline-max-level' in
-`imenu' menu."
-  (setq temp-latex-section-alist latex-section-alist)
-  (set (make-local-variable 'latex-section-alist)
-       (let (list)
-         (dolist (elt (default-value 'latex-section-alist))
-           (if (<= (cdr elt) latex-outline-max-level)
-               (push elt list)))
-         list)))
-#+end_src
-
-#+begin_src emacs-lisp :tangle init.el
-(defadvice latex-imenu-create-index (before cut-metasection-list activate)
-  "Cut `latex-metasection-alist' to get rid of \\end{document} entries
-in `imenu' menu."
-  (setq temp-latex-metasection-list latex-metasection-list)
-  (set (make-local-variable 'latex-metasection-list)
-       (remove "end{document}" latex-metasection-list)))
-#+end_src
-
-#+begin_src emacs-lisp :tangle init.el
-(defadvice latex-imenu-create-index
-  (after restore-latex-metasection-list activate)
-  "Restore `latex-metasection-list' default value."
-  (setq latex-metasection-list temp-latex-metasection-list))
-#+end_src
-
-#+begin_src emacs-lisp :tangle init.el
-(defadvice latex-imenu-create-index
-  (after restore-latex-section-alist activate)
-  "Restore `latex-section-alist' default value."
-  (setq latex-section-alist temp-latex-section-alist))
-#+end_src
-
-#+begin_src emacs-lisp :tangle init.el
-(defvar tex-alt-dvi-view-command nil)
-
-(defun alt-tex-view (&optional alt)
-  "Like \\[tex-view] but allows use of alternative command.
-
-If prefix argument is provided, use the alternative command,
-`tex-alt-dvi-view-command'."
-  (interactive "P")
-  (or tex-dvi-view-command
-      (error "You must set `tex-dvi-view-command'"))
-  (let ((tex-dvi-print-command
-         (if alt tex-alt-dvi-view-command
-           tex-dvi-view-command)))
-    (tex-print)))
-
 (defvar alt-latex-section-default "paragraph")
 
 (define-skeleton alt-latex-section
@@ -1870,39 +1761,24 @@ Auto fill mode may break the indentation.
 ** Enhancing file manager
 
 #+begin_src emacs-lisp :tangle init.el
-  (add-hook 'dired-load-hook
-            (lambda ()
-               (require 'dired-x)
-               (setq dired-x-hands-off-my-keys nil)
-               (dired-x-bind-find-file)
-               (setq dired-free-space-args "-Pk"
-  		   dired-free-space 'first
-                     dired-listing-switches "-al")
-               (setq dired-isearch-filenames t
-                     dired-vc-rename-file t)))
+  (with-eval-after-load "dired"
+    (require 'dired-x)
+    (setq dired-x-hands-off-my-keys nil)
+    (dired-x-bind-find-file)
+    (setq dired-free-space 'first
+          dired-listing-switches "-alh")
+    (setq dired-isearch-filenames t
+          dired-vc-rename-file t))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-(when (locate-library "gnus-dired")
-  (require 'gnus-dired))
-
-(let ((system-type))
-  (cond
-   ('windows-nt
-    (setq dired-omit-files
-      (concat dired-omit-files
-              "\\|^\\..+\\|^CVS$\\|^\\$Recycle\\.Bin$")))
-   (t (setq dired-omit-files
-      (concat dired-omit-files
-              "\\|^\\..+\\|^CVS$\\|^lost\\+found")))))
+(require 'dired-x)
 (setq dired-omit-files
   (concat dired-omit-files "\\|^__pycache__$" "\\|^\.mypy_cache$"))
 (add-to-list 'dired-omit-extensions ".egg-info")
 (setq dired-omit-extensions (delete ".pdf" dired-omit-extensions))
 (add-hook 'dired-mode-hook
           (lambda ()
-             (when (fboundp 'gnus-dired-mode)
-               (gnus-dired-mode 1))
              (setq dired-omit-size-limit nil
                    truncate-lines t)
              (dired-omit-mode 1)
@@ -1911,123 +1787,11 @@ Auto fill mode may break the indentation.
              (keymap-set dired-mode-map "w" 'dired-copy-filename-as-kill)))
 #+end_src
 
-* Mail, newsgroup, RSS
-
-** Usenet, RSS and electronic mail
-
-I use Gnus for Usenet forums, RSS feeds and electronic mail. All
-configuration files goes into =~/.config/emacs=.
-
-#+begin_src emacs-lisp :tangle init.el
-(setq read-mail-command 'gnus
-      mail-user-agent 'gnus-user-agent
-      message-directory (expand-file-name "~/.config/emacs/Mail")
-      gnus-home-directory (expand-file-name "~/.config/emacs/"))
-#+end_src
-
-Quit reading news before killing emacs.
-
-#+begin_src emacs-lisp :tangle init.el
-(add-hook 'kill-emacs-hook
-          (lambda ()
-             (when (and (fboundp 'gnus-alive-p) (gnus-alive-p))
-               (gnus-group-exit))))
-#+end_src
-
-Group topics are enabled by default.
-
-#+begin_src emacs-lisp :tangle init.el
-(add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
-#+end_src
-
-Maill servers are scanned every 2 minutes.
-
-#+begin_src emacs-lisp :tangle init.el
-(require 'gnus-demon)
-(gnus-demon-add-scanmail)
-#+end_src
-
-#+begin_src emacs-lisp :tangle .gnus.el
-(setq gnus-nntp-server nil
-      gnus-select-method
-      '(nnimap "gmail"
-               (nnimap-address "imap.gmail.com")
-               (nnimap-server-port "imaps")
-               (nnimap-stream ssl))
-      gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
-
-(setq message-send-mail-function 'smtpmail-send-it
-      smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
-      smtpmail-auth-credentials '(("smtp.gmail.com" 587 "orontee@gmail.com" nil))
-      smtpmail-default-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-service 587
-      smtpmail-local-domain "localdomain")
-#+end_src
-
-To view images using Eye Of Gnome I have created the file:~/.mailcap
-with the following content.
-
-#+begin_src
-image/jpeg; eog %s
-#+end_src
-
-Atom feeds must be converted before Gnus can parsed them. The
-file:~/.config/emacs/atom2rss.xsl can be downloaded from
-http://atom.geekhood.net/.
-
-#+begin_src
-(require 'mm-url)
-(defadvice mm-url-insert (after DE-convert-atom-to-rss () )
-  "Converts atom to RSS by calling xsltproc."
-  (when (re-search-forward "xmlns=\"http://www.w3.org/.*/Atom\""
-                           nil t)
-    (goto-char (point-min))
-    (message "Converting Atom to RSS... ")
-    (call-process-region (point-min) (point-max)
-                         "xsltproc"
-                         t t nil
-                         (expand-file-name "~/.config/emacs/atom2rss.xsl") "-")
-    (goto-char (point-min))
-    (message "Converting Atom to RSS... done")))
-
-(ad-activate 'mm-url-insert)
-#+end_src
-
-** Message writing
-
-#+begin_src emacs-lisp :tangle init.el
-(setq user-mail-address "orontee@gmail.com"
-      user-full-name "Matthias Meulien")
-#+end_src
-
-#+begin_src emacs-lisp :tangle init.el
-(add-hook 'message-mode-hook
-          (lambda ()
-             (setq message-elide-ellipsis "\n> (...)\n"
-                   message-signature t)
-             (setq message-completion-alist
-                   '(("^\\(Newsgroups\\|Followup-To\\|Posted-To\\|Gcc\\):" . message-expand-group)
-                     ("^\\(Resent-\\)?\\(To\\|B?Cc\\):" . eudc-expand-inline)
-                     ("^\\(Reply-To\\|From\\|Mail-Followup-To\\|Mail-Copies-To\\):" . eudc-expand-inline)
-                     ("^\\(Disposition-Notification-To\\|Return-Receipt-To\\):" . message-expand-name)))
-             (setq ispell-message-dictionary-alist
-                   '(("^To:[^\n,]+\\.fr[ \t\n,>]" . "francais")
-                     ("^Newsgroups:[ \t]*fr\\." . "francais")
-                     ("^Newsgroups:[ \t]*[^f]" . "english")))))
-#+end_src
-
-#+begin_src emacs-lisp :tangle init.el
-(setq gnus-posting-styles
-      '((".*"
-         (signature "Matthias"))))
-#+end_src
-
-* Code sources                                                             :noexport:
+* Code sources                                                     :noexport:
 
 #+name: init.el_header
 #+begin_src emacs-lisp
-;;; -*- coding: utf-8; -*-
+;;; -*- coding: utf-8; lexical-binding: t; -*-
 ;;; GNU Emacs Startup file
 
 ;;; WARNING This file was automatically generated: Do not edit
@@ -2037,7 +1801,7 @@ http://atom.geekhood.net/.
 #+begin_src emacs-lisp :tangle init.el
 (require 'cus-edit)
 (setq custom-file (expand-file-name
-                   (concat  "~/.config/emacs/" system-name "-custom.el")))
+                   (concat  "~/.config/emacs/" (system-name) "-custom.el")))
 (when (file-exists-p custom-file)
   (load custom-file))
 #+end_src

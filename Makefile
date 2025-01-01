@@ -8,15 +8,15 @@ export_cmd = \
   (find-file \"$<\") \
   (org-html-export-as-html))"
 
-build_files = init.el init_bash.sh .gnus.el
+build_files = init.el init_bash.sh
 
 EMACSCLIENT ?= emacsclient
 
-all: init.el init_bash.sh .gnus.el
+all: init.el init_bash.sh
 
 html: emacs.html
 
-init.el init_bash.sh .gnus.el: README.org
+init.el init_bash.sh: README.org
 	$(EMACSCLIENT) -e $(tangle_cmd)
 
 emacs.html: README.org

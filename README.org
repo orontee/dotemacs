@@ -744,20 +744,25 @@ Emacs
 
 ** Documentation, help
 
-#+begin_src emacs-lisp :tangle init.el
-(add-hook 'Info-mode-hook
-          (lambda ()
-             (setq truncate-lines t)))
+Make local documentation available.
 
-(let ((path (expand-file-name "~/.local/share/info/")))
-  (when (file-accessible-directory-p path)
-    (add-to-list 'Info-additional-directory-list path)))
+#+begin_src emacs-lisp :tangle init.el
+  (add-hook 'Info-mode-hook
+            (lambda ()
+               (setq truncate-lines t)))
+
+  (let ((path (expand-file-name "~/.local/share/info/")))
+    (when (file-accessible-directory-p path)
+      (add-to-list 'Info-additional-directory-list path)))
 #+end_src
+
+Enable Which Key mode and make it use Unicode.
 
 #+begin_src emacs-lisp :tangle init.el
   (when (locate-library "which-key")
-    (load-library "which-key")
-    (which-key-mode))
+    (require 'which-key)
+    (setq which-key-dont-use-unicode nil)
+    (which-key-mode 1))
 #+end_src
 
 ** Tab bar

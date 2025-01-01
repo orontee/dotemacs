@@ -62,6 +62,16 @@ can be downloaded from http://ftp.gnu.org/pub/gnu/emacs/.
   file"))
 #+end_src
 
+I usually build my own binary from a Git repository.
+
+#+begin_src sh
+  $ ./autogen.sh
+  $ ./configure --with-pgtk --no-create --no-recursion --prefix=/opt/emacs
+  $ CFLAGS='-O3' make -j 10 bootstrap configure=default
+  $ make
+  $ sudo make install
+#+end_src
+
 ** Extending Emacs, packages repositories, etc
 
 The easiest way to extend Emacs features is to use =list-package= and
@@ -238,6 +248,65 @@ Completion of bookmark name uses substring style.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-to-list 'completion-category-overrides '(bookmark (styles substring)))
+#+end_src
+
+** Remember
+
+I used to use Org mode (this buffer!). But nowadays I prefer to stick
+to the universal Markdown or ReStructuredText formats.
+
+Thus I add to find an alternative for "Org capture" and just switched
+to good old "Remember mode" to remember data.
+
+Notes are appended to a dedicated remember data file in Markdown mode,
+with a date tag and a properly formatted link to buffer file.
+
+#+begin_src emacs-lisp :tangle init.el
+  (defun markdown-buffer-file-name-as-link (&optional buffer)
+    "Return link to file BUFFER is visiting, or nil if none."
+    (let ((buffer (get-buffer (or buffer (current-buffer)))))
+      (let* ((buffer (or (buffer-base-buffer buffer) buffer))
+  	   (filepath (buffer-file-name buffer))
+  	   (name (buffer-name buffer)))
+        (when filepath
+  	(concat "[" name "]("
+  		(url-encode-url (concat "file://" filepath))
+  		")")))))
+
+  (defun markdown-insert-buffer-file-link (buffer)
+    "Insert link to file visited by BUFFER."
+    (interactive "bBuffer: ")
+    (insert (markdown-buffer-file-name-as-link buffer)))
+
+  (defun markdown-date-tag (format-string)
+    "Return date tag."
+    (concat "[date]:# \"" (format-time-string format-string) "\""))
+
+  (defun markdown-insert-date-tag (&optional format-string)
+    "Insert a date tag.
+  Use FORMAT-STRING as format, see `format-time-string'; Default to the
+  locale's date and time format."
+    (insert (markdown-date-tag (or format-string "%c"))))
+
+  (defun format-markdown-note (text)
+    "Meant to be used with `remember-text-format-function'.
+  It returns the text to be remembered, formatted as a Markdown section of
+  level 2."
+    (let ((desc (remember-buffer-desc)))
+      (concat "## " desc "\n"
+  	    (markdown-date-tag remember-time-format) "\n\n"
+  	    text)))
+
+  (with-eval-after-load "remember"
+    (setq remember-notes-initial-major-mode 'markdown-mode
+  	remember-annotation-functions '(markdown-buffer-file-name-as-link)
+  	remember-handler-functions '(remember-append-to-file)
+  	remember-data-file (expand-file-name "Remember.md" "~/Documents/Notes")
+  	remember-text-format-function 'format-markdown-note
+  	remember-time-format "%c"
+  	remember-leader-text nil)
+
+    (global-set-key "\C-c\M-r" 'remember))
 #+end_src
 
 ** Generic modes
@@ -813,7 +882,7 @@ Apply Modus theme for accessible readability.
 
   (add-hook 'modus-themes-after-load-theme-hook #'personal-modus-themes-custom-faces)
 
-  (load-theme 'modus-operandi-tinted :no-confirm)
+  (load-theme 'modus-vivendi-tinted :no-confirm)
   (personal-modus-themes-custom-faces)
 #+end_src
 
@@ -841,8 +910,9 @@ Save Emacs state from one session to another.
 
 #+begin_src emacs-lisp :tangle init.el
   (setq desktop-restore-frames nil
- 	desktop-restore-eager nil
- 	desktop-lazy-verbose t)
+  	desktop-restore-eager nil
+  	desktop-lazy-verbose nil
+  	desktop-buffers-not-to-save "\\` \\|\\*eww\\*")
 
   (desktop-save-mode)
 #+end_src
@@ -889,7 +959,7 @@ Use single character to indicate string truncation.
 
 #+begin_src emacs-lisp :tangle init.el
   (setq major-mode-remap-alist
-        '((bash-mode . bash-ts-mode)
+        '((sh-mode . bash-ts-mode)
           (c++-mode . c++-ts-mode)
           (c-mode . c-ts-mode)
           (css-mode . css-ts-mode)
@@ -1220,9 +1290,9 @@ An abbreviation is defined for =&> /dev/null=.
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-(add-hook 'sh-mode-hook
+(add-hook 'bash-ts-mode-hook
           (lambda ()
-             (define-key sh-mode-map "'" 'self-insert-command)))
+             (define-key bash-ts-mode-map "'" 'self-insert-command)))
 #+end_src
 
 Make comint process output to interpret OSC commands and configure
@@ -1599,7 +1669,6 @@ that represent colors.
   (when (locate-library "markdown-mode")
     (load-library "markdown-mode")
     (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
-
 #+end_src
 
 ** Support for TeX and LaTeX
@@ -1839,55 +1908,6 @@ Auto fill mode may break the indentation.
     (add-to-list 'auto-insert-alist
                  `(rst-mode . ,filename))))
 #+end_src
-** Org mode
-
-#+begin_src emacs-lisp :tangle init.el
-(setq org-hide-leading-stars t
-      org-log-done 'time
-      org-directory (expand-file-name "~/Documents/Notes/")
-      org-default-notes-file (expand-file-name "todo.org" org-directory))
-#+end_src
-
-#+begin_src emacs-lisp :tangle init.el
-(when (featurep 'windmove)
-  (add-hook 'org-shiftup-final-hook 'windmove-up)
-  (add-hook 'org-shiftleft-final-hook 'windmove-left)
-  (add-hook 'org-shiftdown-final-hook 'windmove-down)
-  (add-hook 'org-shiftright-final-hook 'windmove-right))
-#+end_src
-
-#+begin_src emacs-lisp :tangle init.el
-(define-key global-map "\C-cr" 'org-capture)
-(define-key global-map "\C-ca" 'org-agenda)
-#+end_src
-
-Org files have an option to set the language to use for translations
-while exporting to HTML. When this option is set, one can deduce the
-dictionary to use for spell checking. By the way I like to spell check
-Org buffers on the fly.
-
-#+begin_src emacs-lisp :tangle init.el
-(when has-spell-checker
-  (add-hook 'org-mode-hook
-   (lambda ()
-      (require 'ispell)
-      (ispell-set-spellchecker-params)
-      (require 'ox)
-      (let ((lang (plist-get (org-export-get-environment) :language)))
-        (when (and lang (assoc lang ispell-dictionary-alist))
-          (setq ispell-local-dictionary lang)))
-      (flyspell-mode))))
-#+end_src
-
-Various types of capture items are defined.
-
-#+begin_src emacs-lisp :tangle init.el
-(require 'org-capture)
-(add-to-list 'org-capture-templates
-      '("t" "Todo" entry (file+headline "todo.org" "Tasks")
-        "* TODO %?\n  %i\n  %a"))
-#+end_src
-
 * File management
 
 ** Replace deletion by move to trash

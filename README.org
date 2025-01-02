@@ -296,6 +296,7 @@ with a date tag and a properly formatted link to buffer file.
     "Insert a date tag.
     Use FORMAT-STRING as format, see `format-time-string'; Default to the
     locale's date and time format."
+    (interactive)
     (insert (markdown-date-tag (or format-string "%c"))))
 
   (defvar remember-markdown-title-level 2)

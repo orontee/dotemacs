@@ -1822,7 +1822,10 @@ Auto fill mode may break the indentation.
 #+begin_src emacs-lisp :tangle init.el
 (require 'dired-x)
 (setq dired-omit-files
-  (concat dired-omit-files "\\|^__pycache__$" "\\|^\.mypy_cache$"))
+  (concat dired-omit-files
+     "\\|^__pycache__$"
+     "\\|^\\.mypy_cache$"
+     "\\|^\\."))
 (add-to-list 'dired-omit-extensions ".egg-info")
 (setq dired-omit-extensions (delete ".pdf" dired-omit-extensions))
 (add-hook 'dired-mode-hook

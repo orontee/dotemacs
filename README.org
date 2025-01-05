@@ -289,7 +289,7 @@ with a date tag and a properly formatted link to buffer file.
     (let ((link (markdown-buffer-file-name-as-link buffer)))
       (if link
   	(insert link)
-        (message "Buffer not visiting a file")))
+        (message "Buffer not visiting a file"))))
 
   (defun markdown-date-tag (format-string)
     "Return date tag."

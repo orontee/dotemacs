@@ -332,6 +332,24 @@ with a date tag and a properly formatted link to buffer file.
           (remember-data-file (expand-file-name name remember-data-directory)))
       (remember-append-to-file)))
 
+  (defvar remember-markdown-archive-file "~/Documents/Notes/Archives.md")
+
+  (defun remember-markdown-archive-note ()
+    "Archive current note.
+  The note is moved to `remembre-markdown-archive-file'."
+    (interactive)
+    (when (markdown-heading-at-point)
+      (next-line))
+    (save-mark-and-excursion
+      (markdown-kill-outline)
+      (let ((buf (find-buffer-visiting remember-markdown-archive-file))
+  	  (text (current-kill 0)))
+        (if buf
+  	  (with-current-buffer buf
+  	    (goto-char (point-max))
+  	    (insert text))
+  	(append-to-file text nil remember-markdown-archive-file)))))
+
   (define-prefix-command 'remember-prefix-map)
   (keymap-global-set "C-x M-r" 'remember-prefix-map)
   (keymap-set remember-prefix-map "r" 'remember)

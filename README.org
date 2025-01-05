@@ -286,7 +286,10 @@ with a date tag and a properly formatted link to buffer file.
   (defun markdown-insert-buffer-file-link (buffer)
     "Insert link to file visited by BUFFER."
     (interactive "bBuffer: ")
-    (insert (markdown-buffer-file-name-as-link buffer)))
+    (let ((link (markdown-buffer-file-name-as-link buffer)))
+      (if link
+  	(insert link)
+        (message "Buffer not visiting a file")))
 
   (defun markdown-date-tag (format-string)
     "Return date tag."

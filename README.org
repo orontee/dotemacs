@@ -1805,6 +1805,28 @@ Auto fill mode may break the indentation.
 (setq delete-by-moving-to-trash t)
 #+end_src
 
+** File search
+
+The function =xref-matches-in-files= is broken since handling of
+binary files depends on the local. A dirty hack is to force "C"
+locale.
+
+#+begin_src emacs-lisp :tangle init.el
+(require 'xref)
+(map-do (lambda (key val)
+	  (map-put xref-search-program-alist
+		   key (concat "LANG=C " val)))
+	xref-search-program-alist)
+#+end_src
+
+When available, use `ripgrep` to search in files.
+
+#+begin_src emacs-lisp :tangle init.el
+(when (and (executable-find "rg")
+           (assoc 'ripgrep xref-search-program-alist))
+  (setq xref-search-program 'ripgrep))
+#+end_src
+
 
 ** Enhancing file manager
 

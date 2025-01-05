@@ -923,6 +923,7 @@ Pacman package build files are shell scripts.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-to-list 'auto-mode-alist '("PKGBUILD\\'" . sh-mode))
+(add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-ts-mode))
 #+end_src
 
 Extend executable path.

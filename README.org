@@ -1830,15 +1830,18 @@ Auto fill mode may break the indentation.
 ** File search
 
 The function =xref-matches-in-files= is broken since handling of
-binary files depends on the local. A dirty hack is to force "C"
-locale.
+binary files is done by parsing the output and depends on the local
+for =grep= and =ugrep=. A fix consist to force those tools to ignore
+matches found in binary files (=-I= option aka
+=--binary-files=without-match=).
 
 #+begin_src emacs-lisp :tangle init.el
 (require 'xref)
-(map-do (lambda (key val)
-	  (map-put xref-search-program-alist
-		   key (concat "LANG=C " val)))
-	xref-search-program-alist)
+(setq xref-search-program-alist
+      '((grep . "xargs -0 grep <C> --null -snHE -I -e <R>")
+	(ripgrep
+	 . "xargs -0 rg <C> --null -nH --no-heading --no-messages -g '!*/' -e <R>")
+	(ugrep . "xargs -0 ugrep <C> --null -ns -I -e <R>")))
 #+end_src
 
 When available, use `ripgrep` to search in files.

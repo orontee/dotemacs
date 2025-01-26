@@ -708,9 +708,9 @@ outline minor mode.
 (setq outline-minor-mode-use-buttons 'in-margins
       outline-blank-line t)
 
-(define-prefix-command 'ctl-c@-map)
-(keymap-global-set "C-c @" 'ctl-c@-map)
-(keymap-set ctl-c@-map "t" 'outline-minor-mode)
+(define-prefix-command 'outline-minor-prefix-map)
+(keymap-global-set "C-c @" 'outline-minor-prefix-map)
+(keymap-set outline-minor-prefix-map "t" 'outline-minor-mode)
 #+end_src
 
 ** Tab bar
@@ -1123,11 +1123,11 @@ region.
 
 #+begin_src emacs-lisp :tangle init.el
 (require 'whitespace)
-(define-prefix-command 'ctl-cw-map)
-(keymap-global-set "C-c w" 'ctl-cw-map)
-(keymap-set ctl-cw-map "t" 'whitespace-mode)
-(keymap-set ctl-cw-map "c" 'whitespace-cleanup)
-(keymap-set ctl-cw-map "r" 'whitespace-report)
+(define-prefix-command 'whitespace-prefix-map)
+(keymap-global-set "C-c w" 'whitespace-prefix-map)
+(keymap-set whitespace-prefix-map "t" 'whitespace-mode)
+(keymap-set whitespace-prefix-map "c" 'whitespace-cleanup)
+(keymap-set whitespace-prefix-map "r" 'whitespace-report)
 
 (setq whitespace-style
       (quote (face empty spaces tabs newline space-mark trailing

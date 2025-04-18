@@ -108,7 +108,7 @@ At the time of writing, I have activated the following packages:
 
 #+begin_src emacs-lisp :exports results :results value raw
 (let ((descriptions "|Package|Description|\n|---|\n"))
-  (dolist (package package-alist descriptions)
+  (dolist (package (sort package-alist) descriptions)
     (let ((name (car package))
           (desc (package-desc-summary (cadr package))))
     (setq descriptions
@@ -118,48 +118,48 @@ At the time of writing, I have activated the following packages:
 #+RESULTS:
 | Package            | Description                                                 |
 |--------------------+-------------------------------------------------------------|
-| x509-mode          | View certificates, CRLs and keys using OpenSSL.             |
-| vue-mode           | Major mode for vue component based on mmm-mode              |
-| vue-html-mode      | Major mode for editing Vue.js templates                     |
-| tablist            | Extended tabulated-list-mode.                               |
-| systemd            | Major mode for editing systemd units                        |
-| structurizr-mode   | No description available.                                   |
-| ssass-mode         | Edit Sass without a Turing Machine                          |
-| spacious-padding   | Increase the padding/spacing of frames and windows          |
-| sops               | SOPS encrypt and decrypt without leaving the editor.        |
-| restclient         | No description available.                                   |
-| rainbow-mode       | Colorize color names in buffers                             |
-| qt-pro-mode        | Qt Pro/Pri major mode                                       |
-| pulsar             | Pulse highlight on demand or after select functions         |
-| powershell         | Mode for editing PowerShell scripts                         |
-| pdf-tools          | Support library for PDF documents                           |
-| nsis-mode          | NSIS-mode.                                                  |
-| modus-themes       | Elegant, highly legible and customizable themes             |
-| mmm-mode           | Allow Multiple Major Modes in a buffer                      |
-| minimap            | Sidebar showing a "mini-map" of a buffer                    |
-| meson-mode         | Major mode for the Meson build system files.                |
-| mermaid-ts-mode    | Major mode for Mermaid                                      |
-| mermaid-mode       | Major mode for working with mermaid graphs.                 |
-| markdown-mode      | Major mode for Markdown-formatted text                      |
-| marginalia         | Enrich existing commands with completion annotations        |
-| jsonrpc            | JSON-RPC library                                            |
-| guess-language     | Robust automatic language detection                         |
-| gptel              | Interact with ChatGPT or other LLMs                         |
-| git-link           | No description available.                                   |
-| feature-mode       | Major mode for editing Gherkin (i.e. Cucumber) user stories |
-| eglot              | The Emacs Client for LSP servers                            |
-| edit-indirect      | Edit regions in separate buffers                            |
-| diminish           | Diminished modes are minor modes with no modeline display   |
-| devicetree-ts-mode | Tree-sitter support for DTS                                 |
-| csv-mode           | Major mode for editing comma/char separated values          |
-| corfu              | COmpletion in Region FUnction                               |
-| cmake-mode         | Major-mode for editing CMake sources.                       |
-| capnp-mode         | Major mode for editing Capn' Proto Files                    |
-| breadcrumb         | project and imenu-based breadcrumb paths                    |
-| bitbake-modes      | Major modes for editing bitbake bb* and conf files.         |
-| adoc-mode          | a major-mode for editing AsciiDoc files                     |
-| Python-doc         | Info documentation for Python                               |
 | CMake-doc          | Info documentation for CMake                                |
+| Python-doc         | Info documentation for Python                               |
+| adoc-mode          | a major-mode for editing AsciiDoc files                     |
+| bitbake-modes      | Major modes for editing bitbake bb* and conf files.         |
+| breadcrumb         | project and imenu-based breadcrumb paths                    |
+| capnp-mode         | Major mode for editing Capn' Proto Files                    |
+| cmake-mode         | Major-mode for editing CMake sources.                       |
+| corfu              | COmpletion in Region FUnction                               |
+| csv-mode           | Major mode for editing comma/char separated values          |
+| devicetree-ts-mode | Tree-sitter support for DTS                                 |
+| diminish           | Diminished modes are minor modes with no modeline display   |
+| edit-indirect      | Edit regions in separate buffers                            |
+| eglot              | The Emacs Client for LSP servers                            |
+| feature-mode       | Major mode for editing Gherkin (i.e. Cucumber) user stories |
+| git-link           | No description available.                                   |
+| gptel              | Interact with ChatGPT or other LLMs                         |
+| guess-language     | Robust automatic language detection                         |
+| jsonrpc            | JSON-RPC library                                            |
+| marginalia         | Enrich existing commands with completion annotations        |
+| markdown-mode      | Major mode for Markdown-formatted text                      |
+| mermaid-mode       | Major mode for working with mermaid graphs.                 |
+| mermaid-ts-mode    | Major mode for Mermaid                                      |
+| meson-mode         | Major mode for the Meson build system files.                |
+| minimap            | Sidebar showing a "mini-map" of a buffer                    |
+| mmm-mode           | Allow Multiple Major Modes in a buffer                      |
+| modus-themes       | Elegant, highly legible and customizable themes             |
+| nsis-mode          | NSIS-mode.                                                  |
+| pdf-tools          | Support library for PDF documents                           |
+| powershell         | Mode for editing PowerShell scripts                         |
+| pulsar             | Pulse highlight on demand or after select functions         |
+| qt-pro-mode        | Qt Pro/Pri major mode                                       |
+| rainbow-mode       | Colorize color names in buffers                             |
+| restclient         | No description available.                                   |
+| sops               | SOPS encrypt and decrypt without leaving the editor.        |
+| spacious-padding   | Increase the padding/spacing of frames and windows          |
+| ssass-mode         | Edit Sass without a Turing Machine                          |
+| structurizr-mode   | No description available.                                   |
+| systemd            | Major mode for editing systemd units                        |
+| tablist            | Extended tabulated-list-mode.                               |
+| vue-html-mode      | Major mode for editing Vue.js templates                     |
+| vue-mode           | Major mode for vue component based on mmm-mode              |
+| x509-mode          | View certificates, CRLs and keys using OpenSSL.             |
 
 
 All settings written using the customize library go to a dedicated

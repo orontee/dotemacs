@@ -896,12 +896,24 @@ Spacious padding make the UI even more readable.
 Save Emacs state from one session to another.
 
 #+begin_src emacs-lisp :tangle init.el
-(setq desktop-restore-frames nil
-      desktop-restore-eager 1
-      desktop-lazy-verbose nil
-      desktop-buffers-not-to-save "\\` \\|\\*eww\\*")
+  (setq desktop-restore-frames nil
+        desktop-restore-eager 1
+        desktop-lazy-verbose nil
+        desktop-buffers-not-to-save "\\` \\|\\*eww\\*")
 
-(desktop-save-mode)
+  (with-eval-after-load "desktop"
+    (add-to-list 'desktop-modes-not-to-save 'tar-mode)
+    (add-to-list 'desktop-modes-not-to-save 'archive-mode))
+
+  (setq desktop-buffers-not-to-save-function
+        (lambda (_filename bufname &rest _)
+  	(cond
+  	 ((> (buffer-size (get-buffer bufname))
+  	     (expt 2 20))
+  	  nil)
+  	 (t))))
+
+  (desktop-save-mode)
 #+end_src
 
 ** Various

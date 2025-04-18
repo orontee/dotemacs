@@ -832,7 +832,6 @@ is_command emacs      && alias     em='emacsclient -t'
 
 *** TODO Windows equivalent
 
-
 ** Minibuffer history
 
 #+begin_src emacs-lisp :tangle init.el
@@ -932,7 +931,7 @@ These are some core features disabled for newbies.
 (put 'scroll-left 'disabled nil)
 #+end_src
 
-Pacman package build files are shell scripts.
+Extend automatic selection of mode based on file name.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-to-list 'auto-mode-alist '("PKGBUILD\\'" . sh-mode))
@@ -957,6 +956,8 @@ Use single character to indicate string truncation.
 (setq truncate-string-ellipsis "…")
 #+end_src
 
+Prefer tree-sitter based modes.
+
 #+begin_src emacs-lisp :tangle init.el
   (setq major-mode-remap-alist
         '((sh-mode . bash-ts-mode)
@@ -971,6 +972,15 @@ Use single character to indicate string truncation.
           (yaml-mode . yaml-ts-mode)))
 #+end_src
 
+Set proper keyboard layout to generate up-to-date transient input
+method descriptions.
+
+#+begin_src emacs-lisp :tangle init.el
+  (with-eval-after-load "quail"
+    (add-to-list 'quail-keyboard-layout-alist
+                 '("pc105-fr" . "                                &1é2\"3'4(5-6è7_8ç9à0)°=+      aAzZeErRtTyYuUiIoOpP^\"$£      qQsSdDfFgGhHjJkKlLmMù%*µ      <>wWxXcCvVbBnN,?;.:/!§                                    "))
+    (quail-set-keyboard-layout "pc105-fr"))
+#+end_src
 * Programming
 
 
@@ -1600,7 +1610,7 @@ to the process.
 (when (locate-library "php-mode")
   (load-library "php-mode")
   (add-hook 'php-mode-hook 'flymake-mode))
-#+end_src
+#+end_SEC
 
 * Text edition
 

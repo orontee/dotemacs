@@ -497,7 +497,7 @@ The vanilla completion window is hidden if not explicitly asked for.
         completions-group t
         completions-max-height 15
         completions-sort 'historical
-        completion-auto-select nil
+        completion-auto-select 'second-tab
         completion-auto-help t)
 #+end_src
 
@@ -513,11 +513,12 @@ minibuffer completion.
         (require 'vertico)
         (keymap-set vertico-map "TAB" #'minibuffer-complete)
         (setq vertico-preselect 'prompt)
-        (vertico-mode 1)
-        (when (locate-library "marginalia")
-  	(require 'marginalia)
-  	(marginalia-mode 1)))
+        (vertico-mode 1))
     (icomplete-mode 1))
+
+  (when (locate-library "marginalia")
+    (require 'marginalia)
+    (marginalia-mode 1))
 #+end_src
 
 When available, use =corfu= for completion in region.

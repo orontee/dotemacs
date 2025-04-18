@@ -1355,7 +1355,9 @@ that frame vertically or horizontally according to the frame geometry.
                (setq ediff-split-window-function 'split-window-horizontally))))
 #+end_src
 
-White space visualization is useful when inspecting diffs.
+White space visualization is useful when inspecting diffs. Also
+prettification helps reading diffs; A command to easily toggle
+prettification is defined.
 
 #+begin_src emacs-lisp :tangle init.el
 (require 'outline)
@@ -1365,6 +1367,13 @@ White space visualization is useful when inspecting diffs.
                    outline-minor-mode-cycle t)
              (whitespace-mode)
              (outline-minor-mode)))
+
+
+(defun diff-toggle-font-lock-prettify ()
+  (interactive)
+  (font-lock-unfontify-buffer)
+  (setq diff-font-lock-prettify (not diff-font-lock-prettify))
+  (font-lock-update))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el

@@ -495,9 +495,36 @@ When reading file or buffer names the case will be ignored.
       read-buffer-completion-ignore-case t)
 #+end_src
 
+Some side windows are identified, so their location is predictable and
+I can get rid of all of them with a single =C-xws=!
 
 #+begin_src emacs-lisp :tangle init.el
-(setq confirm-nonexistent-file-or-buffer t)
+  (defvar side-windows-parameters
+    '(window-parameters . ((no-other-window . nil)
+                           (no-delete-other-windows . t))))
+
+  (setq fit-window-to-buffer-horizontally t
+        window-resize-pixelwise t
+        window-sides-vertical nil)
+
+  (defun toggle-side-windows-configuration ()
+    (let ((fullscreen (frame-parameter (window-frame) 'fullscreen)))
+      (if fullscreen
+  	(setq display-buffer-alist
+  	      `(("\\*\\(?:xref\\|grep\\|Occur\\|Buffer List\\|Help\\)\\*"
+    		 display-buffer-in-side-window
+    		 (side . right) (slot . 0) (window-width . balance-windows)
+    		 (preserve-size . (nil . nil)) ,side-windows-parameters)
+    		("\\*\\(?:.+shell\\|Completions\\|compilation\\|Flymake.*\\)\\*"
+  		 display-buffer-in-side-window
+    		 (side . bottom) (slot . 1) (preserve-size . (nil . t))
+    		 ,side-windows-parameters))
+  	      window-min-width 40)
+        (setq display-buffer-alist nil
+  	    window-min-width 10))))
+
+  (add-hook 'window-state-change-hook
+  	  'toggle-side-windows-configuration)
 #+end_src
 
 ** Completion

@@ -273,6 +273,33 @@ Completion of bookmark name uses substring style.
 (add-to-list 'completion-category-overrides '(bookmark (styles substring)))
 #+end_src
 
+** Buffers
+
+Keybindings to view differences between a buffer and the underlying
+file.
+
+#+begin_src emacs-lisp :tangle init.el
+  (defun diff-with-file ()
+    (interactive)
+    (let* ((buf (current-buffer))
+  	 (file (buffer-file-name buf)))
+      (when (not file) (error "Specified buffer has no file"))
+      (diff-buffer-with-file)))
+
+  (keymap-set ctl-x-x-map "=" 'diff-with-file)
+
+  (defun buffer-menu-view-differences ()
+    (interactive nil Buffer-menu-mode)
+    (let* ((buf (Buffer-menu-buffer t))
+  	 (file (buffer-file-name buf)))
+      (cond
+       ((not file) (error "Specified buffer has no file"))
+       ((and buf (with-current-buffer buf
+                   (diff-buffer-with-file)))))))
+
+  (keymap-set Buffer-menu-mode-map "=" 'buffer-menu-view-differences)
+#+end_src
+
 ** Remember
 
 I used to use Org mode (this buffer!). But nowadays I prefer to stick
@@ -1230,14 +1257,10 @@ backends must be reordered.
 
 Comparing revisions using Ediff is so pleasant that it deserves a key
 binding, an alternative to the usefull =C-xvD= (binded to
-=vc-root-diff=). Same remark for the command that grep in Git
-repositories.
+=vc-root-diff=).
 
 #+begin_src emacs-lisp :tangle init.el
 (keymap-global-set "C-x v =" 'ediff-revision)
-(require 'vc-git)
-(keymap-global-set "C-x v G" 'vc-git-grep)
-(keymap-global-set "C-x v d" 'vc-dir-root)
 #+end_src
 
 Spell checking is automatically enabled when editing log messages,

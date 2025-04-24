@@ -578,6 +578,7 @@ Use =icomplete= for minibuffer completion.
 
   (when (locate-library "marginalia")
     (require 'marginalia)
+    (setq marginalia-align 'right)
     (marginalia-mode 1))
 #+end_src
 

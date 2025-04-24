@@ -515,13 +515,6 @@ To select a buffer I often use =C-xb= and completion. When my brain
 can't remember the buffer name, I use the default buffer menu
 (accessible from =C-xC-b= and =C-uC-xC-b=).
 
-When reading file or buffer names the case will be ignored.
-
-#+begin_src emacs-lisp :tangle init.el
-(setq read-file-name-completion-ignore-case t
-      read-buffer-completion-ignore-case t)
-#+end_src
-
 Some side windows are identified, so their location is predictable and
 I can get rid of all of them with a single =C-xws=!
 
@@ -537,21 +530,21 @@ I can get rid of all of them with a single =C-xws=!
   (defun toggle-side-windows-configuration ()
     (let ((fullscreen (frame-parameter (window-frame) 'fullscreen)))
       (if fullscreen
-  	(setq display-buffer-alist
-  	      `(("\\*\\(?:xref\\|grep\\|Occur\\|Buffer List\\|Help\\)\\*"
-    		 display-buffer-in-side-window
-    		 (side . right) (slot . 0) (window-width . balance-windows)
-    		 (preserve-size . (nil . nil)) ,side-windows-parameters)
-    		("\\*\\(?:.+shell\\|Completions\\|compilation\\|Flymake.*\\)\\*"
-  		 display-buffer-in-side-window
-    		 (side . bottom) (slot . 1) (preserve-size . (nil . t))
-    		 ,side-windows-parameters))
-  	      window-min-width 40)
+          (setq display-buffer-alist
+                `(("\\*\\(?:xref\\|grep\\|Occur\\|Buffer List\\|Help\\)\\*"
+                   display-buffer-in-side-window
+                   (side . right) (slot . 0) (window-width . balance-windows)
+                   (preserve-size . (nil . nil)) ,side-windows-parameters)
+                  ("\\*\\(?:.+shell\\|compilation\\|Flymake.*\\)\\*"
+                   display-buffer-in-side-window
+                   (side . right) (slot . 1) (window-width . balance-windows)
+  		 (preserve-size . (nil . nil)) ,side-windows-parameters))
+                window-min-width 40)
         (setq display-buffer-alist nil
-  	    window-min-width 10))))
+              window-min-width 10))))
 
   (add-hook 'window-state-change-hook
-  	  'toggle-side-windows-configuration)
+            'toggle-side-windows-configuration)
 #+end_src
 
 ** Completion
@@ -570,8 +563,9 @@ for. It has no modeline. And follows a horizontal layout.
         completion-show-help nil)
 
   (add-hook 'completion-list-mode-hook
-  	  (lambda ()
-  	    (setq-local mode-line-format nil)))
+            (lambda ()
+              (setq-local mode-line-format nil)
+              (setq truncate-lines t)))
 #+end_src
 
 Use =icomplete= for minibuffer completion.
@@ -594,6 +588,13 @@ When available, use =corfu= for completion in region.
     (require 'corfu)
     (global-corfu-mode 1)
     (setq corfu-auto t))
+#+end_src
+
+When reading file or buffer names the case will be ignored.
+
+#+begin_src emacs-lisp :tangle init.el
+(setq read-file-name-completion-ignore-case t
+      read-buffer-completion-ignore-case t)
 #+end_src
 
 ** Cycling spacing
@@ -2008,4 +2009,5 @@ When available, use `ripgrep` to search in files.
 
 # Local Variables:
 # Mode: org
+# indent-tabs-mode: nil
 # End:

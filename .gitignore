@@ -1,4 +1,5 @@
 *~
-emacs.html
-.emacs
-.gnus.el
+/emacs.html
+/init.el
+/init_bash.sh
+/.gnus.el

@@ -212,6 +212,7 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
                     gdb-inferior-io-mode-hook
                     gdb-locals-mode-hook
                     vc-dir-mode-hook
+                    log-view-mode-hook
                     xref--xref-buffer-mode-hook
                     flymake-diagnostics-buffer-mode-hook
                     gdb-mode-hook

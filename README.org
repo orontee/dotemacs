@@ -1390,6 +1390,12 @@ PROMPT_COMMAND=${PROMPT_COMMAND:+$PROMPT_COMMAND; }osc7_cwd
 set +x
 #+end_src
 
+** Containers
+
+#+begin_src emacs-lisp :tangle init.el
+  (when (featurep 'dockerfile-ts-mode)
+    (add-to-list 'auto-mode-alist '("Containerfile" . dockerfile-ts-mode)))
+#+end_src
 
 ** Compilation                                                     :noexport:
 

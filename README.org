@@ -1318,23 +1318,29 @@ content match =generic-find-file-regexp= and
 =generic-use-find-file-hook= default value is =t= .
 
 #+begin_src emacs-lisp :tangle init.el
-(when has-spell-checker
-  (add-hook 'find-file-hook
-            (lambda ()
-               (when (string-match "^svn-commit" (buffer-name))
+  (when has-spell-checker
+    (add-hook 'find-file-hook
+              (lambda ()
+                 (when (string-match "^svn-commit" (buffer-name))
+                   (setq ispell-local-dictionary "english")
+                   (flyspell-mode))))
+
+    (add-hook 'default-generic-mode-hook
+              (lambda ()
+                 (when (equal (buffer-name) "COMMIT_EDITMSG")
+                   (setq ispell-local-dictionary "english")
+                   (flyspell-mode))))
+
+    (add-hook 'log-edit-mode-hook
+              (lambda ()
                  (setq ispell-local-dictionary "english")
                  (flyspell-mode))))
+#+end_src
 
-  (add-hook 'default-generic-mode-hook
-            (lambda ()
-               (when (equal (buffer-name) "COMMIT_EDITMSG")
-                 (setq ispell-local-dictionary "english")
-                 (flyspell-mode))))
+Automatically display window with diff when editing commit messages. 
 
-  (add-hook 'log-edit-mode-hook
-            (lambda ()
-               (setq ispell-local-dictionary "english")
-               (flyspell-mode))))
+#+begin_src emacs-lisp :tangle init.el
+  (add-hook 'log-edit-hook #'log-edit-maybe-show-diff)
 #+end_src
 
 Shorten the display of the current branch name in the modeline.

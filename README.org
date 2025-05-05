@@ -251,6 +251,8 @@ them:
       "C-x 5"         "other-frame"
       "C-x 6"         "2-column"
       "C-x 8"         "insert-special"
+      "C-x 8 e"       "emoji"
+      "C-x C-a"       "gud"
       "C-x C-k C-q"   "kmacro-counters"
       "C-x C-k C-r a" "kmacro-add"
       "C-x C-k C-r"   "kmacro-register"

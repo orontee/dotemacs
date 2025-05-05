@@ -596,7 +596,7 @@ for. It has no modeline. And follows a horizontal layout.
 
 #+begin_src emacs-lisp :tangle init.el
   (setq completions-detailed t
-        completions-format 'horizontal
+        completions-format 'one-column
         completions-group t
         completions-max-height 15
         completions-sort 'historical
@@ -607,7 +607,8 @@ for. It has no modeline. And follows a horizontal layout.
   (add-hook 'completion-list-mode-hook
             (lambda ()
               (setq-local mode-line-format nil)
-              (setq truncate-lines t)))
+              (setq truncate-lines t)
+  	      (hl-line-mode)))
 #+end_src
 
 Use =icomplete= for minibuffer completion.

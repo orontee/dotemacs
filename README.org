@@ -1452,11 +1452,12 @@ Colorize compilation output.
 
 #+begin_src emacs-lisp :tangle init.el
   (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
+  (add-hook 'compilation-filter-hook #'ansi-osc-compilation-filter)
 
   (add-hook 'compilation-mode-hook
             (lambda ()
-               (setq truncate-partial-width-windows nil)
-               (keymap-set compilation-mode-map "c" 'compile)))
+              (setq truncate-partial-width-windows nil)
+              (keymap-set compilation-mode-map "c" 'compile)))
 #+end_src
 
 *** TODO Send a D-BUS notification at the end of compilation       :noexport:

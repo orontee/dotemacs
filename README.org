@@ -1340,7 +1340,12 @@ content match =generic-find-file-regexp= and
 Automatically display window with diff when editing commit messages. 
 
 #+begin_src emacs-lisp :tangle init.el
+  (setq log-edit-hook '(log-edit-insert-message-template
+  		      log-edit-insert-changelog
+  		      log-edit-show-files))
+
   (when (fboundp 'log-edit-maybe-show-diff)
+    (remove-hook 'log-edit-hook #'log-edit-show-files)
     (add-hook 'log-edit-hook #'log-edit-maybe-show-diff))
 #+end_src
 

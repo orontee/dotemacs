@@ -66,7 +66,7 @@ I usually build my own binary from a Git repository.
 
 #+begin_src sh
     $ ./autogen.sh
-    $ ./configure --with-pgtk --no-create --no-recursion --prefix=/opt/emacs
+    $ ./configure --with-pgtk --no-create --no-recursion --prefix=/usr/local
     $ CFLAGS='-O3' make -j 10 bootstrap
     $ make
     $ sudo make install
@@ -211,6 +211,7 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
                     gdb-frames-mode-hook
                     gdb-inferior-io-mode-hook
                     gdb-locals-mode-hook
+  		  help-mode-hook
                     vc-dir-mode-hook
                     log-view-mode-hook
                     xref--xref-buffer-mode-hook
@@ -218,6 +219,7 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
                     gdb-mode-hook
                     grep-mode-hook
                     occur-mode-hook
+  		  shell-mode-hook
                     speedbar-mode-hook))
       (add-hook hook
                 (lambda ()
@@ -570,17 +572,18 @@ I can get rid of all of them with a single =C-xws=!
         window-sides-vertical nil)
 
   (defun toggle-side-windows-configuration ()
-    (let ((fullscreen (frame-parameter (window-frame) 'fullscreen)))
+    (let ((fullscreen (frame-parameter (window-frame) 'fullscreen))
+  	(side-window-width (/ (frame-width) 3)))
       (if fullscreen
           (setq display-buffer-alist
                 `(("\\*\\(?:xref\\|grep\\|Occur\\|Buffer List\\|Help\\)\\*"
                    display-buffer-in-side-window
-                   (side . right) (slot . 0) (window-width . balance-windows)
-                   (preserve-size . (nil . nil)) ,side-windows-parameters)
+                   (side . right) (slot . 0) (window-width . ,side-window-width)
+                   ,side-windows-parameters)
                   ("\\*\\(?:.+shell\\|compilation\\|Flymake.*\\)\\*"
                    display-buffer-in-side-window
-                   (side . right) (slot . 1) (window-width . balance-windows)
-  		 (preserve-size . (nil . nil)) ,side-windows-parameters))
+                   (side . right) (slot . 1) (window-width . ,side-window-width)
+  		  ,side-windows-parameters))
                 window-min-width 40)
         (setq display-buffer-alist nil
               window-min-width 10))))

@@ -614,11 +614,13 @@ for. It has no modeline. And follows a horizontal layout.
   	      (hl-line-mode)))
 #+end_src
 
-Use =icomplete= for minibuffer completion.
+Use =icomplete= for minibuffer completion.  Don't show matches on no
+input to keep display lean and also because it doesn't work with
+=multi-occur= and other features based on multi-buffer selection.
 
 #+begin_src emacs-lisp :tangle init.el
   (setq icomplete-in-buffer nil
-        icomplete-show-matches-on-no-input t
+        icomplete-show-matches-on-no-input nil
         icomplete-tidy-shadowed-file-names t)
   (icomplete-mode 1)
 

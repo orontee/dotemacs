@@ -125,7 +125,6 @@ At the time of writing, I have activated the following packages:
 | diminish         | Diminished modes are minor modes with no modeline display |
 | guess-language   | Robust automatic language detection                       |
 | marginalia       | Enrich existing commands with completion annotations      |
-| markdown-mode    | Major mode for Markdown-formatted text                    |
 | modus-themes     | Elegant, highly legible and customizable themes           |
 | posframe         | Pop a posframe (just a frame) at point.                   |
 | spacious-padding | Increase the padding/spacing of frames and windows        |
@@ -546,11 +545,13 @@ I can get rid of all of them with a single =C-xws=!
   	(side-window-width (/ (frame-width) 3)))
       (if fullscreen
           (setq display-buffer-alist
-                `(("\\*\\(?:xref\\|grep\\|Occur\\|Buffer List\\|Help\\)\\*"
+                `((,(regexp-opt
+  		   '("*xref*" "*grep*" "*Occur*" "*Help*" "*Apropos*"
+  		     "*faces*" "*Colors*"))
                    display-buffer-in-side-window
                    (side . right) (slot . 0) (window-width . ,side-window-width)
                    ,side-windows-parameters)
-                  ("\\*\\(?:.+shell\\|compilation\\|Flymake.*\\)\\*"
+                  ("\\*\\(?:.*compilation\\|Flymake.*\\|Compile-Log\\|Native-compile-Log\\|Async-native-compile-log\\)\\*"
                    display-buffer-in-side-window
                    (side . right) (slot . 1) (window-width . ,side-window-width)
   		  ,side-windows-parameters))
@@ -1022,8 +1023,9 @@ These are some core features disabled for newbies.
 Extend automatic selection of mode based on file name.
 
 #+begin_src emacs-lisp :tangle init.el
-(add-to-list 'auto-mode-alist '("PKGBUILD\\'" . sh-mode))
-(add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-ts-mode))
+  (add-to-list 'auto-mode-alist '("PKGBUILD\\'" . sh-mode))
+  (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-ts-mode))
 #+end_src
 
 Extend executable path.
@@ -1087,6 +1089,7 @@ method descriptions.
 #+begin_src emacs-lisp :tangle init.el
   (setq project-kill-buffers-display-buffer-list t
         project-vc-merge-submodules nil
+        project-compilation-buffer-name-function 'project-prefixed-buffer-name
         project-mode-line t)
 #+end_src
 

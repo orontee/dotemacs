@@ -777,7 +777,9 @@ based buffers and alike ones.
 Silent bell.
 
 #+begin_src emacs-lisp :tangle init.el
-(setq visible-bell t)
+  (setq visible-bell t)
+  (if (functionp 'flash-echo-area-bell-function)
+      (setq ring-bell-function 'flash-echo-area-bell-function))
 #+end_src
 
 Use pixel precision scrolling.

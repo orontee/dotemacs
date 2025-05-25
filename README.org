@@ -1373,6 +1373,13 @@ bindings after the mode has been deactivated.
 		(outline-apply-default-state))))
 #+end_src
 
+Rename =*vc-change-log*= and =*vc-diff*= buffers.
+
+#+begin_src emacs-lisp :tangle init.el
+  (add-hook 'log-view-mode-hook 'rename-uniquely)
+  (add-hook 'diff-mode-hook 'rename-uniquely)
+#+end_src
+
 ** Command interpreter
 
 #+begin_src emacs-lisp :tangle init.el

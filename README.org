@@ -547,7 +547,7 @@ I can get rid of all of them with a single =C-xws=!
           (setq display-buffer-alist
                 `((,(regexp-opt
   		   '("*xref*" "*grep*" "*Occur*" "*Help*" "*Apropos*"
-  		     "*faces*" "*Colors*"))
+  		     "*faces*" "*Colors*" "*Remember*"))
                    display-buffer-in-side-window
                    (side . right) (slot . 0) (window-width . ,side-window-width)
                    ,side-windows-parameters)

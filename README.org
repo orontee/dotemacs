@@ -545,15 +545,21 @@ I can get rid of all of them with a single =C-xws=!
   	(side-window-width (/ (frame-width) 3)))
       (if fullscreen
           (setq display-buffer-alist
-                `((,(regexp-opt
+                `((,(concat
+  		   "\\*eldoc.*\\*\\|"
+  		   (regexp-opt
   		   '("*xref*" "*grep*" "*Occur*" "*Help*" "*Apropos*"
-  		     "*faces*" "*Colors*" "*Remember*"))
+  		     "*faces*" "*Colors*" "*Remember*") t))
                    display-buffer-in-side-window
                    (side . right) (slot . 0) (window-width . ,side-window-width)
                    ,side-windows-parameters)
-                  ("\\*\\(?:.*compilation\\|Flymake.*\\|Compile-Log\\|Native-compile-Log\\|Async-native-compile-log\\)\\*"
+                  ("\\*\\(?:.*compilation\\|Compile-Log\\|Native-compile-Log\\|Async-native-compile-log\\)\\*"
                    display-buffer-in-side-window
                    (side . right) (slot . 1) (window-width . ,side-window-width)
+  		 ,side-windows-parameters)
+  		("\\*\\(?:.*Flymake.*\\)\\*"
+                   display-buffer-in-side-window
+                   (side . bottom) (slot . 1) (window-height . 10)
   		  ,side-windows-parameters))
                 window-min-width 40)
         (setq display-buffer-alist nil
@@ -1124,6 +1130,18 @@ Prevent Eldoc mode from resizing echo area.
 (with-eval-after-load "eldoc"
   (setq eldoc-echo-area-use-multiline-p nil))
 #+end_src
+
+Turn visual line mode in =*eldoc*= buffer.
+
+#+begin_src emacs-lisp :tangle init.el
+  (add-hook 'special-mode-hook
+  	  (lambda ()
+  	    (when (string-match "^\\*eldoc.*\\*$" (buffer-name))
+  	      (visual-line-mode)
+  	      (when (not text-scale-mode)
+                      (text-scale-set -1)))))
+#+end_src
+
 
 ** Spell checking
 

@@ -883,15 +883,29 @@ Unicode.
       "C-x v"         "version-control"
       "C-x w ^"       "window-detach"
       "C-x w"         "window-extras"
+      "C-x w f"       "window-layout-flip"
+      "C-x w r"       "window-layout-rotate"
+      "C-x w o"       "rotate-windows"
       "C-x x"         "buffer-extras"
       "C-x"           "extra-commands"
       "M-g"           "goto-map"
       "M-s h"         "search-highlight"
       "M-s"           "search-map")
 
+    (with-eval-after-load 'edebug
+      (which-key-add-key-based-replacements
+        edebug-global-prefix "edebug")) ; default = "C-x X"
+    (with-eval-after-load 'gud
+      (which-key-add-key-based-replacements
+        gud-key-prefix "gud")) ; default = "C-x C-a"
     (with-eval-after-load 'page-ext
       (which-key-add-key-based-replacements
-        "C-x C-p" "page-extras")))
+        "C-x C-p" "page-extras"))
+    (with-eval-after-load 'org
+      (which-key-add-keymap-based-replacements org-mode-map
+        "C-c \""      "org-plot"
+        "C-c C-v"     "org-babel"
+        "C-c C-x"     "org-extra-commands")))
 #+end_src
 
 Prevent dynamic documentation (provided by Eldoc mode) from resizing

@@ -210,7 +210,6 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
                     gdb-mode-hook
                     grep-mode-hook
                     occur-mode-hook
-  		  shell-mode-hook
                     speedbar-mode-hook))
       (add-hook hook
                 (lambda ()

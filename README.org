@@ -1326,6 +1326,7 @@ binding, an alternative to the usefull =C-xvD= (binded to
 
 #+begin_src emacs-lisp :tangle init.el
 (keymap-global-set "C-x v =" 'ediff-revision)
+(keymap-global-set "C-x v d" 'vc-diff)
 #+end_src
 
 Spell checking is automatically enabled when editing log messages,
@@ -1459,7 +1460,7 @@ An abbreviation is defined for =&> /dev/null=.
 #+begin_src emacs-lisp :tangle init.el
 (add-hook 'bash-ts-mode-hook
           (lambda ()
-             (define-key bash-ts-mode-map "'" 'self-insert-command)))
+             (keymap-set bash-ts-mode-map "'" 'self-insert-command)))
 #+end_src
 
 Make comint process output to interpret OSC commands and configure

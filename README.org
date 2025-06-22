@@ -796,26 +796,32 @@ I like tabs but want them to use the same keybindings as GTK-based
 applications. Also I want new tabs to display bookmarks.
 
 #+begin_src emacs-lisp :tangle init.el
-(require 'bookmark)
-(defun get-or-build-bookmark-buffer ()
-  (cond
-   ((get-buffer bookmark-bmenu-buffer))
-   (t (save-excursion
-        (save-window-excursion
-          (bookmark-bmenu-list)
-          (get-buffer bookmark-bmenu-buffer))))))
+  (require 'bookmark)
+  (defun get-or-build-bookmark-buffer ()
+    (cond
+     ((get-buffer bookmark-bmenu-buffer))
+     (t (save-excursion
+          (save-window-excursion
+            (bookmark-bmenu-list)
+            (get-buffer bookmark-bmenu-buffer))))))
 
-(when (featurep 'tab-bar)
-  (setq tab-bar-close-button-show t
-        tab-bar-close-last-tab-choice 'delete-frame
-        tab-bar-close-tab-select 'left
-        tab-bar-new-tab-choice 'get-or-build-bookmark-buffer
-        tab-bar-select-tab-modifiers '(meta))
-  (keymap-set tab-prefix-map "1" nil)
-  (keymap-global-set "C-<next>" 'tab-bar-switch-to-next-tab)
-  (keymap-global-set "C-<prior>" 'tab-bar-switch-to-prev-tab)
-  (keymap-global-set "C-S-<next>" (lambda () (interactive) (tab-bar-move-tab 1)))
-  (keymap-global-set "C-S-<prior>" (lambda () (interactive) (tab-bar-move-tab -1))))
+  (when (featurep 'tab-bar)
+    (setq tab-bar-close-button-show 'selected
+          tab-bar-close-last-tab-choice 'delete-frame
+          tab-bar-close-tab-select 'left
+          tab-bar-new-tab-choice 'get-or-build-bookmark-buffer
+          tab-bar-select-tab-modifiers '(meta)
+          tab-bar-format '(tab-bar-format-menu-bar
+  			 tab-bar-format-history
+  			 tab-bar-format-tabs
+      			 tab-bar-separator)
+      	tab-bar-show t)
+
+    (keymap-set tab-prefix-map "1" nil)
+    (keymap-global-set "C-<next>" 'tab-bar-switch-to-next-tab)
+    (keymap-global-set "C-<prior>" 'tab-bar-switch-to-prev-tab)
+    (keymap-global-set "C-S-<next>" (lambda () (interactive) (tab-bar-move-tab 1)))
+    (keymap-global-set "C-S-<prior>" (lambda () (interactive) (tab-bar-move-tab -1))))
 #+end_src
 
 ** Frame customization definitions
@@ -925,16 +931,6 @@ Turn visual line mode in =*eldoc*= buffer.
   	      (visual-line-mode)
   	      (when (not text-scale-mode)
                       (text-scale-set -1)))))
-#+end_src
-
-** Tab bar
-
-#+begin_src emacs-lisp :tangle init.el
-  (setq tab-bar-close-button-show 'selected
-        tab-bar-format
-  	'(tab-bar-format-menu-bar tab-bar-format-history tab-bar-format-tabs
-  				  tab-bar-separator)
-  	tab-bar-show t)
 #+end_src
 
 ** Server, daemon

@@ -210,6 +210,7 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
                     gdb-mode-hook
                     grep-mode-hook
                     occur-mode-hook
+  		  shortdoc-mode-hook
                     speedbar-mode-hook))
       (add-hook hook
                 (lambda ()
@@ -529,7 +530,7 @@ I can get rid of all of them with a single =C-xws=!
   		   "\\*eldoc.*\\*\\|"
   		   (regexp-opt
   		   '("*xref*" "*grep*" "*Occur*" "*Help*" "*Apropos*"
-  		     "*faces*" "*Colors*" "*Remember*") t))
+  		     "*faces*" "*Colors*" "*Remember*" "*Shortdoc string*") t))
                    display-buffer-in-side-window
                    (side . right) (slot . 0) (window-width . ,side-window-width)
                    ,side-windows-parameters)
@@ -1414,12 +1415,11 @@ bindings after the mode has been deactivated.
 		(outline-apply-default-state))))
 #+end_src
 
-Rename =*vc-change-log*= and =*vc-diff*= buffers.
-
-#+begin_src emacs-lisp :tangle init.el
-  (add-hook 'log-view-mode-hook 'rename-uniquely)
-  (add-hook 'diff-mode-hook 'rename-uniquely)
-#+end_src
+Sharing =*vc-change-log*= and =*vc-diff*= buffers between projects is
+error prone and counter-intuitive. I was suggested to add
+=rename-uniquely= to the corresponding hooks, =log-view-mode-hook= and
+=diff-mode-hook= but it has side effects (like popping new windows on
+buffer revert 🤯). So I prefer to patch Emacs sources, see 
 
 ** Command interpreter
 

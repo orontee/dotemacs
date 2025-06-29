@@ -963,7 +963,6 @@ function is_command { type "$1" &> /dev/null; }
 is_command emacs      && alias     em='emacsclient -t'
 #+end_src
 
-
 ** Minibuffer history
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1061,12 +1060,20 @@ Tired of typing =yes= and =no=? Prefer =y= and =n=!
 (fset 'yes-or-no-p 'y-or-n-p)
 #+end_src
 
-These are some core features disabled for newbies.
+When available, enable repeat global minor mode to avoid repeating
+the prefix keys of some commands binded to multi-key sequences.
 
 #+begin_src emacs-lisp :tangle init.el
-(put 'narrow-to-region 'disabled nil)
-(put 'narrow-to-page 'disabled nil)
-(put 'scroll-left 'disabled nil)
+  (when (featurep 'repeat)
+    (repeat-mode))
+#+end_src
+
+  These are some core features disabled for newbies.
+
+  ,#+begin_src emacs-lisp :tangle init.el
+  (put 'narrow-to-region 'disabled nil)
+  (put 'narrow-to-page 'disabled nil)
+  (put 'scroll-left 'disabled nil)
 #+end_src
 
 Extend automatic selection of mode based on file name.
@@ -1121,7 +1128,6 @@ method descriptions.
     (quail-set-keyboard-layout "pc105-fr"))
 #+end_src
 * Programming
-
 
 ** Edition
 
@@ -1435,7 +1441,6 @@ Improve terminal emulation.
   (when (locate-library "coterm")
     (coterm-mode 1))
 #+end_src
-
 
 ** Interactive shell
 
@@ -2036,7 +2041,6 @@ When available, use `ripgrep` to search in files.
            (assoc 'ripgrep xref-search-program-alist))
   (setq xref-search-program 'ripgrep))
 #+end_src
-
 
 ** Enhancing file manager
 

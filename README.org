@@ -1320,7 +1320,8 @@ preferred version control backend is Git, the list of version control
 backends must be reordered.
 
 #+begin_src emacs-lisp :tangle init.el
-(setq vc-handled-backends (cons 'Git (remove 'Git vc-handled-backends)))
+  (setq vc-handled-backends (cons 'Git (remove 'Git vc-handled-backends))
+        vc-find-revision-no-save t)
 #+end_src
 
 Comparing revisions using Ediff is so pleasant that it deserves a key
@@ -1421,7 +1422,8 @@ Sharing =*vc-change-log*= and =*vc-diff*= buffers between projects is
 error prone and counter-intuitive. I was suggested to add
 =rename-uniquely= to the corresponding hooks, =log-view-mode-hook= and
 =diff-mode-hook= but it has side effects (like popping new windows on
-buffer revert 🤯). So I prefer to patch Emacs sources, see 
+buffer revert 🤯). So I prefer to patch Emacs sources, see
+https://debbugs.gnu.org/cgi/bugreport.cgi?bug=78864.
 
 ** Command interpreter
 

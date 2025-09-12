@@ -1240,6 +1240,13 @@ index menu.
                 (outline-minor-mode)))
 #+end_src
 
+#+begin_src emacs-lisp :tangle init.el
+  (with-eval-after-load 'breadcrumb
+    (add-hook 'prog-mode-hook
+  	    (lambda ()
+  	      (breadcrumb-mode))))
+#+end_src
+
 ** Abbreviations
 
 The file =~/.config/emacs/abbrev_defs= (or whatever the value of
@@ -1591,7 +1598,11 @@ to =C-co= for a way to switch between implementation and declaration
 on a file name basis).
 
 #+begin_src emacs-lisp :tangle init.el
-  (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+  (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-ts-mode))
+  (add-to-list 'auto-mode-alist '(".clang-format\\'" . yaml-ts-mode))
+  (add-to-list 'auto-mode-alist '(".clang-tidy\\'" . yaml-ts-mode))
+  (add-to-list 'auto-mode-alist '(".clangd\\'" . yaml-ts-mode))
+  (add-to-list 'auto-mode-alist '("conanfile.txt\\'" . conf-mode))
 
   (require 'find-file)
   (setcdr (assoc "\\.h\\'" cc-other-file-alist)
@@ -1745,13 +1756,15 @@ Set the name of the Python template to insert at file creation.
              (setq scheme-program-name "umb-scheme")))
 #+end_src
 
-** Support for JavaScript
+** Support for JavaScript/Typescript
 
 #+begin_src emacs-lisp :tangle init.el
-(add-hook 'js-ts-mode-hook
-          (lambda ()
-             (setq indent-tabs-mode nil)
-             (subword-mode)))
+  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
+
+  (add-hook 'js-ts-mode-hook
+            (lambda ()
+               (setq indent-tabs-mode nil)
+               (subword-mode)))
 #+end_src
 
 ** Support for SQL

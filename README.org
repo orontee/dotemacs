@@ -442,21 +442,20 @@ line...
   (load "generic-x")
 #+end_src
 
-The =systemd= configuration files are Conf files.
+The =systemd= and =conan= configuration files are Conf files.
 
 #+begin_src emacs-lisp :tangle init.el
-(when (eq system-type 'gnu/linux)
-  (add-to-list 'auto-mode-alist
-               '("\\.service\\'" . conf-mode)))
+  (add-to-list 'auto-mode-alist '("\\.service\\'" . conf-mode))
+  (add-to-list 'auto-mode-alist '("conanfile.txt\\'" . conf-mode))
 #+end_src
 
 Bind =rc-generic-mode= to Visual Studio Resource files.
 
 #+begin_src emacs-lisp :tangle init.el
+    (add-to-list 'auto-mode-alist
+                 '("\\.rc2\\'" . rc-generic-mode))
   (add-to-list 'auto-mode-alist
-               '("\\.rc2\\'" . rc-generic-mode))
-(add-to-list 'auto-mode-alist
-             '("\\git-rebase-todo\\'" . default-generic-mode))
+               '("\\git-rebase-todo\\'" . default-generic-mode))
 #+end_src
 
 ** Auto insertion at file creation
@@ -538,7 +537,7 @@ I can get rid of all of them with a single =C-xws=!
                    display-buffer-in-side-window
                    (side . right) (slot . 1) (window-width . ,side-window-width)
   		 ,side-windows-parameters)
-  		("\\*\\(?:.*Flymake.*\\)\\*"
+  		("\\*\\(?:.*Flymake.*\\|Warning\\)\\*"
                    display-buffer-in-side-window
                    (side . bottom) (slot . 1) (window-height . 10)
   		  ,side-windows-parameters))
@@ -1082,6 +1081,10 @@ Extend automatic selection of mode based on file name.
   (add-to-list 'auto-mode-alist '("PKGBUILD\\'" . sh-mode))
   (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.clang-format\\'" . yaml-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.clang-tidy\\'" . yaml-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.clangd\\'" . yaml-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
 #+end_src
 
 Extend executable path.
@@ -1468,9 +1471,9 @@ An abbreviation is defined for =&> /dev/null=.
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-(add-hook 'bash-ts-mode-hook
-          (lambda ()
-             (keymap-set bash-ts-mode-map "'" 'self-insert-command)))
+  (add-hook 'bash-ts-mode-hook
+            (lambda ()
+               (keymap-set bash-ts-mode-map "'" 'self-insert-command)))
 #+end_src
 
 Make comint process output to interpret OSC commands and configure
@@ -1490,11 +1493,16 @@ PROMPT_COMMAND=${PROMPT_COMMAND:+$PROMPT_COMMAND; }osc7_cwd
 set +x
 #+end_src
 
+#+begin_src emacs-lisp :tangle init.el
+  (add-to-list 'auto-mode-alist '("\\.bash.*" . bash-ts-mode))
+#+end_src
+
 ** Containers
 
 #+begin_src emacs-lisp :tangle init.el
   (when (featurep 'dockerfile-ts-mode)
-    (add-to-list 'auto-mode-alist '("Containerfile" . dockerfile-ts-mode)))
+    (add-to-list 'auto-mode-alist '("Containerfile" . dockerfile-ts-mode))
+    (add-to-list 'auto-mode-alist '("Dockerfile" . dockerfile-ts-mode)))
 #+end_src
 
 ** Compilation

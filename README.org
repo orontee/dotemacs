@@ -1063,7 +1063,7 @@ When available, enable repeat global minor mode to avoid repeating
 the prefix keys of some commands binded to multi-key sequences.
 
 #+begin_src emacs-lisp :tangle init.el
-  (when (featurep 'repeat)
+  (when (locate-library "repeat")
     (repeat-mode))
 #+end_src
 

@@ -533,7 +533,7 @@ I can get rid of all of them with a single =C-xws=!
                    display-buffer-in-side-window
                    (side . right) (slot . 0) (window-width . ,side-window-width)
                    ,side-windows-parameters)
-                  ("\\*\\(?:.*compilation\\|Compile-Log\\|Native-compile-Log\\|Async-native-compile-log\\)\\*"
+                  ("\\*\\(?:.*Async Shell Command\\|compilation\\|Compile-Log\\|Native-compile-Log\\|Async-native-compile-log\\)\\*"
                    display-buffer-in-side-window
                    (side . right) (slot . 1) (window-width . ,side-window-width)
   		 ,side-windows-parameters)
@@ -962,10 +962,19 @@ function is_command { type "$1" &> /dev/null; }
 is_command emacs      && alias     em='emacsclient -t'
 #+end_src
 
-** Minibuffer history
+** Minibuffer
+
+Enable minibuffer history:
 
 #+begin_src emacs-lisp :tangle init.el
 (savehist-mode)
+#+end_src
+
+Override =C-x DEL= default (mapped to =backward-kill-sentence=) to
+easily clear minibuffer content:
+
+#+begin_src emacs-lisp :tangle init.el
+  (keymap-set minibuffer-mode-map "C-x DEL" 'delete-minibuffer-contents)
 #+end_src
 
 ** Theme

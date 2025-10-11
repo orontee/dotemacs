@@ -533,11 +533,11 @@ I can get rid of all of them with a single =C-xws=!
                    display-buffer-in-side-window
                    (side . right) (slot . 0) (window-width . ,side-window-width)
                    ,side-windows-parameters)
-                  ("\\*\\(?:.*Async Shell Command\\|compilation\\|Compile-Log\\|Native-compile-Log\\|Async-native-compile-log\\)\\*"
+                  ("\\*\\(?:.*Async Shell Command\\|.*compilation\\|Compile-Log\\|Native-compile-Log\\|Async-native-compile-log\\)\\*"
                    display-buffer-in-side-window
                    (side . right) (slot . 1) (window-width . ,side-window-width)
   		 ,side-windows-parameters)
-  		("\\*\\(?:.*Flymake.*\\|Warning\\)\\*"
+  		("\\*\\(?:.*Flymake.*\\|Warnings\\)\\*"
                    display-buffer-in-side-window
                    (side . bottom) (slot . 1) (window-height . 10)
   		  ,side-windows-parameters))
@@ -548,6 +548,11 @@ I can get rid of all of them with a single =C-xws=!
   (add-hook 'window-state-change-hook
             'toggle-side-windows-configuration)
 #+end_src
+
+#+begin_src emacs-lisp :tangle init.el
+
+#+end_src
+
 
 ** Completion
 

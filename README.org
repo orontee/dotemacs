@@ -514,7 +514,8 @@ I can get rid of all of them with a single =C-xws=!
 #+begin_src emacs-lisp :tangle init.el
   (defvar side-windows-parameters
     '(window-parameters . ((no-other-window . nil)
-                           (no-delete-other-windows . t))))
+                           (no-delete-other-windows . t)
+  			 (reusable-frames . nil))))
 
   (setq fit-window-to-buffer-horizontally t
         window-resize-pixelwise t
@@ -550,6 +551,27 @@ I can get rid of all of them with a single =C-xws=!
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
+  (defun other-dedicated-window (window)
+    """Select another dedicated window. """
+    (interactive
+     (list
+      (let ((frame-windows (window-list-1 nil 'skip-minibuf (window-frame)))
+  	  (side-windows-buffers))
+        (dolist (w frame-windows)
+  	(when (window-dedicated-p w)
+  	  (let ((name (buffer-name (window-buffer w))))
+  	    (push `(,name . ,w) side-windows-buffers))))
+        (cond
+         ((eq (length side-windows-buffers) 0)
+  	(error "No side window"))
+         ((eq (length side-windows-buffers) 1)
+  	(cdr (car side-windows-buffers)))
+         (t (cdr (assoc
+  		(completing-read "Buffer: " side-windows-buffers)
+  		side-windows-buffers)))))))
+    (select-window window))
+
+    (keymap-global-set "C-x M-o" 'other-dedicated-window)
 
 #+end_src
 

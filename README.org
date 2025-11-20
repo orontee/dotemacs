@@ -273,15 +273,6 @@ Keybindings to view differences between a buffer and the underlying
 file.
 
 #+begin_src emacs-lisp :tangle init.el
-  (defun diff-with-file ()
-    (interactive)
-    (let* ((buf (current-buffer))
-  	 (file (buffer-file-name buf)))
-      (when (not file) (error "Specified buffer has no file"))
-      (diff-buffer-with-file)))
-
-  (keymap-set ctl-x-x-map "=" 'diff-with-file)
-
   (defun buffer-menu-view-differences ()
     (interactive nil Buffer-menu-mode)
     (let* ((buf (Buffer-menu-buffer t))
@@ -292,6 +283,10 @@ file.
                    (diff-buffer-with-file)))))))
 
   (keymap-set Buffer-menu-mode-map "=" 'buffer-menu-view-differences)
+#+end_src
+
+#+begin_src emacs-lisp :tangle init.el
+  (setopt Buffer-menu-human-readable-sizes t)
 #+end_src
 
 ** Remember
@@ -1166,6 +1161,7 @@ method descriptions.
                  '("pc105-fr" . "                                &1é2\"3'4(5-6è7_8ç9à0)°=+      aAzZeErRtTyYuUiIoOpP^\"$£      qQsSdDfFgGhHjJkKlLmMù%*µ      <>wWxXcCvVbBnN,?;.:/!§                                    "))
     (quail-set-keyboard-layout "pc105-fr"))
 #+end_src
+
 * Programming
 
 ** Edition

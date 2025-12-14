@@ -23,6 +23,7 @@ emacs.html: README.org
 	$(EMACSCLIENT) -e $(export_cmd)
 
 install: $(build_files)
+	mkdir -p $(HOME)/.config/emacs
 	for FILE in $(build_files); do \
 		mv $$FILE $(HOME)/.config/emacs/; \
 	done

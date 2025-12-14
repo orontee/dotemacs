@@ -1017,29 +1017,26 @@ Apply Modus theme for accessible readability.
 #+begin_src emacs-lisp :tangle init.el
   (require 'modus-themes)
 
-  (defun personal-modus-themes-custom-faces ()
-    (modus-themes-with-colors
-      (custom-set-faces
-       ;; variable pitch face in info headings
-       `(info-title-1 ((,c :inherit info-title-2 :height 1.2 :foreground ,fg-heading-1)))
-       `(info-title-2 ((,c :inherit info-title-3 :height 1.2 :foreground ,fg-heading-2)))
-       `(info-title-3 ((,c :inherit info-title-4 :height 1.2 :foreground ,fg-heading-3)))
-       `(info-title-4 ((,c :inherit (bold variable-pitch) :height 1.0 :foreground ,fg-heading-4)))
-       ;; variable pitch face in markdown headings
-       `(markdown-header-face-1 ((,c :inherit markdown-header-face-2 :height 1.2 :foreground ,fg-heading-1)))
-       `(markdown-header-face-2 ((,c :inherit markdown-header-face-3 :height 1.2 :foreground ,fg-heading-2)))
-       `(markdown-header-face-3 ((,c :inherit markdown-header-face-4 :height 1.2 :foreground ,fg-heading-3)))
-       `(markdown-header-face-4 ((,c :inherit (bold variable-pitch) :height 1.0 :foreground ,fg-heading-4)))
-       ;; lighter fill column indicator
-       `(fill-column-indicator ((,c :background ,bg-dim))))))
+    (defun personal-modus-themes-custom-faces ()
+      (modus-themes-with-colors
+        (custom-set-faces
+         ;; variable pitch face in info headings
+         `(info-title-1 ((,c :inherit info-title-2 :height 1.2 :foreground ,fg-heading-1)))
+         `(info-title-2 ((,c :inherit info-title-3 :height 1.2 :foreground ,fg-heading-2)))
+         `(info-title-3 ((,c :inherit info-title-4 :height 1.2 :foreground ,fg-heading-3)))
+         `(info-title-4 ((,c :inherit (bold variable-pitch) :height 1.0 :foreground ,fg-heading-4)))
+         ;; variable pitch face in markdown headings
+         `(markdown-header-face-1 ((,c :inherit markdown-header-face-2 :height 1.2 :foreground ,fg-heading-1)))
+         `(markdown-header-face-2 ((,c :inherit markdown-header-face-3 :height 1.2 :foreground ,fg-heading-2)))
+         `(markdown-header-face-3 ((,c :inherit markdown-header-face-4 :height 1.2 :foreground ,fg-heading-3)))
+         `(markdown-header-face-4 ((,c :inherit (bold variable-pitch) :height 1.0 :foreground ,fg-heading-4)))
+         ;; lighter fill column indicator
+         `(fill-column-indicator ((,c :background ,bg-dim))))))
 
   (setq modus-themes-variable-pitch-ui t
         modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
 
-  (add-hook 'modus-themes-after-load-theme-hook #'personal-modus-themes-custom-faces)
-
   (load-theme 'modus-vivendi-tinted :no-confirm)
-  (personal-modus-themes-custom-faces)
 #+end_src
 
 Spacious padding make the UI even more readable.

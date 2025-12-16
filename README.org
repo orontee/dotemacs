@@ -959,6 +959,12 @@ Turn visual line mode in =*eldoc*= buffer.
                       (text-scale-set -1)))))
 #+end_src
 
+Make manpages the current buffer in the other window.
+
+#+begin_src emacs-lisp :tangle init.el
+  (setq Man-notify-method 'aggressive)
+#+end_src
+
 ** Server, daemon
 
 A server is started if and only if the running process is not a daemon

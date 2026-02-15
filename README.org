@@ -65,8 +65,8 @@ can be downloaded from http://ftp.gnu.org/pub/gnu/emacs/.
 I usually build my own binary from a Git repository.
 
 #+begin_src sh
-  $ git clean -fdx
-  $ ./autogen.sh; configure --prefix "/usr/local" \
+  $ git clean -fdx; git pull
+  $ ./autogen.sh; ./configure --prefix "/usr/local" \
       --with-dbus --with-gif --with-gnutls --with-jpeg --with-json \
       --with-libsystemd --with-mailutils --with-modules \
       --with-native-compilation --with-pgtk --with-png --with-rsvg \
@@ -542,7 +542,7 @@ I can get rid of all of them with a single =C-xws=!
                    display-buffer-in-side-window
                    (side . bottom) (slot . 1) (window-height . 10)
   		  ,side-windows-parameters))
-                window-min-width 40)
+                window-min-width 10)
         (setq display-buffer-alist nil
               window-min-width 10))))
 
@@ -1107,7 +1107,6 @@ Extend automatic selection of mode based on file name.
 #+begin_src emacs-lisp :tangle init.el
   (add-to-list 'auto-mode-alist '("PKGBUILD\\'" . sh-mode))
   (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.clang-format\\'" . yaml-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.clang-tidy\\'" . yaml-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.clangd\\'" . yaml-ts-mode))
@@ -1889,9 +1888,40 @@ that represent colors.
 #+begin_src emacs-lisp :tangle init.el
   (when (locate-library "markdown-mode")
     (require 'markdown-mode)
-    (setq markdown-asymmetric-header t)
+    (add-hook 'markdown-mode-hook
+  	    (lambda ()
+  	      (setq markdown-asymmetric-header t
+    		    fill-column 90)
+  	      (visual-line-mode 1)))
     (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
 #+end_src
+
+Configure the native "ts" mode:
+
+#+begin_src emacs-lisp :tangle init.el
+  (add-hook 'markdown-ts-mode
+  	  (lambda ()
+  	    (setq fill-column 90)
+  	    (visual-line-mode 1)))
+#+end_src
+
+And improve readability in both modes.
+
+#+begin_src emacs-lisp :tangle init.el
+  (when (locate-library "olivetti/olivetti.el")
+    (load-library "olivetti/olivetti.el")
+    (setopt olivetti-body-width 90
+  	  olivetti-style 'fancy
+  	  olivetti-minimum-body-width 80)
+    (dolist (hook '(Info-mode-hook
+  		  Man-mode-hook
+  		  markdown-mode-hook
+  		  markdown-ts-mode-hook))
+        (add-hook hook
+                  (lambda ()
+  		  (olivetti-mode 1)))))
+#+end_src
+
 
 ** Support for TeX and LaTeX
 

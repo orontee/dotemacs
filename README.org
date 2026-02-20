@@ -16,9 +16,9 @@ I found that tool more or less randomly while sitting in front of one
 of the X Window terminals of my university. Today, whatever I have to
 do with a computer, it ends in an Emacs buffer... In my current use,
 Emacs has become a kind of interface over the computer's operating
-system (whatever it is: Arch Linux, Ubuntu, Windows XP, Vista and 10,
-and today mostly Debian).  But suprisingly I feel like it has adapt to
-my needs rather than I have limited myself to its features.
+system (whatever it is: Mostly Debian and, at work, Microsoft
+Windows).  But suprisingly I feel like it has adapted to my needs
+rather than I had to limit myself to its features.
 
 As an intensive Emacs user I had various needs related to Emacs
 customization: Centralize all customization to be able to deploy
@@ -89,25 +89,24 @@ I usually build my own binary from a Git repository.
 
 ** Extending Emacs, packages repositories, etc
 
-The easiest way to extend Emacs features is to use =list-package= and
-install packages from remote repositories. But =package.el= is rather
-new and not all libraries are available in the form of packages. When
-a library must be installed by hand, a good practice is to always put
-it in the directory =~/.config/emacs/lisp=. The load path is extended
-accordingly.
+The standard way to extend Emacs features is to use the built-in
+package manager. Not all libraries are available in the form of
+packages, so when a library must be installed by hand, the directory
+=~/.config/emacs/lisp= is used. The load path is extended accordingly.
 
 #+begin_src emacs-lisp :tangle init.el
 (add-to-list 'load-path (expand-file-name "~/.config/emacs/lisp/"))
 #+end_src
 
-The default is to fetch packages from the GNU Emacs packages
-repository. There are usefull packages in other places like [[http://tromey.com/elpa/][ELPA]] and
-[[http://marmalade-repo.org/][Marmalade]].
+Packages configuration is done with =use-package=.
 
 #+begin_src emacs-lisp :tangle init.el
-(with-eval-after-load "package"
-  (add-to-list 'package-archives '("melpa". "https://melpa.org/packages/")))
+  (require 'use-package-ensure)
 #+end_src
+
+The default is to fetch packages from the GNU Emacs packages 
+repository only.
+
 
 At the time of writing, I have activated the following packages:
 
@@ -121,41 +120,25 @@ At the time of writing, I have activated the following packages:
 #+end_src
 
 #+RESULTS:
-| Package                  | Description                                                |
-|--------------------------+------------------------------------------------------------|
-| CMake-doc                | Info documentation for CMake                               |
-| Python-doc               | Info documentation for Python                              |
-| breadcrumb               | project and imenu-based breadcrumb paths                   |
-| cmake-mode               | Major-mode for editing CMake sources.                      |
-| compat                   | Emacs Lisp Compatibility Library                           |
-| consult                  | Consulting completing-read.                                |
-| corfu                    | COmpletion in Region FUnction.                             |
-| coterm                   | Terminal emulation for comint                              |
-| debbugs                  | SOAP library to access debbugs servers                     |
-| devhelp                  | Browse documentation in Devhelp format                     |
-| diminish                 | Diminished modes are minor modes with no modeline display  |
-| edit-indirect            | Edit regions in separate buffers                           |
-| git-link                 | Get the GitHub/Bitbucket/GitLab URL for a buffer location. |
-| gnu-elpa-keyring-update  | Update Emacs's GPG keyring for GNU ELPA                    |
-| gptel                    | Interact with ChatGPT or other LLMs.                       |
-| guess-language           | Robust automatic language detection                        |
-| marginalia               | Enrich existing commands with completion annotations.      |
-| markdown-mode            | Major mode for Markdown-formatted text.                    |
-| meson-mode               | Major mode for the Meson build system files                |
-| modus-themes             | Elegant, highly legible and customizable themes.           |
-| nginx-mode               | major mode for editing nginx config files                  |
-| page-break-lines         | Display ^L page breaks as tidy horizontal lines            |
-| persist                  | Persist Variables between Emacs Sessions                   |
-| powershell               | Mode for editing PowerShell scripts                        |
-| pulsar                   | Pulse highlight on demand or after select functions        |
-| restclient               | An interactive HTTP client for Emacs                       |
-| rfc-mode                 | RFC document browser and viewer                            |
-| spacious-padding         | Increase the padding/spacing of frames and windows         |
-| speechd-el               | Client to speech synthesizers and Braille displays.        |
-| systemd                  | Major mode for editing systemd units                       |
-| tldr                     | Tldr client for Emacs.                                     |
-| which-key                | Display available keybindings in popup                     |
-| yocto-docs-scarthgap-doc | Info documentation for yocto-docs-scarthgap                |
+| Package          | Description                                                |
+|------------------+------------------------------------------------------------|
+| breadcrumb       | project and imenu-based breadcrumb paths                   |
+| cond-let         | Additional and improved binding conditionals.              |
+| corfu            | COmpletion in Region FUnction.                             |
+| coterm           | Terminal emulation for comint                              |
+| diminish         | Diminished modes are minor modes with no modeline display. |
+| edit-indirect    | Edit regions in separate buffers.                          |
+| gptel            | Interact with ChatGPT or other LLMs.                       |
+| guess-language   | Robust automatic language detection.                       |
+| marginalia       | Enrich existing commands with completion annotations.      |
+| markdown-mode    | Major mode for Markdown-formatted text.                    |
+| meson-mode       | Major mode for the Meson build system files.               |
+| modus-themes     | Elegant, highly legible and customizable themes.           |
+| olivetti         | Minor mode to automatically balance window margins.        |
+| spacious-padding | Increase the padding/spacing of frames and windows         |
+| systemd          | Major mode for editing systemd units.                      |
+| transient        | Transient commands.                                        |
+| which-key        | Display available keybindings in popup.                    |
 
 
 All settings written using the customize library go to a dedicated
@@ -233,19 +216,17 @@ modes indicators don't bring much information and I prefer to remove
 them:
 #+begin_src emacs-lisp :tangle init.el
   (setq flyspell-mode-line-string nil)
-  (when (locate-library "which-key")
-    (load-library "which-key")
-    (setq which-key-lighter ""))
 #+end_src
 
 Diminish mode-line display of minor modes.
 
 #+begin_src emacs-lisp :tangle init.el
-(when (locate-library "diminish")
-  (require 'diminish)
-  (diminish 'completion-preview-mode)
-  (diminish 'eldoc-mode)
-  (diminish 'abbrev-mode))
+  (use-package diminish
+    :ensure t
+    :config
+    (diminish 'completion-preview-mode)
+    (diminish 'eldoc-mode)
+    (diminish 'abbrev-mode))
 #+end_src
 
 Hide title bar when window is maximized.
@@ -442,10 +423,9 @@ line...
   (load "generic-x")
 #+end_src
 
-The =systemd= and =conan= configuration files are Conf files.
+=conan= configuration files are Conf files.
 
 #+begin_src emacs-lisp :tangle init.el
-  (add-to-list 'auto-mode-alist '("\\.service\\'" . conf-mode))
   (add-to-list 'auto-mode-alist '("conanfile.txt\\'" . conf-mode))
 #+end_src
 
@@ -608,8 +588,9 @@ input to keep display lean and also because it doesn't work with
         icomplete-tidy-shadowed-file-names t)
   (icomplete-mode 1)
 
-  (when (locate-library "marginalia")
-    (require 'marginalia)
+  (use-package marginalia
+    :ensure t
+    :config
     (setq marginalia-align 'right)
     (marginalia-mode 1))
 #+end_src
@@ -617,8 +598,9 @@ input to keep display lean and also because it doesn't work with
 When available, use =corfu= for completion in region.
 
 #+begin_src emacs-lisp :tangle init.el
-  (when (locate-library "corfu")
-    (require 'corfu)
+  (use-package corfu
+    :ensure t
+    :config
     (global-corfu-mode 1)
     (setq corfu-auto t))
 #+end_src
@@ -880,11 +862,12 @@ Extend keybinding documentation with Which Key mode and make it use
 Unicode.
 
 #+begin_src emacs-lisp :tangle init.el
-  (when (locate-library "which-key")
-    (require 'which-key)
-    (setq which-key-dont-use-unicode nil)
+  (use-package which-key
+    :ensure t
+    :config
+    (setq which-key-dont-use-unicode nil
+  	    which-key-lighter "")
     (which-key-mode 1)
-
     (which-key-add-key-based-replacements
       "<f1> 4"        "help-other-win"
       "<f1>"          "help"
@@ -923,7 +906,6 @@ Unicode.
       "M-g"           "goto-map"
       "M-s h"         "search-highlight"
       "M-s"           "search-map")
-
     (with-eval-after-load 'edebug
       (which-key-add-key-based-replacements
         edebug-global-prefix "edebug")) ; default = "C-x X"
@@ -1042,8 +1024,9 @@ Apply Modus theme for accessible readability.
 Spacious padding make the UI even more readable.
 
 #+begin_src emacs-lisp :tangle init.el
-  (when (locate-library "spacious-padding")
-    (require 'spacious-padding)
+  (use-package spacious-padding
+    :ensure t
+    :config
     (spacious-padding-mode))
 #+end_src
 
@@ -1090,7 +1073,9 @@ When available, enable repeat global minor mode to avoid repeating
 the prefix keys of some commands binded to multi-key sequences.
 
 #+begin_src emacs-lisp :tangle init.el
-  (when (locate-library "repeat")
+  (use-package repeat
+    :ensure t
+    :config
     (repeat-mode))
 #+end_src
 
@@ -1155,6 +1140,13 @@ method descriptions.
     (add-to-list 'quail-keyboard-layout-alist
                  '("pc105-fr" . "                                &1é2\"3'4(5-6è7_8ç9à0)°=+      aAzZeErRtTyYuUiIoOpP^\"$£      qQsSdDfFgGhHjJkKlLmMù%*µ      <>wWxXcCvVbBnN,?;.:/!§                                    "))
     (quail-set-keyboard-layout "pc105-fr"))
+#+end_src
+
+#+begin_src emacs-lisp :tangle init.el
+  (use-package systemd
+    :defer t)
+  (use-package bitbake
+    :defer t)
 #+end_src
 
 * Programming
@@ -1225,15 +1217,13 @@ a spell checker in path or not.
 Configure =guess-language-mode= to be less intrusive in mode-line.
 
 #+begin_src emacs-lisp :tangle init.el
-  (when (locate-library "guess-language")
-    (require 'guess-language)
+  (use-package guess-language
+    :config
     (setq guess-language-languages '(en fr)
   	guess-language-langcodes
   	'((en "en" "English" "🖍️en" "English")
   	  (fr "francais" "French" "🖍️fr" "French")))
-    (add-hook 'text-mode-hook
-  	    (lambda ()
-  	      (guess-language-mode))))
+    :hook text-mode)
 #+end_src
 
 ** Long lines and buffer boundaries
@@ -1271,10 +1261,8 @@ index menu.
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-  (with-eval-after-load 'breadcrumb
-    (add-hook 'prog-mode-hook
-  	    (lambda ()
-  	      (breadcrumb-mode))))
+  (use-package breadcrumb
+    :hook prog-mode)
 #+end_src
 
 ** Abbreviations
@@ -1462,6 +1450,14 @@ error prone and counter-intuitive. I was suggested to add
 buffer revert 🤯). So I prefer to patch Emacs sources, see
 https://debbugs.gnu.org/cgi/bugreport.cgi?bug=78864.
 
+Easy generation of URLs for Git projects hosted on common forges.
+
+#+begin_src emacs-lisp :tangle init.el
+  (use-package git-link
+    :defer t
+    :commands (git-link git-link-commit git-link-homepage))
+#+end_src
+
 ** Command interpreter
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1477,7 +1473,8 @@ https://debbugs.gnu.org/cgi/bugreport.cgi?bug=78864.
 Improve terminal emulation.
 
 #+begin_src emacs-lisp :tangle init.el
-  (when (locate-library "coterm")
+  (use-package coterm
+    :config
     (coterm-mode 1))
 #+end_src
 
@@ -1688,6 +1685,14 @@ Update default text to insert into new files.
   t "#pragma once\n\n"))
 #+end_src
 
+#+begin_src emacs-lisp :tangle init.el
+    (use-package cmake-mode
+      :defer t
+      :mode ("CMakeLists.txt\\'" "\\.cmake\\'"))
+#+end_src
+
+
+
 ** Qt
 
  #+begin_src emacs-lisp :tangle init.el
@@ -1815,9 +1820,9 @@ to the process.
 ** Support for PHP
 
 #+begin_src emacs-lisp :tangle init.el
-(when (locate-library "php-mode")
-  (load-library "php-mode")
-  (add-hook 'php-mode-hook 'flymake-mode))
+    (use-package php-mode
+      :defer t
+      :mode "\\.php\\'")
 #+end_src
 
 * Text edition
@@ -1869,31 +1874,30 @@ When available, load the package =flymake-csslint= to check code on the
 fly.
 
 #+begin_src emacs-lisp :tangle init.el
-(when (locate-library "flymake-csslint")
-  (require 'flymake-csslint)
-  (add-hook 'css-mode-hook 'flymake-mode))
+  (use-package flymake-css
+    :hook (css-mode . flymake-mode))
 #+end_src
 
 When available, load the package =rainbow-mode= to colorize strings
 that represent colors.
 
 #+begin_src emacs-lisp :tangle init.el
-(when (locate-library "rainbow-mode")
-  (require 'rainbow-mode)
-  (add-hook 'css-mode-hook 'rainbow-mode))
+  (use-package rainbow-mode
+    :hook (css-mode . rainbow-mode))
 #+end_src
 
 ** Support for MarkDown
 
 #+begin_src emacs-lisp :tangle init.el
-  (when (locate-library "markdown-mode")
-    (require 'markdown-mode)
+  (use-package markdown-mode
+    :defer t
+    :config
     (add-hook 'markdown-mode-hook
   	    (lambda ()
   	      (setq markdown-asymmetric-header t
     		    fill-column 90)
   	      (visual-line-mode 1)))
-    (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
+    :mode "\\.md\\'" )
 #+end_src
 
 Configure the native "ts" mode:
@@ -1908,18 +1912,12 @@ Configure the native "ts" mode:
 And improve readability in both modes.
 
 #+begin_src emacs-lisp :tangle init.el
-  (when (locate-library "olivetti/olivetti.el")
-    (load-library "olivetti/olivetti.el")
-    (setopt olivetti-body-width 90
-  	  olivetti-style 'fancy
-  	  olivetti-minimum-body-width 80)
-    (dolist (hook '(Info-mode-hook
-  		  Man-mode-hook
-  		  markdown-mode-hook
-  		  markdown-ts-mode-hook))
-        (add-hook hook
-                  (lambda ()
-  		  (olivetti-mode 1)))))
+  (use-package olivetti
+    :custom
+    (olivetti-body-width 90)
+    (olivetti-style 'fancy)
+    (olivetti-minimum-body-width 80)
+    :hook (Info-mode Man-mode markdown-mode markdown-ts-mode))
 #+end_src
 
 

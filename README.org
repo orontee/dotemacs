@@ -544,6 +544,8 @@ I can get rid of all of them with a single =C-xws=!
             'toggle-side-windows-configuration)
 #+end_src
 
+A key binding is dedicated to select a given dedicated window.
+
 #+begin_src emacs-lisp :tangle init.el
   (defun other-dedicated-window (window)
     """Select another dedicated window. """
@@ -567,6 +569,13 @@ I can get rid of all of them with a single =C-xws=!
 
     (keymap-global-set "C-x M-o" 'other-dedicated-window)
 
+#+end_src
+
+#+begin_src emacs-lisp :tangle init.el
+  (use-package pulsar
+    :ensure t
+    :config
+    (pulsar-mode 1))
 #+end_src
 
 

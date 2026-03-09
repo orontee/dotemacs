@@ -107,6 +107,10 @@ Packages configuration is done with =use-package=.
 The default is to fetch packages from the GNU Emacs packages 
 repository only.
 
+#+begin_src emacs-lisp :tangle init.el
+(setq package-review-policy t
+      package-review-diff-command '("git" "diff" "--no-index" "--color=never" "--diff-filter=d"))
+#+end_src
 
 At the time of writing, I have activated the following packages:
 

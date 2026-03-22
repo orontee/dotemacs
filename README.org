@@ -216,6 +216,7 @@ scale can be done interactively with =C-xC-0=, =C-xC-+= and =C-xC-=.
                     gdb-mode-hook
                     grep-mode-hook
                     occur-mode-hook
+  		  shell-command-mode-hook
   		  shortdoc-mode-hook
                     speedbar-mode-hook))
       (add-hook hook
@@ -1944,7 +1945,7 @@ that represent colors.
     (add-hook 'markdown-mode-hook
   	    (lambda ()
   	      (setq markdown-asymmetric-header t
-    		    fill-column 90)
+    		    fill-column 70)
   	      (visual-line-mode 1)))
     :mode "\\.md\\'" )
 #+end_src
@@ -1954,7 +1955,7 @@ Configure the native "ts" mode:
 #+begin_src emacs-lisp :tangle init.el
   (add-hook 'markdown-ts-mode-hook
   	  (lambda ()
-  	    (setq fill-column 90)
+  	    (setq fill-column 70)
   	    (visual-line-mode 1)))
 #+end_src
 

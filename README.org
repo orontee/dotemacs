@@ -578,8 +578,12 @@ A key binding is dedicated to select a given dedicated window.
 #+begin_src emacs-lisp :tangle init.el
   (use-package pulsar
     :ensure t
+    :bind
+    ( :map global-map
+      ("C-x l" . pulsar-pulse-line)
+      ("C-x L" . pulsar-highlight-permanently-dwim))
     :config
-    (pulsar-mode 1))
+    (pulsar-global-mode 1))
 #+end_src
 
 

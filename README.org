@@ -575,6 +575,9 @@ A key binding is dedicated to select a given dedicated window.
 
 #+end_src
 
+Help follow cursor with pulses. A key binding is defined to pulse on
+demand.
+
 #+begin_src emacs-lisp :tangle init.el
   (use-package pulsar
     :ensure t
@@ -586,6 +589,19 @@ A key binding is dedicated to select a given dedicated window.
     (pulsar-global-mode 1))
 #+end_src
 
+Define a key binding for =follow-delete-other-windows-and-split= and
+when follow mode is active use same key binding to disable follow
+mode.
+
+#+begin_src emacs-lisp :tangle init.el
+  (with-eval-after-load "follow"
+    (setopt follow-mode-prefix-key "C-x f")
+    (keymap-set follow-mode-submap "f" 'follow-mode))
+
+  (define-prefix-command 'global-follow-mode-map)
+  (keymap-global-set "C-x f" 'global-follow-mode-map)
+  (keymap-global-set "C-x f f" 'follow-delete-other-windows-and-split)
+#+end_src
 
 ** Completion
 

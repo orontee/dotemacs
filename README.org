@@ -339,6 +339,8 @@ with a date tag and a properly formatted link to buffer file.
   (defvar remember-markdown-title-level 2)
 
   (require 'remember)
+  (keymap-global-set "C-x M-r" 'remember-prefix-map)
+
   (defun remember-markdown-format-note (text)
     "Meant to be used with `remember-text-format-function'.
     It returns the text to be remembered, formatted as a Markdown section of
@@ -352,19 +354,7 @@ with a date tag and a properly formatted link to buffer file.
                         text))
         (buffer-string))))
 
-  (defvar remember-data-files-regex "\\.md\\'")
-
-  (defun remember-append-in-data-directory ()
-    "Append remember data to a file in `remember-data-directory'.
-  The file is read from minibuffer."
-    (let* ((name
-  	 (completing-read "Remember in file: "
-  			  (directory-files
-  			   (expand-file-name remember-data-directory)
-  			   nil
-  			   remember-data-files-regex)))
-          (remember-data-file (expand-file-name name remember-data-directory)))
-      (remember-append-to-file)))
+  (setopt remember-data-files-regex "\\.md\\'")
 
   (defvar remember-markdown-archive-file "~/Documents/Notes/Archives.md")
 
@@ -384,40 +374,18 @@ with a date tag and a properly formatted link to buffer file.
   	    (insert text))
   	(append-to-file text nil remember-markdown-archive-file)))))
 
-  (define-prefix-command 'remember-prefix-map)
-  (keymap-global-set "C-x M-r" 'remember-prefix-map)
-  (keymap-set remember-prefix-map "r" 'remember)
-  (keymap-set remember-prefix-map "c" 'remember-clipboard)
-  (keymap-set remember-prefix-map "R" 'remember-region)
-  (keymap-set remember-prefix-map "n" 'remember-notes)
-
   (with-eval-after-load "remember"
-  (define-derived-mode remember-mode markdown-mode "Remember"
-    "Major mode for output from \\[remember].
-  This buffer is used to collect data written in Markdown format that you
-  want to remember.
-  \\<remember-mode-map>
-  Just hit \\[remember-finalize] when you're done entering, and it will file
-  the data away for latter retrieval, and possible indexing.
-  \\{remember-mode-map}"
-    ;; restore Markdown mode keybindings overwritten in
-    ;; remember-mode-map
-    (keymap-local-set "C-c C-s" markdown-mode-style-map)
 
-    (setq header-line-format
-  	(substitute-command-keys
-  	 "Edit, then exit with `\\[remember-finalize]' or abort with \
-  `\\[remember-destroy]'")))
-
-  (setq remember-notes-initial-major-mode 'markdown-mode
-        remember-annotation-functions '(markdown-buffer-file-name-as-link)
-        remember-handler-functions '(remember-append-in-data-directory)
-        remember-data-directory "~/Documents/Notes"
-        remember-data-file (expand-file-name "Remember.md"
-      					   remember-data-directory)
-        remember-text-format-function 'remember-markdown-format-note
-        remember-time-format "%c"
-        remember-leader-text nil))
+    (setq remember-initial-major-mode 'markdown-mode
+  	remember-notes-initial-major-mode 'markdown-mode
+  	remember-annotation-functions '(markdown-buffer-file-name-as-link)
+  	remember-handler-functions '(remember-append-in-data-directory)
+  	remember-data-directory "~/Documents/Notes"
+  	remember-data-file (expand-file-name "Remember.md"
+      					     remember-data-directory)
+  	remember-text-format-function 'remember-markdown-format-note
+  	remember-time-format "%c"
+  	remember-leader-text nil))
 #+end_src
 
 ** Generic modes
@@ -897,13 +865,14 @@ applications. Also I want new tabs to display bookmarks.
 Make local documentation in Info format available to Emacs.
 
 #+begin_src emacs-lisp :tangle init.el
-  (add-hook 'Info-mode-hook
-            (lambda ()
-               (setq truncate-lines t)))
-
-  (let ((path (expand-file-name "~/.local/share/info/")))
-    (when (file-accessible-directory-p path)
-      (add-to-list 'Info-additional-directory-list path)))
+  (eval-after-load "info"
+    (lambda ()
+      (add-hook 'Info-mode-hook
+                (lambda ()
+  		(setq truncate-lines t)))
+      (let ((path (expand-file-name "~/.local/share/info/")))
+        (when (file-accessible-directory-p path)
+  	(add-to-list 'Info-additional-directory-list path)))))
 #+end_src
 
 Extend keybinding documentation with Which Key mode and make it use

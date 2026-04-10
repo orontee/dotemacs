@@ -1162,8 +1162,9 @@ method descriptions.
 #+begin_src emacs-lisp :tangle init.el
   (use-package systemd
     :defer t)
-  (use-package bitbake
-    :defer t)
+  (use-package bitbake-mode
+    :defer t
+    :mode ("\\.bbclass" "\\.bb" "\\.inc"))
 #+end_src
 
 * Programming

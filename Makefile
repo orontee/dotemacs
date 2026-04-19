@@ -9,6 +9,7 @@ export_cmd = \
   (org-html-export-as-html))"
 
 build_files = init.el init_bash.sh
+theme_files = matthem-dark-theme.el matthem-light-theme.el
 
 EMACSCLIENT ?= emacsclient
 
@@ -26,6 +27,10 @@ install: $(build_files)
 	mkdir -p $(HOME)/.config/emacs
 	for FILE in $(build_files); do \
 		mv $$FILE $(HOME)/.config/emacs/; \
+	done
+	mkdir -p $(HOME)/.config/emacs/themes
+	for FILE in $(theme_files); do \
+		cp $$FILE $(HOME)/.config/emacs/themes; \
 	done
 
 distclean:

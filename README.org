@@ -1435,9 +1435,13 @@ automaticaly =smerge-mode=; Otherwise I tend to use =smerge-mode= key
 bindings after the mode has been deactivated.
 
 #+begin_src emacs-lisp :tangle init.el
-(require 'smerge-mode)
-(with-eval-after-load "smerge-mode"
-  (setq smerge-auto-leave nil))
+  (require 'smerge-mode)
+  (with-eval-after-load "smerge-mode"
+    (setq smerge-auto-leave nil))
+  (add-hook 'smerge-mode-hook
+          #'(lambda ()
+              (when outline-minor-mode
+            (outline-show-all))))
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el

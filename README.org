@@ -2123,27 +2123,22 @@ Auto fill mode may break the indentation.
 
 ** File search
 
-The function =xref-matches-in-files= is broken since handling of
-binary files is done by parsing the output and depends on the local
-for =grep= and =ugrep=. A fix consist to force those tools to ignore
-matches found in binary files (=-I= option aka
-=--binary-files=without-match=).
+When available, use =ugrep= to search in files; It's damned fast!
 
 #+begin_src emacs-lisp :tangle init.el
-(require 'xref)
-(setq xref-search-program-alist
-      '((grep . "xargs -0 grep <C> --null -snHE -I -e <R>")
-	(ripgrep
-	 . "xargs -0 rg <C> --null -nH --no-heading --no-messages -g '!*/' -e <R>")
-	(ugrep . "xargs -0 ugrep <C> --null -ns -I -e <R>")))
-#+end_src
+  (when (executable-find "ugrep")
+    (setopt grep-find-command
+  	    '("ugrep -n -H --color=always --no-heading -e '' $(git rev-parse --show-toplevel || pwd)"
+  	      . 27))
+    (setopt grep-find-template "ugrep -n -H --color=always --no-heading -e <R> <D>")
+    (setopt grep-find-use-xargs 'gnu-sort)
+    (setopt grep-template "ugrep -n -H --color=always --no-heading -e <R> <F>")
+    (setopt grep-use-null-device nil)
+    (setopt grep-highlight-matches t)
 
-When available, use `ripgrep` to search in files.
-
-#+begin_src emacs-lisp :tangle init.el
-(when (and (executable-find "rg")
-           (assoc 'ripgrep xref-search-program-alist))
-  (setq xref-search-program 'ripgrep))
+    (with-eval-after-load "xref"
+      (when (assoc 'ugrep xref-search-program-alist)
+        (setq xref-search-program 'ugrep))))
 #+end_src
 
 ** Enhancing file manager

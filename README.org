@@ -565,8 +565,15 @@ mode.
 
 #+begin_src emacs-lisp :tangle init.el
   (with-eval-after-load "follow"
+    (defun follow-mode-quit ()
+      (interactive)
+      (when follow-mode
+        (follow-mode -1)))
+
     (setopt follow-mode-prefix-key "C-x f")
-    (keymap-set follow-mode-submap "f" 'follow-mode))
+    (keymap-set follow-mode-submap "f"
+    	      'follow-switch-to-current-buffer-all)
+    (keymap-set follow-mode-submap "q" 'follow-mode-quit))
 
   (define-prefix-command 'global-follow-mode-map)
   (keymap-global-set "C-x f" 'global-follow-mode-map)

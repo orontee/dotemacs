@@ -2132,8 +2132,12 @@ Auto fill mode may break the indentation.
 ** File search
 
 #+begin_src emacs-lisp :tangle init.el
-(setopt grep-use-headings t
-        grep-highlight-matches 'always)
+  (setopt grep-use-headings t
+          grep-highlight-matches 'always)
+  (add-hook 'grep-mode-hook
+  	  (lambda ()
+  	    (setq-local outline-minor-mode-use-buttons 'insert)
+  	    (outline-minor-mode)))
 #+end_src
 
 #+RESULTS:

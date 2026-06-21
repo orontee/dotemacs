@@ -148,6 +148,8 @@ At the time of writing, I have activated the following packages:
 | nginx-mode               | major mode for editing nginx config files                  |
 | olivetti                 | Minor mode to automatically balance window margins         |
 | powershell               | Mode for editing PowerShell scripts.                       |
+| pulsar                   | Pulse highlight on demand or after select functions        |
+| rainbow-mode             | Colorize color names in buffers                            |
 | request                  | Compatible layer for URL request.                          |
 | restclient               | An interactive HTTP client for Emacs.                      |
 | rfc-mode                 | RFC document browser and viewer                            |

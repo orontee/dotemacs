@@ -1255,6 +1255,7 @@ index menu.
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
+  (setopt xref-history-storage 'xref-window-local-history)
   (add-hook 'xref--xref-buffer-mode-hook
               (lambda ()
                 (hl-line-mode)))

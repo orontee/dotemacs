@@ -889,7 +889,9 @@ Unicode.
     :ensure t
     :config
     (setq which-key-dont-use-unicode nil
-  	    which-key-lighter "")
+  	    which-key-lighter ""
+  	    which-key-ellipsis "…"
+  	    which-key-add-column-padding 2)
     (which-key-mode 1)
     (which-key-add-key-based-replacements
       "<f1> 4"        "help-other-win"

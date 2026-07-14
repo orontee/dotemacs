@@ -67,7 +67,7 @@ I usually build my own binary from a Git repository.
 #+begin_src sh
   $ git clean -fdx; git pull
   $ ./autogen.sh; ./configure --prefix "/usr/local" \
-      --with-dbus --with-gif --with-gnutls --with-jpeg --with-json \
+      --with-dbus --with-gif --with-gnutls --with-jpeg \
       --with-libsystemd --with-mailutils --with-modules \
       --with-native-compilation --with-pgtk --with-png --with-rsvg \
       --with-tiff --with-tree-sitter --with-xft --with-xinput2 \

@@ -1274,7 +1274,7 @@ index menu.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package breadcrumb
-    :defer nil
+    :defer t
     :hook prog-mode)
 #+end_src
 
@@ -1352,6 +1352,22 @@ preceding identifier and embedded capitals to be downcase.
 #+end_src
 
 ** Version control
+
+Currently transitionning from core "VC" to Magit.
+
+#+begin_src emacs-lisp :tangle init.el
+  (use-package magit
+    :defer t
+    :config
+    (add-hook 'magit-log-mode-hook (lambda () (text-scale-set -1)))
+    (add-hook 'magit-stashes-mode-hook (lambda () (text-scale-set -1)))
+    (add-hook 'magit-status-mode-hook (lambda () (text-scale-set -1)))
+    :bind
+    (:map project-prefix-map
+  	("v" .  magit-status)))
+#+end_src
+
+Follows previous "VC" configuration.
 
 I sometimes have directories both under [[http://subversion.apache.org/][Subversion]] and [[http://gitscm.org/][Git]]. As my
 preferred version control backend is Git, the list of version control

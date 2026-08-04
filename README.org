@@ -627,11 +627,25 @@ When available, use =corfu= for completion in region.
     (setq corfu-auto t))
 #+end_src
 
-When reading file or buffer names the case will be ignored.
+When reading file or buffer names the case will be ignored. For file
+names, backup files are hidden from completion candidates.
 
 #+begin_src emacs-lisp :tangle init.el
-(setq read-file-name-completion-ignore-case t
-      read-buffer-completion-ignore-case t)
+  (setq read-file-name-completion-ignore-case t
+        read-buffer-completion-ignore-case t)
+
+  (defun my-minibuffer-file-sort (files)
+    "Sort FILES to have directories first and the rest alphabetically.
+  Omit the .. directory from FILES."
+    (setq files (delete "./"
+  		      (delete "../" files)))
+    (setq files (minibuffer-sort-alphabetically files))
+    (let ((backup-p (lambda (file) (string-suffix-p "~" file))))
+      (seq-remove backup-p files)))
+
+  (setq completion-category-overrides
+        '((file . ((styles partial-completion)
+                   (display-sort-function . my-minibuffer-file-sort)))))
 #+end_src
 
 ** Cycling spacing

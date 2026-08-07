@@ -260,16 +260,53 @@ Lighter bookmark menu: Filenames are hidden and more horizontal space
 is dedicated to bookmark names.
 
 #+begin_src emacs-lisp :tangle init.el
-(with-eval-after-load "bookmark"
-  (setq bookmark-bmenu-file-column 60
-        bookmark-bmenu-toggle-filenames nil))
+  (with-eval-after-load "bookmark"
+    (setq bookmark-bmenu-file-column 60
+          bookmark-bmenu-toggle-filenames nil))
 #+end_src
 
 Completion of bookmark name uses substring style.
 
 #+begin_src emacs-lisp :tangle init.el
-(add-to-list 'completion-category-overrides '(bookmark (styles substring)))
+  (add-to-list 'completion-category-overrides '(bookmark (styles substring)))
 #+end_src
+
+Ease bookmarks switching.
+
+#+begin_src emacs-lisp :tangle init.el
+  (defun bookmark-project-bookmarks ()
+    "Return a bookmarks file name build from project name."
+    (let ((project (project-current)))
+      (if project
+          (expand-file-name
+           (concat "bookmarks-" (project-name project) ".eld")
+           user-emacs-directory)
+        bookmark-default-file)))
+
+  (defalias 'bookmark-switch-bookmarks-candidate 'bookmark-project-bookmarks)
+
+  (defun bookmark-switch-bookmarks (file)
+    "Switch to bookmarks from FILE.
+
+    The \Bookmark List\ is updated to display only bookmarks from
+    FILE. Subsequent call to `bookmark-bmenu-save' update FILE. Note that
+    `bookmark-default-file' is kept unchanged."
+    (interactive (list
+                  (read-file-name "Bookmarks file: "
+                                  user-emacs-directory
+  				(bookmark-switch-bookmarks-candidate)
+                                  (lambda (file)
+                                    (when (not (file-exists-p file))
+                                      (let ((bookmark-alist nil))
+                                        (bookmark-write-file file)))
+                                    file)
+                                  (file-name-nondirectory
+  				 (bookmark-switch-bookmarks-candidate)))))
+    (bookmark-load file t nil t))
+#+end_src
+
+#+RESULTS:
+: bookmark-switch-bookmarks
 
 ** Buffers
 
@@ -646,6 +683,17 @@ names, backup files are hidden from completion candidates.
   (setq completion-category-overrides
         '((file . ((styles partial-completion)
                    (display-sort-function . my-minibuffer-file-sort)))))
+#+end_src
+
+** Transient
+
+#+begin_src emacs-lisp :tangle init.el
+  (use-package transient
+    :config
+    (setq transient-mode-line-format nil
+          transient-describe-menu t
+  	transient-semantic-coloring nil
+  	transient-enable-menu-navigation nil))
 #+end_src
 
 ** Cycling spacing
@@ -1371,14 +1419,12 @@ Currently transitionning from core "VC" to Magit.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package magit
-    :defer t
     :config
+    (setq magit-define-global-key-bindings 'recommended)
     (add-hook 'magit-log-mode-hook (lambda () (text-scale-set -1)))
     (add-hook 'magit-stashes-mode-hook (lambda () (text-scale-set -1)))
     (add-hook 'magit-status-mode-hook (lambda () (text-scale-set -1)))
-    :bind
-    (:map project-prefix-map
-  	("v" .  magit-status)))
+    (add-hook 'magit-refs-mode-hook (lambda () (text-scale-set -1))))
 #+end_src
 
 Follows previous "VC" configuration.

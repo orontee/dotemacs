@@ -45,7 +45,7 @@ copied from the [[https://lists.gnu.org/mailman/listinfo/help-gnu-emacs][gnu.ema
 ** Header                                                          :noexport:
 
 #+begin_src emacs-lisp :tangle init.el :noweb tangle
-<<init.el_header>>
+  <<init.el_header>>
 #+end_src
 
 ** Checking emacs version
@@ -55,11 +55,11 @@ last versions were greatly improved. A recent version is required. It
 can be downloaded from http://ftp.gnu.org/pub/gnu/emacs/.
 
 #+begin_src emacs-lisp :tangle init.el
-(when (or (< emacs-major-version 24)
-          (and (= emacs-major-version 24)
-               (< emacs-minor-version 3)))
-  (error "Wrong Emacs version, update or remove the configuration
-  file"))
+  (when (or (< emacs-major-version 24)
+            (and (= emacs-major-version 24)
+                 (< emacs-minor-version 3)))
+    (error "Wrong Emacs version, update or remove the configuration
+    file"))
 #+end_src
 
 I usually build my own binary from a Git repository.
@@ -67,24 +67,24 @@ I usually build my own binary from a Git repository.
 #+begin_src sh
   $ git clean -fdx; git pull
   $ ./autogen.sh; ./configure --prefix "/usr/local" \
-      --with-dbus --with-gif --with-gnutls --with-jpeg \
-      --with-libsystemd --with-mailutils --with-modules \
-      --with-native-compilation --with-pgtk --with-png --with-rsvg \
-      --with-tiff --with-tree-sitter --with-xft --with-xinput2 \
-      --with-xpm --without-xaw3d \
-      CFLAGS="-O3 -pipe -fomit-frame-pointer"
-   $ make NATIVE_FULL_AOT=1 -j $(nproc)
-   $ sudo make install
-   $ sudo update-alternatives \
-     --install /usr/bin/emacs emacs \
-               /usr/local/bin/emacs 99 \
-     --slave /usr/share/man/man1/emacs.1.gz emacs.1.gz \
-             /usr/local/share/man/man1/emacs.1.gz
-   $ sudo update-alternatives \
-     --install /usr/bin/emacsclient emacsclient \
-               /usr/local/bin/emacsclient 99 \
-     --slave /usr/share/man/man1/emacsclient.1.gz emacsclient.1.gz \
-             /usr/local/share/man/man1/emacsclient.1.gz
+  			    --with-dbus --with-gif --with-gnutls --with-jpeg \
+  			    --with-libsystemd --with-mailutils --with-modules \
+  			    --with-native-compilation --with-pgtk --with-png --with-rsvg \
+  			    --with-tiff --with-tree-sitter --with-xft --with-xinput2 \
+  			    --with-xpm --without-xaw3d \
+  			    CFLAGS="-O3 -pipe -fomit-frame-pointer"
+  $ make NATIVE_FULL_AOT=1 -j $(nproc)
+  $ sudo make install
+  $ sudo update-alternatives \
+    --install /usr/bin/emacs emacs \
+    /usr/local/bin/emacs 99 \
+    --slave /usr/share/man/man1/emacs.1.gz emacs.1.gz \
+    /usr/local/share/man/man1/emacs.1.gz
+  $ sudo update-alternatives \
+    --install /usr/bin/emacsclient emacsclient \
+    /usr/local/bin/emacsclient 99 \
+    --slave /usr/share/man/man1/emacsclient.1.gz emacsclient.1.gz \
+    /usr/local/share/man/man1/emacsclient.1.gz
 #+end_src
 
 ** Extending Emacs, packages repositories, etc
@@ -95,7 +95,7 @@ packages, so when a library must be installed by hand, the directory
 =~/.config/emacs/lisp= is used. The load path is extended accordingly.
 
 #+begin_src emacs-lisp :tangle init.el
-(add-to-list 'load-path (expand-file-name "~/.config/emacs/lisp/"))
+  (add-to-list 'load-path (expand-file-name "~/.config/emacs/lisp/"))
 #+end_src
 
 Packages configuration is done with =use-package=.
@@ -108,19 +108,19 @@ The default is to fetch packages from the GNU Emacs packages
 repository only.
 
 #+begin_src emacs-lisp :tangle init.el
-(setq package-review-policy t
-      package-review-diff-command '("git" "diff" "--no-index" "--color=never" "--diff-filter=d"))
+  (setq package-review-policy t
+        package-review-diff-command '("git" "diff" "--no-index" "--color=never" "--diff-filter=d"))
 #+end_src
 
 At the time of writing, I have activated the following packages:
 
 #+begin_src emacs-lisp :exports results :results value raw
-(let ((descriptions "|Package|Description|\n|---|\n"))
-  (dolist (package (sort package-alist) descriptions)
-    (let ((name (car package))
-          (desc (package-desc-summary (cadr package))))
-    (setq descriptions
-          (concat descriptions (format "|%s|%s|\n" name desc))))))
+  (let ((descriptions "|Package|Description|\n|---|\n"))
+    (dolist (package (sort package-alist) descriptions)
+      (let ((name (car package))
+            (desc (package-desc-summary (cadr package))))
+        (setq descriptions
+              (concat descriptions (format "|%s|%s|\n" name desc))))))
 #+end_src
 
 #+RESULTS:
@@ -165,7 +165,7 @@ All settings written using the customize library go to a dedicated
 file that is loaded when the loading of the [[file:.init.el][configuration file]] ends.
 
 #+begin_src emacs-lisp :noweb yes
-<<init.el_custom-file_loading>>
+  <<init.el_custom-file_loading>>
 #+end_src
 
 When the custom settings are loaded, a machine specific file is
@@ -173,7 +173,7 @@ loaded. The file name comes from the host name of the machine Emacs is
 running on.
 
 #+begin_src emacs-lisp :noweb yes
-<<init.el_system-name_loading>>
+  <<init.el_system-name_loading>>
 #+end_src
 
 ** Widening the screen
@@ -186,10 +186,10 @@ is still available by pressing =f10= or the contextual menu bind to
 =C-mouse-1=.
 
 #+begin_src emacs-lisp :tangle init.el
-(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-(when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
-(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+  (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+  (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+  (when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
+  (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 #+end_src
 
 Don't know how to scroll buffers now that the scrollbar is gone? Read
@@ -250,7 +250,7 @@ Diminish mode-line display of minor modes.
 Hide title bar when window is maximized.
 
 #+begin_src emacs-lisp :tangle init.el
-(add-hook 'window-size-change-functions
+  (add-hook 'window-size-change-functions
             #'frame-hide-title-bar-when-maximized)
 #+end_src
 
@@ -455,8 +455,8 @@ line...
 Bind =rc-generic-mode= to Visual Studio Resource files.
 
 #+begin_src emacs-lisp :tangle init.el
-    (add-to-list 'auto-mode-alist
-                 '("\\.rc2\\'" . rc-generic-mode))
+  (add-to-list 'auto-mode-alist
+               '("\\.rc2\\'" . rc-generic-mode))
   (add-to-list 'auto-mode-alist
                '("\\git-rebase-todo\\'" . default-generic-mode))
 #+end_src
@@ -467,10 +467,10 @@ Auto insertion of templates at file creation is enabled and the
 location where templates are searched is defined.
 
 #+begin_src emacs-lisp :tangle init.el
-(auto-insert-mode)
-(let ((file (expand-file-name "~/Modèles")))
-  (when (file-exists-p file)
-    (setq auto-insert-directory file)))
+  (auto-insert-mode)
+  (let ((file (expand-file-name "~/Modèles")))
+    (when (file-exists-p file)
+      (setq auto-insert-directory file)))
 #+end_src
 
 ** Revert buffers on file changes
@@ -480,26 +480,26 @@ disk. For files with =.log= extension, the tail is constantly
 followed.
 
 #+begin_src emacs-lisp :tangle init.el
-(global-auto-revert-mode)
+  (global-auto-revert-mode)
 
-(add-hook 'find-file-hook
-          (lambda()
-             (when (and (buffer-file-name)
-                        (equal (file-name-extension (buffer-file-name)) "log"))
-               (auto-revert-tail-mode))))
+  (add-hook 'find-file-hook
+            (lambda()
+              (when (and (buffer-file-name)
+                         (equal (file-name-extension (buffer-file-name)) "log"))
+                (auto-revert-tail-mode))))
 #+end_src
 
 ** Handle long lines
 
 #+begin_src emacs-lisp :tangle init.el
-(global-so-long-mode 1)
+  (global-so-long-mode 1)
 #+end_src
 
 To prevent long lines, enable display of the fill column indicator.
 
 #+begin_src emacs-lisp :tangle init.el
-(global-display-fill-column-indicator-mode t)
-(setq global-display-fill-column-indicator-modes '((not special-mode) prog-mode))
+  (global-display-fill-column-indicator-mode t)
+  (setq global-display-fill-column-indicator-modes '((not special-mode) prog-mode))
 #+end_src
 
 ** Moving between windows and selecting buffers
@@ -532,8 +532,8 @@ I can get rid of all of them with a single =C-xws=!
                 `((,(concat
   		   "\\*eldoc.*\\*\\|"
   		   (regexp-opt
-  		   '("*xref*" "*grep*" "*Occur*" "*Help*" "*Apropos*" "*Messages*"
-  		     "*faces*" "*Colors*" "*Remember*" "*Shortdoc string*") t))
+  		    '("*xref*" "*grep*" "*Occur*" "*Help*" "*Apropos*" "*Messages*"
+  		      "*faces*" "*Colors*" "*Remember*" "*Shortdoc string*") t))
                    display-buffer-in-side-window
                    (side . right) (slot . 0) (window-width . ,side-window-width)
                    ,side-windows-parameters)
@@ -544,7 +544,7 @@ I can get rid of all of them with a single =C-xws=!
   		("\\*\\(?:.*Flymake.*\\|Warnings\\)\\*"
                    display-buffer-in-side-window
                    (side . bottom) (slot . 1) (window-height . 10)
-  		  ,side-windows-parameters))
+  		 ,side-windows-parameters))
                 window-min-width 10)
         (setq display-buffer-alist nil
               window-min-width 10))))
@@ -576,7 +576,7 @@ A key binding is dedicated to select a given dedicated window.
   		side-windows-buffers)))))))
     (select-window window))
 
-    (keymap-global-set "C-x M-o" 'other-dedicated-window)
+  (keymap-global-set "C-x M-o" 'other-dedicated-window)
 
 #+end_src
 
@@ -634,7 +634,7 @@ for. It has no modeline. And follows a horizontal layout.
             (lambda ()
               (setq-local mode-line-format nil)
               (setq truncate-lines t)
-  	      (hl-line-mode)))
+  	    (hl-line-mode)))
 #+end_src
 
 Use =icomplete= for minibuffer completion.  Don't show matches on no

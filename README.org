@@ -1234,6 +1234,53 @@ method descriptions.
               (setq display-line-numbers-widen t)))
 #+end_src
 
+** Language Server Program
+
+Eglot is used to start LSP servers. A dedicated prefix map is created
+and populated.
+
+#+begin_src emacs-lisp :tangle init.el
+  (use-package eglot
+    :hook
+    (bash-mode . eglot-ensure)
+    (bash-ts-mode . eglot-ensure)
+    (css-mode . eglot-ensure)
+    (css-ts-mode . eglot-ensure)
+    (html-mode . eglot-ensure)
+    (html-ts-mode . eglot-ensure)
+    (js-mode . eglot-ensure)
+    (js-ts-mode . eglot-ensure)
+    (markdown-mode . eglot-ensure)
+    (markdown-ts-mode . eglot-ensure)
+    (python-mode . eglot-ensure)
+    (python-ts-mode . eglot-ensure)
+    (sh-mode . eglot-ensure)
+    (yaml-mode .eglot-ensure)
+    (yaml-ts-mode .eglot-ensure)
+    :init
+    (setq eglot-autoshutdown t
+  	eglot-confirm-server-edits t
+  	eglot-report-progress t
+  	eglot-extend-to-xref t
+  	eglot-sync-connect 1
+  	eglot-connect-timeout 60
+  	eglot-autoreconnect t)
+    :config
+    (define-prefix-command 'eglot-prefix-map)
+    :hook
+    (eglot-mode . (lambda ()
+  		  (keymap-local-set "C-c i" 'flymake-prefix-map)
+  		  (keymap-set eglot-prefix-map "i" 'eglot-find-implementation)
+  		  (keymap-set eglot-prefix-map "e" 'eglot)
+  		  (keymap-set eglot-prefix-map "k" 'eglot-shutdown-all)
+  		  (keymap-set eglot-prefix-map "r" 'eglot-rename)
+  		  (keymap-set eglot-prefix-map "x" 'eglot-reconnect)
+  		  (keymap-set eglot-prefix-map "a" 'eglot-code-actions)
+  		  (keymap-set eglot-prefix-map "m" 'eglot-menu)
+  		  (keymap-set eglot-prefix-map "f" 'eglot-format-buffer)
+  		  (keymap-set eglot-prefix-map "h" 'eglot-inlay-hints-mode))))
+#+end_src
+
 ** Projects
 
 #+begin_src emacs-lisp :tangle init.el

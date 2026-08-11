@@ -1135,6 +1135,30 @@ done after all customization are loaded.
 (desktop-save-mode)
 #+end_src
 
+** Spell checking
+
+Use =guess-language-mode= to select spell check language automatically
+and configure it to be less intrusive in mode-line.
+
+#+begin_src emacs-lisp :tangle init.el
+  (use-package guess-language
+    :config
+    (setq guess-language-languages '(en fr)
+  	guess-language-langcodes
+  	'((en "en" "English" "📚️en" "English")
+  	  (fr "francais" "French" "📚️️fr" "French")))
+    :hook text-mode)
+#+end_src
+
+** Long lines and buffer boundaries
+
+#+begin_src emacs-lisp :tangle init.el
+(add-hook 'prog-mode-hook
+          (lambda ()
+             (setq truncate-lines t
+                   indicate-buffer-boundaries '((top . left) (bottom . right)))))
+#+end_src
+
 ** Various
 
 Tired of typing =yes= and =no=? Prefer =y= and =n=!
@@ -1318,48 +1342,6 @@ created and populated.
                       (keymap-set flymake-prefix-map "p" 'flymake-goto-prev-error))))
 #+end_src
 
-** Spell checking
-
-When writing code source, I like to have comments, documentation and
-string checked for right spelling. But one must check whether there is
-a spell checker in path or not.
-
-#+begin_src emacs-lisp :tangle init.el
-  (require 'ispell)
-  (setq has-spell-checker
-        (not (eq (executable-find ispell-program-name) nil)))
-  (when has-spell-checker
-    (add-hook 'prog-mode-hook
-              (lambda ()
-                 (setq ispell-local-dictionary "english"
-                       flyspell-persistent-highlight nil)))
-    (add-hook 'rst-mode-hook
-              (lambda ()
-                (setq ispell-local-dictionary "english")
-                (flyspell-mode))))
-#+end_src
-
-Configure =guess-language-mode= to be less intrusive in mode-line.
-
-#+begin_src emacs-lisp :tangle init.el
-  (use-package guess-language
-    :config
-    (setq guess-language-languages '(en fr)
-  	guess-language-langcodes
-  	'((en "en" "English" "🖍️en" "English")
-  	  (fr "francais" "French" "🖍️fr" "French")))
-    :hook text-mode)
-#+end_src
-
-** Long lines and buffer boundaries
-
-#+begin_src emacs-lisp :tangle init.el
-(add-hook 'prog-mode-hook
-          (lambda ()
-             (setq truncate-lines t
-                   indicate-buffer-boundaries '((top . left) (bottom . right)))))
-#+end_src
-
 ** Code navigation
 
 Another way to browse tags found in the current buffer is to use the
@@ -1464,6 +1446,22 @@ preceding identifier and embedded capitals to be downcase.
       glasses-uncapitalize-p t)
 #+end_src
 
+** Spell checking
+
+When writing code source, I like to have comments, documentation and
+string checked for right spelling.
+
+#+begin_src emacs-lisp :tangle init.el
+  (use-package ispell
+    :hook
+    (prog-mode . (lambda ()
+  		 (setq ispell-local-dictionary "english"
+                         flyspell-persistent-highlight nil)))
+    (rst-mode-hook . (lambda ()
+  		     (setq ispell-local-dictionary "english")
+  		     (flyspell-mode))))
+#+end_src
+
 ** Version control
 
 Currently transitionning from core "VC" to Magit.
@@ -1508,23 +1506,22 @@ content match =generic-find-file-regexp= and
 =generic-use-find-file-hook= default value is =t= .
 
 #+begin_src emacs-lisp :tangle init.el
-  (when has-spell-checker
-    (add-hook 'find-file-hook
-              (lambda ()
-                 (when (string-match "^svn-commit" (buffer-name))
-                   (setq ispell-local-dictionary "english")
-                   (flyspell-mode))))
+  (add-hook 'find-file-hook
+            (lambda ()
+              (when (string-match "^svn-commit" (buffer-name))
+                (setq ispell-local-dictionary "english")
+                (flyspell-mode))))
 
-    (add-hook 'default-generic-mode-hook
-              (lambda ()
-                 (when (equal (buffer-name) "COMMIT_EDITMSG")
-                   (setq ispell-local-dictionary "english")
-                   (flyspell-mode))))
+  (add-hook 'default-generic-mode-hook
+            (lambda ()
+              (when (equal (buffer-name) "COMMIT_EDITMSG")
+                (setq ispell-local-dictionary "english")
+                (flyspell-mode))))
 
-    (add-hook 'log-edit-mode-hook
-              (lambda ()
-                 (setq ispell-local-dictionary "english")
-                 (flyspell-mode))))
+  (add-hook 'log-edit-mode-hook
+            (lambda ()
+              (setq ispell-local-dictionary "english")
+              (flyspell-mode)))
 #+end_src
 
 Automatically display window with diff when editing commit messages. 

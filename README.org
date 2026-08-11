@@ -1303,14 +1303,19 @@ and populated.
 
 ** On the fly code check
 
-Flymake is used to check code on the fly.
+Flymake is used to check code on the fly. A dedicated prefix map is
+created and populated.
 
 #+begin_src emacs-lisp :tangle init.el
-  (add-hook 'flymake-mode-hook
-            (lambda ()
-              (keymap-local-set "C-c f d" 'flymake-show-buffer-diagnostics)
-              (keymap-local-set "C-c f n" 'flymake-goto-next-error)
-              (keymap-local-set "C-c f p" 'flymake-goto-prev-error)))
+  (use-package flymake
+    :config
+    (define-prefix-command 'flymake-prefix-map)
+    :hook
+    (flymake-mode . (lambda ()
+  		    (keymap-local-set "C-c F" 'flymake-prefix-map)
+                      (keymap-set flymake-prefix-map "d" 'flymake-show-buffer-diagnostics)
+                      (keymap-set flymake-prefix-map "n" 'flymake-goto-next-error)
+                      (keymap-set flymake-prefix-map "p" 'flymake-goto-prev-error))))
 #+end_src
 
 ** Spell checking

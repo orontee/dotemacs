@@ -1839,7 +1839,6 @@ Update default text to insert into new files.
 #+end_src
 
 
-
 ** Qt
 
  #+begin_src emacs-lisp :tangle init.el
@@ -2076,7 +2075,6 @@ And improve readability in both modes.
     :hook (Info-mode Man-mode markdown-mode markdown-ts-mode))
 #+end_src
 
-
 ** Support for TeX and LaTeX
 
 When a file with =.tex= extension is opened, it is parsed to identify
@@ -2263,7 +2261,13 @@ Auto fill mode may break the indentation.
   	    (outline-minor-mode)))
 #+end_src
 
-#+RESULTS:
+
+#+begin_src emacs-lisp :tangle init.el
+  (when (excutable-find "ugrep")
+    (setopt xref-search-program 'ugrep)
+    (with-eval-after-load 'grep
+      (setopt grep-program "ugrep")))
+#+end_src
 
 ** Enhancing file manager
 

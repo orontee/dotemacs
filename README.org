@@ -102,8 +102,6 @@ Packages configuration is done with =use-package=.
 
 #+begin_src emacs-lisp :tangle init.el
   (require 'use-package-ensure)
-  (setq use-package-always-defer t
-        use-package-always-ensure t)
 #+end_src
 
 The default is to fetch packages from the GNU Emacs packages 
@@ -1241,8 +1239,10 @@ method descriptions.
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-  (use-package systemd)
+  (use-package systemd
+    :defer t)
   (use-package bitbake-mode
+    :defer t
     :mode ("\\.bbclass" "\\.bb" "\\.inc"))
 #+end_src
 
@@ -1378,6 +1378,7 @@ Finally a breadcrum is added to buffers visiting code files.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package breadcrumb
+    :defer t
     :hook prog-mode)
 #+end_src
 
@@ -1603,6 +1604,7 @@ Easy generation of URLs for Git projects hosted on common forges.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package git-link
+    :defer t
     :commands (git-link git-link-commit git-link-homepage))
 #+end_src
 
@@ -1622,6 +1624,7 @@ Improve terminal emulation.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package coterm
+    :defer nil
     :vc (:url "https://repo.or.cz/emacs-coterm.git"
           :rev newest)
     :config
@@ -1840,6 +1843,7 @@ Update default text to insert into new files.
 
 #+begin_src emacs-lisp :tangle init.el
     (use-package cmake-mode
+      :defer t
       :mode ("CMakeLists.txt\\'" "\\.cmake\\'"))
 #+end_src
 
@@ -1972,6 +1976,7 @@ to the process.
 
 #+begin_src emacs-lisp :tangle init.el
     (use-package php-mode
+      :defer t
       :mode "\\.php\\'")
 #+end_src
 
@@ -2025,6 +2030,7 @@ fly.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package flymake-css
+    :defer t
     :hook (css-mode . flymake-mode))
 #+end_src
 
@@ -2033,6 +2039,7 @@ that represent colors.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package rainbow-mode
+    :defer t
     :hook (css-mode . rainbow-mode))
 #+end_src
 
@@ -2040,6 +2047,7 @@ that represent colors.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package markdown-mode
+    :defer t
     :config
     (add-hook 'markdown-mode-hook
   	    (lambda ()
@@ -2063,6 +2071,7 @@ And improve readability in both modes.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package olivetti
+    :defer nil
     :vc (:url "https://github.com/rnkn/olivetti.git"
   	    :rev newest)
     :custom

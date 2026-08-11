@@ -1344,15 +1344,13 @@ created and populated.
 
 ** Code navigation
 
-Another way to browse tags found in the current buffer is to use the
-index menu.
+XRef is used to navigate between references. In the results buffer
+current line is highlighted and some files are always outlined. 
 
 #+begin_src emacs-lisp :tangle init.el
-(setq imenu-auto-rescan t
-      imenu-max-items 35)
-#+end_src
+  (when (executable-find "ugrep")
+      (setopt xref-search-program 'ugrep))
 
-#+begin_src emacs-lisp :tangle init.el
   (setopt xref-history-storage 'xref-window-local-history)
   (add-hook 'xref--xref-buffer-mode-hook
               (lambda ()
@@ -1367,6 +1365,16 @@ index menu.
                       outline-default-rules '((match-regexp . "ChangeLog\\|test/manual/etags")))
                 (outline-minor-mode)))
 #+end_src
+
+Another way to browse tags found in the current buffer is to use the
+index menu.
+
+#+begin_src emacs-lisp :tangle init.el
+(setq imenu-auto-rescan t
+      imenu-max-items 35)
+#+end_src
+
+Finally a breadcrum is added to buffers visiting code files.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package breadcrumb
@@ -2249,21 +2257,20 @@ Auto fill mode may break the indentation.
 
 ** File search
 
-#+begin_src emacs-lisp :tangle init.el
-  (setopt grep-use-headings t
-          grep-highlight-matches 'always)
-  (add-hook 'grep-mode-hook
-  	  (lambda ()
-  	    (setq-local outline-minor-mode-use-buttons 'insert)
-  	    (outline-minor-mode)))
-#+end_src
-
+Configure grep package.
 
 #+begin_src emacs-lisp :tangle init.el
-  (when (excutable-find "ugrep")
-    (setopt xref-search-program 'ugrep)
-    (with-eval-after-load 'grep
-      (setopt grep-program "ugrep")))
+  (use-package grep
+    :init
+    (setopt grep-use-headings t
+            grep-highlight-matches 'always)
+    :config
+    (when (executable-find "ugrep")
+        (setq grep-program "ugrep"))
+    :hook
+    (grep-mode . (lambda ()
+    		 (setq-local outline-minor-mode-use-buttons 'insert)
+    		 (outline-minor-mode))))
 #+end_src
 
 ** Enhancing file manager

@@ -257,52 +257,73 @@ Hide title bar when window is maximized.
 ** Bookmarks
 
 Lighter bookmark menu: Filenames are hidden and more horizontal space
-is dedicated to bookmark names.
+is dedicated to bookmark names. Completion of bookmark name uses
+substring style. Finally ease bookmarks switching.
 
 #+begin_src emacs-lisp :tangle init.el
-  (with-eval-after-load "bookmark"
+  (use-package bookmark
+    :config
     (setq bookmark-bmenu-file-column 60
-          bookmark-bmenu-toggle-filenames nil))
-#+end_src
+          bookmark-bmenu-toggle-filenames nil)
+    (add-to-list 'completion-category-overrides '(bookmark (styles substring)))
+    (defun bookmark-project-bookmarks ()
+      "Return a bookmarks file name build from project name."
+      (let ((project (project-current)))
+        (if project
+            (expand-file-name
+             (concat "bookmarks-" (project-name project) ".eld")
+             user-emacs-directory)
+  	bookmark-default-file)))
 
-Completion of bookmark name uses substring style.
+    (defcustom bookmark-switch-bookmarks-default-file nil
+      "Determines the default bookmarks file to load with
+       `bookmark-switch-bookmarks'.
 
-#+begin_src emacs-lisp :tangle init.el
-  (add-to-list 'completion-category-overrides '(bookmark (styles substring)))
-#+end_src
+       When nil, `bookmark-default-file' is used.
 
-Ease bookmarks switching.
+       When equal to a callable, it is expected to return the bookmarks
+       file to use by `bookmark-switch-bookmarks' as default bookmarks
+       file to use."
+      :version "32.0"
+      :group 'bookmark
+      :type '(choice (const :tag "Default bookmarks file" nil)
+  		   (function :tag "Custom function")))
 
-#+begin_src emacs-lisp :tangle init.el
-  (defun bookmark-project-bookmarks ()
-    "Return a bookmarks file name build from project name."
-    (let ((project (project-current)))
-      (if project
-          (expand-file-name
-           (concat "bookmarks-" (project-name project) ".eld")
-           user-emacs-directory)
-        bookmark-default-file)))
+    (setopt bookmark-switch-bookmarks-default-file
+  	  'bookmark-project-bookmarks)
 
-  (defalias 'bookmark-switch-bookmarks-candidate 'bookmark-project-bookmarks)
+    (defun bookmark-switch-bookmarks-candidate ()
+      "Return bookmarks file to use when switching bookmarks.
 
-  (defun bookmark-switch-bookmarks (file)
-    "Switch to bookmarks from FILE.
+      When `bookmark-switch-bookmarks-function' is callable, then this
+      function is called without argument and its value is
+      returned. Otherwise `bookmark-defaul-file' is returned."
+      (cond
+       ((functionp bookmark-switch-bookmarks-default-file)
+        (funcall bookmark-switch-bookmarks-default-file))
+       (t bookmark-default-file)))
 
-    The \Bookmark List\ is updated to display only bookmarks from
-    FILE. Subsequent call to `bookmark-bmenu-save' update FILE. Note that
-    `bookmark-default-file' is kept unchanged."
-    (interactive (list
-                  (read-file-name "Bookmarks file: "
-                                  user-emacs-directory
-  				(bookmark-switch-bookmarks-candidate)
-                                  (lambda (file)
-                                    (when (not (file-exists-p file))
+    (defun bookmark-switch-bookmarks (file)
+      "Switch to bookmarks from FILE.
+
+       The \Bookmark List\ is updated to display only bookmarks from
+       FILE. Subsequent call to `bookmark-bmenu-save' update FILE. Note
+       that `bookmark-default-file' is kept unchanged."
+      (interactive (list
+                    (read-file-name "Bookmarks file: "
+                                    user-emacs-directory
+  				  (bookmark-switch-bookmarks-candidate)
+                                    (lambda (file)
+                                      (when (not (file-exists-p file))
                                       (let ((bookmark-alist nil))
                                         (bookmark-write-file file)))
-                                    file)
-                                  (file-name-nondirectory
-  				 (bookmark-switch-bookmarks-candidate)))))
-    (bookmark-load file t nil t))
+                                      file)
+                                    (file-name-nondirectory
+  				   (bookmark-switch-bookmarks-candidate)))))
+      (bookmark-load file t nil t))
+    :bind
+    (:map ctl-x-r-map ("L" . bookmark-switch-bookmarks))
+    (:map bookmark-bmenu-mode-map ("L" . bookmark-switch-bookmarks)))
 #+end_src
 
 #+RESULTS:

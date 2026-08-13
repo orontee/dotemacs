@@ -1482,7 +1482,10 @@ Currently transitionning from core "VC" to Magit.
     (add-hook 'magit-log-mode-hook (lambda () (text-scale-set -1)))
     (add-hook 'magit-stashes-mode-hook (lambda () (text-scale-set -1)))
     (add-hook 'magit-status-mode-hook (lambda () (text-scale-set -1)))
-    (add-hook 'magit-refs-mode-hook (lambda () (text-scale-set -1))))
+    (add-hook 'magit-refs-mode-hook (lambda () (text-scale-set -1)))
+    :bind
+    (:map project-prefix-map
+  	("v" .  magit-status)))
 #+end_src
 
 Follows previous "VC" configuration.

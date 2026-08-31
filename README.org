@@ -402,7 +402,14 @@ with a date tag and a properly formatted link to buffer file.
     "Meant to be used with `remember-text-format-function'.
     It returns the text to be remembered, formatted as a Markdown section of
     level `remember-markdown-title-level'."
-    (let ((desc (remember-buffer-desc)))
+    (let ((desc (remember-buffer-desc))
+  	(text (string-trim
+  	       (mapconcat
+  		'identity
+  		(cdr
+  		 (split-string
+  		  text "\n" nil split-string-default-separators))
+  		"\n"))))
       (with-temp-buffer
         (markdown-insert-header remember-markdown-title-level desc)
         (end-of-line)

@@ -2033,12 +2033,11 @@ It is difficult to avoid long lines when writing SGML files, thus
 automatic line breaking is turned off.
 
 #+begin_src emacs-lisp :tangle init.el
-(add-hook 'html-mode-hook
-          (lambda ()
-             (auto-fill-mode -1)
-             (abbrev-mode)
-             (when has-spell-checker
-               (flyspell-mode))))
+  (add-hook 'html-mode-hook
+            (lambda ()
+               (auto-fill-mode -1)
+               (abbrev-mode)
+  	     (flyspell-mode)))
 #+end_src
 
 An abbreviation is defined for the Lorem Ipsum.

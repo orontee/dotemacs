@@ -979,9 +979,10 @@ Unicode.
     :ensure t
     :config
     (setq which-key-dont-use-unicode nil
-  	    which-key-lighter ""
-  	    which-key-ellipsis "…"
-  	    which-key-add-column-padding 2)
+  	which-key-lighter ""
+  	which-key-ellipsis "…"
+  	which-key-add-column-padding 2
+  	which-key-separator " ")
     (which-key-mode 1)
     (which-key-add-key-based-replacements
       "<f1> 4"        "help-other-win"
@@ -1302,13 +1303,9 @@ and populated.
     (html-ts-mode . eglot-ensure)
     (js-mode . eglot-ensure)
     (js-ts-mode . eglot-ensure)
-    (markdown-mode . eglot-ensure)
-    (markdown-ts-mode . eglot-ensure)
     (python-mode . eglot-ensure)
     (python-ts-mode . eglot-ensure)
     (sh-mode . eglot-ensure)
-    (yaml-mode .eglot-ensure)
-    (yaml-ts-mode .eglot-ensure)
     :init
     (setq eglot-autoshutdown t
   	eglot-confirm-server-edits t

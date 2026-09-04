@@ -29,7 +29,7 @@
     `(italic ((,c :weight bold :family "Mono")))
     `(fill-column-indicator ((,c :foreground ,bg-inactive)))
     ;; scale down line number
-    `(line-number ((,c :height 0.8)))
+    `(line-number ((,c :height 0.8 :foreground ,fg-mode-line-inactive)))
     `(line-number-current-line ((,c :inherit line-number)))
     ;; variable pitch face in info headings
     `(info-title-4 ((,c :inherit (bold variable-pitch) :height 1.0 :foreground ,fg-heading-4)))

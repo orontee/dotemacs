@@ -1317,17 +1317,17 @@ and populated.
     :config
     (define-prefix-command 'eglot-prefix-map)
     :hook
-    (eglot-mode . (lambda ()
-  		  (keymap-local-set "C-c i" 'flymake-prefix-map)
-  		  (keymap-set eglot-prefix-map "i" 'eglot-find-implementation)
-  		  (keymap-set eglot-prefix-map "e" 'eglot)
-  		  (keymap-set eglot-prefix-map "k" 'eglot-shutdown-all)
-  		  (keymap-set eglot-prefix-map "r" 'eglot-rename)
-  		  (keymap-set eglot-prefix-map "x" 'eglot-reconnect)
-  		  (keymap-set eglot-prefix-map "a" 'eglot-code-actions)
-  		  (keymap-set eglot-prefix-map "m" 'eglot-menu)
-  		  (keymap-set eglot-prefix-map "f" 'eglot-format-buffer)
-  		  (keymap-set eglot-prefix-map "h" 'eglot-inlay-hints-mode))))
+    (eglot-managed-mode . (lambda ()
+  			  (keymap-local-set "C-c i" 'eglot-prefix-map)
+  			  (keymap-set eglot-prefix-map "i" 'eglot-find-implementation)
+  			  (keymap-set eglot-prefix-map "e" 'eglot)
+  			  (keymap-set eglot-prefix-map "k" 'eglot-shutdown-all)
+  			  (keymap-set eglot-prefix-map "r" 'eglot-rename)
+  			  (keymap-set eglot-prefix-map "x" 'eglot-reconnect)
+  			  (keymap-set eglot-prefix-map "a" 'eglot-code-actions)
+  			  (keymap-set eglot-prefix-map "m" 'eglot-menu)
+  			  (keymap-set eglot-prefix-map "f" 'eglot-format-buffer)
+  			  (keymap-set eglot-prefix-map "h" 'eglot-inlay-hints-mode))))
 #+end_src
 
 ** Projects

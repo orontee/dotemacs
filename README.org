@@ -71,7 +71,7 @@ I usually build my own binary from a Git repository.
   			    --with-libsystemd --with-mailutils --with-modules \
   			    --with-native-compilation --with-pgtk --with-png --with-rsvg \
   			    --with-tiff --with-tree-sitter --with-xft --with-xinput2 \
-  			    --with-xpm --without-xaw3d \
+  			    --with-imagemagick --with-xpm --without-xaw3d \
   			    CFLAGS="-O3 -pipe -fomit-frame-pointer"
   $ make NATIVE_FULL_AOT=1 -j $(nproc)
   $ sudo make install

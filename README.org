@@ -687,9 +687,7 @@ When available, use =corfu= for completion in region.
 #+begin_src emacs-lisp :tangle init.el
   (use-package corfu
     :ensure t
-    :config
-    (global-corfu-mode 1)
-    (setq corfu-auto t))
+    :hook (prog-mode))
 #+end_src
 
 When reading file or buffer names the case will be ignored. For file

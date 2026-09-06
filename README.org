@@ -2072,14 +2072,22 @@ that represent colors.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package markdown-mode
-    :defer t
-    :config
-    (add-hook 'markdown-mode-hook
+    :init
+    (define-skeleton markdown-create-document
+      "Create a Markdown structured document"
+      "Title: " "---\ntitle: " str ?\n "tags: []"_ ?\n"---\n\n# " str ?\n)
+    :custom
+    (markdown-asymmetric-header t)
+    :mode "\\.md\\'"
+    :hook
+    (markdown-mode .
   	    (lambda ()
-  	      (setq markdown-asymmetric-header t
-    		    fill-column 70)
-  	      (visual-line-mode 1)))
-    :mode "\\.md\\'" )
+  		(visual-line-mode 1)
+  		(setq fill-column 70)
+  		(when (and (buffer-file-name)
+  			   (not (file-exists-p (buffer-file-name)))
+  			   (not (> (buffer-size) 0)))
+  		  (markdown-create-document)))))
 #+end_src
 
 Configure the native "ts" mode:

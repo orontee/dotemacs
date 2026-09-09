@@ -1406,7 +1406,8 @@ Finally a breadcrum is added to buffers visiting code files.
 #+begin_src emacs-lisp :tangle init.el
   (use-package breadcrumb
     :ensure t
-    :hook prog-mode)
+    :config
+    (breadcrumb-mode 1))
 #+end_src
 
 ** Abbreviations

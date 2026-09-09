@@ -1271,9 +1271,9 @@ method descriptions.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package systemd
-    :defer t)
+    :ensure nil)
   (use-package bitbake-mode
-    :defer t
+    :ensure nil
     :mode ("\\.bbclass" "\\.bb" "\\.inc"))
 #+end_src
 
@@ -1405,7 +1405,7 @@ Finally a breadcrum is added to buffers visiting code files.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package breadcrumb
-    :defer t
+    :ensure t
     :hook prog-mode)
 #+end_src
 
@@ -1634,7 +1634,7 @@ Easy generation of URLs for Git projects hosted on common forges.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package git-link
-    :defer t
+    :ensure nil
     :commands (git-link git-link-commit git-link-homepage))
 #+end_src
 
@@ -1654,7 +1654,7 @@ Improve terminal emulation.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package coterm
-    :defer nil
+    :ensure nil
     :vc (:url "https://repo.or.cz/emacs-coterm.git"
           :rev newest)
     :config
@@ -1873,7 +1873,7 @@ Update default text to insert into new files.
 
 #+begin_src emacs-lisp :tangle init.el
     (use-package cmake-mode
-      :defer t
+      :ensure nil
       :mode ("CMakeLists.txt\\'" "\\.cmake\\'"))
 #+end_src
 
@@ -2006,7 +2006,7 @@ to the process.
 
 #+begin_src emacs-lisp :tangle init.el
     (use-package php-mode
-      :defer t
+      :ensure nil
       :mode "\\.php\\'")
 #+end_src
 
@@ -2059,7 +2059,7 @@ fly.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package flymake-css
-    :defer t
+    :ensure nil
     :hook (css-mode . flymake-mode))
 #+end_src
 
@@ -2068,7 +2068,7 @@ that represent colors.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package rainbow-mode
-    :defer t
+    :ensure nil
     :hook (css-mode . rainbow-mode))
 #+end_src
 
@@ -2108,7 +2108,7 @@ And improve readability in both modes.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package olivetti
-    :defer nil
+    :ensure nil
     :vc (:url "https://github.com/rnkn/olivetti.git"
   	    :rev newest)
     :custom

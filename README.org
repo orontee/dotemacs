@@ -395,51 +395,55 @@ with a date tag and a properly formatted link to buffer file.
 
   (defvar remember-markdown-title-level 2)
 
-  (require 'remember)
-  (keymap-global-set "C-x M-r" 'remember-prefix-map)
+  (use-package remember
+    :init
+    (define-prefix-command 'remember-prefix-map)
+    (keymap-global-set "C-x M-r" 'remember-prefix-map)
+    (keymap-set remember-prefix-map "c" 'remember-clipboard)
+    (keymap-set remember-prefix-map "n" 'remember-notes)
+    (keymap-set remember-prefix-map "r" 'remember)
+    (keymap-set remember-prefix-map "R" 'remember-region)
 
-  (defun remember-markdown-format-note (text)
-    "Meant to be used with `remember-text-format-function'.
+    (defun remember-markdown-format-note (text)
+      "Meant to be used with `remember-text-format-function'.
     It returns the text to be remembered, formatted as a Markdown section of
     level `remember-markdown-title-level'."
-    (let ((desc (remember-buffer-desc))
-  	(text (string-trim
-  	       (mapconcat
-  		'identity
-  		(cdr
-  		 (split-string
-  		  text "\n" nil split-string-default-separators))
-  		"\n"))))
-      (with-temp-buffer
-        (markdown-insert-header remember-markdown-title-level desc)
-        (end-of-line)
-        (insert (concat "\n"
-                        (markdown-date-tag remember-time-format) "\n\n"
-                        text))
-        (buffer-string))))
+      (let ((desc (remember-buffer-desc))
+  	  (text (string-trim
+  		 (mapconcat
+  		  'identity
+  		  (cdr
+  		   (split-string
+  		    text "\n" nil split-string-default-separators))
+  		  "\n"))))
+        (with-temp-buffer
+  	(markdown-insert-header remember-markdown-title-level desc)
+  	(end-of-line)
+  	(insert (concat "\n"
+  			(markdown-date-tag remember-time-format) "\n\n"
+  			text))
+  	(buffer-string))))
 
-  (setopt remember-data-files-regex "\\.md\\'")
+    (setopt remember-data-files-regex "\\.md\\'")
 
-  (defvar remember-markdown-archive-file "~/Documents/Notes/Archives.md")
+    (defvar remember-markdown-archive-file "~/Documents/Notes/Archives.md")
 
-  (defun remember-markdown-archive-note ()
-    "Archive current note.
+    (defun remember-markdown-archive-note ()
+      "Archive current note.
   The note is moved to `remembre-markdown-archive-file'."
-    (interactive)
-    (when (markdown-heading-at-point)
-      (next-line))
-    (save-mark-and-excursion
-      (markdown-kill-outline)
-      (let ((buf (find-buffer-visiting remember-markdown-archive-file))
-  	  (text (current-kill 0)))
-        (if buf
-  	  (with-current-buffer buf
-  	    (goto-char (point-max))
-  	    (insert text))
-  	(append-to-file text nil remember-markdown-archive-file)))))
-
-  (with-eval-after-load "remember"
-
+      (interactive)
+      (when (markdown-heading-at-point)
+        (next-line))
+      (save-mark-and-excursion
+        (markdown-kill-outline)
+        (let ((buf (find-buffer-visiting remember-markdown-archive-file))
+  	    (text (current-kill 0)))
+  	(if buf
+  	    (with-current-buffer buf
+  	      (goto-char (point-max))
+  	      (insert text))
+  	  (append-to-file text nil remember-markdown-archive-file)))))
+    :config
     (setq remember-initial-major-mode 'markdown-mode
   	remember-notes-initial-major-mode 'markdown-mode
   	remember-annotation-functions '(markdown-buffer-file-name-as-link)

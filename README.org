@@ -402,6 +402,7 @@ with a date tag and a properly formatted link to buffer file.
     (keymap-set remember-prefix-map "n" 'remember-notes)
     (keymap-set remember-prefix-map "r" 'remember)
     (keymap-set remember-prefix-map "R" 'remember-region)
+    (which-key-add-key-based-replacements "C-x M-r R" "remember-region")
 
     (defun remember-markdown-format-note (text)
       "Meant to be used with `remember-text-format-function'.

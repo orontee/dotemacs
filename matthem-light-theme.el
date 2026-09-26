@@ -41,6 +41,11 @@
     `(markdown-ts-heading-2 ((,c :inherit markdown-ts-heading-3 :height 1.2 :foreground ,fg-heading-2)))
     `(markdown-ts-heading-3 ((,c :inherit markdown-ts-heading-4 :height 1.2 :foreground ,fg-heading-3)))
     `(markdown-ts-heading-4 ((,c :inherit (bold variable-pitch) :height 1.0 :foreground ,fg-heading-4)))
+    ;; variable pitch face in rst headings
+    `(rst-level-1 ((,c :inherit rst-level-2 :height 1.2 :foreground ,fg-heading-1)))
+    `(rst-level-2 ((,c :inherit rst-level-3 :height 1.2 :foreground ,fg-heading-2)))
+    `(rst-level-3 ((,c :inherit rst-level-4 :height 1.2 :foreground ,fg-heading-3)))
+    `(rst-level-4 ((,c :inherit (bold variable-pitch) :height 1.0 :foreground ,fg-heading-4)))
     ;; flat tab bar
     `(tab-bar ((,c :inherit modus-themes-ui-variable-pitch :background ,bg-tab-current)))
     `(tab-bar-tab ((,c :background ,bg-tab-current :box (:line-width (4 . 4) :color ,bg-tab-current))))

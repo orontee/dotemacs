@@ -1035,11 +1035,20 @@ Unicode.
     (with-eval-after-load 'page-ext
       (which-key-add-key-based-replacements
         "C-x C-p" "page-extras"))
+    (with-eval-after-load 'rst
+      (which-key-add-key-based-replacements
+        "C-c C-a"     "rst-adornments"
+        "C-c C-r"     "rst-regions"
+        "C-c C-l"     "rst-lists"
+        "C-c C-t"     "rst-toc"
+        "C-c C-c"     "rst-compilation"))
     (with-eval-after-load 'org
       (which-key-add-keymap-based-replacements org-mode-map
         "C-c \""      "org-plot"
         "C-c C-v"     "org-babel"
         "C-c C-x"     "org-extra-commands")))
+
+  ;; https://gist.github.com/mmarshall540/a12f95ab25b1941244c759b1da24296d
 #+end_src
 
 Prevent dynamic documentation (provided by Eldoc mode) from resizing
@@ -1497,10 +1506,7 @@ string checked for right spelling.
     :hook
     (prog-mode . (lambda ()
   		 (setq ispell-local-dictionary "english"
-                         flyspell-persistent-highlight nil)))
-    (rst-mode-hook . (lambda ()
-  		     (setq ispell-local-dictionary "english")
-  		     (flyspell-mode))))
+                         flyspell-persistent-highlight nil))))
 #+end_src
 
 ** Version control
@@ -2273,14 +2279,22 @@ inserted."
 Auto fill mode may break the indentation.
 
 #+begin_src emacs-lisp :tangle init.el
-(add-hook 'rst-mode-hook
-          (lambda ()
-            (auto-fill-mode -1)))
-
-(let ((filename "template.rst"))
-  (when (file-exists-p (expand-file-name filename auto-insert-directory))
-    (add-to-list 'auto-insert-alist
-                 `(rst-mode . ,filename))))
+  (use-package rst
+    :init
+    ;; Avoid polution of the keymap like legacy implementation does
+    (advice-add 'rst-define-key :filter-args
+                (lambda (args) (seq-take args 3))
+                '((name . rst-no-deprecated-keys)))
+    :config
+    (let ((filename "template.rst"))
+      (when (file-exists-p (expand-file-name filename auto-insert-directory))
+        (add-to-list 'auto-insert-alist
+                     `(rst-mode . ,filename))))
+    :hook
+    (rst-mode . (lambda ()
+  		(auto-fill-mode -1)
+                  (setq ispell-local-dictionary "english")
+                  (flyspell-mode))))
 #+end_src
 * File management
 

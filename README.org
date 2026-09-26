@@ -1513,6 +1513,7 @@ Currently transitionning from core "VC" to Magit.
     :config
     (setq magit-define-global-key-bindings 'recommended)
     (add-hook 'magit-log-mode-hook (lambda () (text-scale-set -1)))
+    (add-hook 'magit-process-mode-hook (lambda () (text-scale-set -1)))
     (add-hook 'magit-stashes-mode-hook (lambda () (text-scale-set -1)))
     (add-hook 'magit-status-mode-hook (lambda () (text-scale-set -1)))
     (add-hook 'magit-refs-mode-hook (lambda () (text-scale-set -1)))

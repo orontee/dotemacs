@@ -142,7 +142,6 @@ At the time of writing, I have activated the following packages:
 | gptel                    | Interact with ChatGPT or other LLMs.                       |
 | guess-language           | Robust automatic language detection                        |
 | marginalia               | Enrich existing commands with completion annotations.      |
-| markdown-mode            | Major mode for Markdown-formatted text.                    |
 | meson-mode               | Major mode for the Meson build system files                |
 | modus-themes             | Elegant, highly legible and customizable themes.           |
 | nginx-mode               | major mode for editing nginx config files                  |
@@ -417,11 +416,13 @@ with a date tag and a properly formatted link to buffer file.
   		    text "\n" nil split-string-default-separators))
   		  "\n"))))
         (with-temp-buffer
-  	(markdown-insert-header remember-markdown-title-level desc)
-  	(end-of-line)
-  	(insert (concat "\n"
-  			(markdown-date-tag remember-time-format) "\n\n"
-  			text))
+  	(insert "\n"
+  		(make-string remember-markdown-title-level ?#)
+  		desc
+  		"\n"
+  		(markdown-date-tag remember-time-format)
+  		"\n\n"
+  		text)
   	(buffer-string))))
 
     (setopt remember-data-files-regex "\\.md\\'")
@@ -430,22 +431,21 @@ with a date tag and a properly formatted link to buffer file.
 
     (defun remember-markdown-archive-note ()
       "Archive current note.
-  The note is moved to `remembre-markdown-archive-file'."
+  The note is moved to `remember-markdown-archive-file'."
       (interactive)
-      (when (markdown-heading-at-point)
-        (next-line))
       (save-mark-and-excursion
-        (markdown-kill-outline)
+        (outline-mark-subtree)
+        (kill-region nil nil 'region)
         (let ((buf (find-buffer-visiting remember-markdown-archive-file))
   	    (text (current-kill 0)))
   	(if buf
   	    (with-current-buffer buf
   	      (goto-char (point-max))
-  	      (insert text))
-  	  (append-to-file text nil remember-markdown-archive-file)))))
+  	      (insert "\n" text)
+  	  (append-to-file text nil remember-markdown-archive-file))))))
     :config
-    (setq remember-initial-major-mode 'markdown-mode
-  	remember-notes-initial-major-mode 'markdown-mode
+    (setq remember-initial-major-mode 'markdown-ts-mode
+  	remember-notes-initial-major-mode 'markdown-ts-mode
   	remember-annotation-functions '(markdown-buffer-file-name-as-link)
   	remember-handler-functions '(remember-append-in-data-directory)
   	remember-data-directory "~/Documents/Notes"
@@ -2081,23 +2081,28 @@ that represent colors.
 ** Support for MarkDown
 
 #+begin_src emacs-lisp :tangle init.el
-  (use-package markdown-mode
+  (use-package markdown-ts-mode
     :init
     (define-skeleton markdown-create-document
       "Create a Markdown structured document"
-      "Title: " "---\ntitle: " str ?\n "tags: []"_ ?\n"---\n\n# " str ?\n)
-    :custom
-    (markdown-asymmetric-header t)
+      (let ((initial (file-name-base (or buffer-file-name (buffer-name)))))
+        (read-string "Title: " (file-name-base (or buffer-file-name (buffer-name)))))
+      "---\n"
+      "title: " str (when (string= str "") (signal 'quit t)) ?\n
+      "tags: [" _ "]" ?\n"---\n\n# " str ?\n @)
+    (add-to-list 'auto-insert-alist
+                 (cons (rx (or ".md" ".markdown")) 'markdown-create-document))
     :mode "\\.md\\'"
+    :config
+    (setopt markdown-ts-ellipsis "…"
+  	  markdown-ts-hide-markup t
+  	  markdown-ts-checked-checkbox 'icon
+  	  markdown-ts-unchecked-checkbox 'icon)
     :hook
-    (markdown-mode .
-  	    (lambda ()
-  		(visual-line-mode 1)
-  		(setq fill-column 70)
-  		(when (and (buffer-file-name)
-  			   (not (file-exists-p (buffer-file-name)))
-  			   (not (> (buffer-size) 0)))
-  		  (markdown-create-document)))))
+    (markdown-ts-mode .
+  		    (lambda ()
+  		      (visual-line-mode 1)
+  		      (setq fill-column 70))))
 #+end_src
 
 Configure the native "ts" mode:

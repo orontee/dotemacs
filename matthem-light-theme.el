@@ -30,17 +30,17 @@
     `(fill-column-indicator ((,c :foreground ,bg-inactive)))
     ;; scale down line number
     `(line-number ((,c :height 0.8 :foreground ,fg-mode-line-inactive)))
-    `(line-number-current-line ((,c :inherit line-number)))
+    `(line-number-current-line ((,c :foreground ,fg-mode-line-active :inherit line-number)))
     ;; variable pitch face in info headings
     `(info-title-4 ((,c :inherit (bold variable-pitch) :height 1.0 :foreground ,fg-heading-4)))
     `(info-title-3 ((,c :inherit info-title-4 :height 1.2 :foreground ,fg-heading-3)))
     `(info-title-2 ((,c :inherit info-title-3 :height 1.2 :foreground ,fg-heading-2)))
     `(info-title-1 ((,c :inherit info-title-2 :height 1.2 :foreground ,fg-heading-1)))
     ;; variable pitch face in markdown headings
-    `(markdown-header-face-1 ((,c :inherit markdown-header-face-2 :height 1.2 :foreground ,fg-heading-1)))
-    `(markdown-header-face-2 ((,c :inherit markdown-header-face-3 :height 1.2 :foreground ,fg-heading-2)))
-    `(markdown-header-face-3 ((,c :inherit markdown-header-face-4 :height 1.2 :foreground ,fg-heading-3)))
-    `(markdown-header-face-4 ((,c :inherit (bold variable-pitch) :height 1.0 :foreground ,fg-heading-4)))
+    `(markdown-ts-heading-1 ((,c :inherit markdown-ts-heading-2 :height 1.2 :foreground ,fg-heading-1)))
+    `(markdown-ts-heading-2 ((,c :inherit markdown-ts-heading-3 :height 1.2 :foreground ,fg-heading-2)))
+    `(markdown-ts-heading-3 ((,c :inherit markdown-ts-heading-4 :height 1.2 :foreground ,fg-heading-3)))
+    `(markdown-ts-heading-4 ((,c :inherit (bold variable-pitch) :height 1.0 :foreground ,fg-heading-4)))
     ;; flat tab bar
     `(tab-bar ((,c :inherit modus-themes-ui-variable-pitch :background ,bg-tab-current)))
     `(tab-bar-tab ((,c :background ,bg-tab-current :box (:line-width (4 . 4) :color ,bg-tab-current))))

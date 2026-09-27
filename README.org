@@ -656,6 +656,7 @@ for. It has no modeline. And follows a horizontal layout.
   (setq completions-detailed t
         completions-format 'one-column
         completions-group t
+        completion-ignore-case t
         completions-max-height 15
         completions-sort 'historical
         completion-auto-select 'second-tab

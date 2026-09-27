@@ -1322,6 +1322,7 @@ and populated.
     (python-mode . eglot-ensure)
     (python-ts-mode . eglot-ensure)
     (sh-mode . eglot-ensure)
+    (yaml-ts-mode . eglot-ensure)
     :init
     (setq eglot-autoshutdown t
   	eglot-confirm-server-edits t

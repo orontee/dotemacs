@@ -566,11 +566,16 @@ I can get rid of all of them with a single =C-xws=!
   		   "\\*eldoc.*\\*\\|"
   		   (regexp-opt
   		    '("*xref*" "*grep*" "*Occur*" "*Help*" "*Apropos*" "*Messages*"
-  		      "*faces*" "*Colors*" "*Remember*" "*Shortdoc string*") t))
+  		      "*faces*" "*Colors*" "*Remember*" "*Shortdoc string*"
+  		      "*Table of Contents*") t))
                    display-buffer-in-side-window
                    (side . right) (slot . 0) (window-width . ,side-window-width)
                    ,side-windows-parameters)
-                  ("\\*\\(?:.*Async Shell Command\\|.*compilation\\|Compile-Log\\|Native-compile-Log\\|Async-native-compile-log\\)\\*"
+                  (,(concat
+  		   "magit-process: .*\\|"
+  		   "\\*\\(?:.*Async Shell Command\\|.*compilation\\|"
+                     "Compile-Log\\|Native-compile-Log\\|"
+                     "Async-native-compile-log\\)\\*")
                    display-buffer-in-side-window
                    (side . right) (slot . 1) (window-width . ,side-window-width)
   		 ,side-windows-parameters)
@@ -1413,8 +1418,10 @@ Another way to browse tags found in the current buffer is to use the
 index menu.
 
 #+begin_src emacs-lisp :tangle init.el
-(setq imenu-auto-rescan t
-      imenu-max-items 35)
+  (use-package imenu
+    :config
+    (setq imenu-auto-rescan t
+  	imenu-flatten 'group))
 #+end_src
 
 Finally a breadcrum is added to buffers visiting code files.

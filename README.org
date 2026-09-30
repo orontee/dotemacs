@@ -418,6 +418,7 @@ with a date tag and a properly formatted link to buffer file.
         (with-temp-buffer
   	(insert "\n"
   		(make-string remember-markdown-title-level ?#)
+  		" "
   		desc
   		"\n"
   		(markdown-date-tag remember-time-format)
@@ -530,7 +531,7 @@ followed.
 To prevent long lines, enable display of the fill column indicator.
 
 #+begin_src emacs-lisp :tangle init.el
-  (setq global-display-fill-column-indicator-modes '((not special-mode) prog-mode))
+  (setq global-display-fill-column-indicator-modes '((not special-mode) t))
   (global-display-fill-column-indicator-mode t)
 #+end_src
 

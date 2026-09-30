@@ -2290,9 +2290,12 @@ Auto fill mode may break the indentation.
                 '((name . rst-no-deprecated-keys)))
     :config
     (let ((filename "template.rst"))
-      (when (file-exists-p (expand-file-name filename auto-insert-directory))
+      (when (file-exists-p
+  	   (expand-file-name filename auto-insert-directory))
         (add-to-list 'auto-insert-alist
                      `(rst-mode . ,filename))))
+    (setopt rst-preferred-adornments
+  	  (delete '(61 over-and-under 1) rst-preferred-adornments))
     :hook
     (rst-mode . (lambda ()
   		(auto-fill-mode -1)

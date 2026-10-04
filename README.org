@@ -574,6 +574,7 @@ I can get rid of all of them with a single =C-xws=!
                   (,(concat
   		   "magit-process: .*\\|"
   		   "\\*\\(?:.*Async Shell Command\\|.*compilation\\|"
+  		   "Shell Command Output\\|"
                      "Compile-Log\\|Native-compile-Log\\|"
                      "Async-native-compile-log\\)\\*")
                    display-buffer-in-side-window
@@ -995,6 +996,13 @@ Unicode.
   	which-key-add-column-padding 2
   	which-key-separator " ")
     (which-key-mode 1)
+    ;; By default, Which-key doesn't give much help for prefix-keys.  It
+    ;; either shows the generic description, "+prefix", or the name of a
+    ;; prefix-command, which usually isn't as descriptive as we'd like.
+    ;;
+    ;; Here are some descriptions for the default bindings in `global-map',
+    ;; `org-mode-map', Gnus, and several other built-in Emacs packages.
+
     (which-key-add-key-based-replacements
       "<f1> 4"        "help-other-win"
       "<f1>"          "help"
@@ -1005,9 +1013,40 @@ Unicode.
       "C-x 4"         "other-window"
       "C-x 5"         "other-frame"
       "C-x 6"         "2-column"
-      "C-x 8"         "insert-special"
+      "C-x 8 '"       "´-ÁĆÉÍŃÓŚÚÝŹ"
+      "C-x 8 * SPC"   "nb-space"
+      "C-x 8 *"       "punct-curr"
+      "C-x 8 ,"       "„-‚-¸-ĄÇŅŞ"
+      "C-x 8 -"       "soft-hyphen"
+      "C-x 8 ."       "·-ż"
+      "C-x 8 /"       "÷-≠-ÅÆŁØ"
+      "C-x 8 1 /"     "½-¼"
+      "C-x 8 1"       "†-½-¼"
+      "C-x 8 2"       "‡"
+      "C-x 8 3 /"     "¾"
+      "C-x 8 3"       "¾"
+      "C-x 8 = /"     "Ǣ-ǣ"
+      "C-x 8 ="       "¯-ĀĒḠĪŌŪȲǢ"
+      "C-x 8 A"       "Æ"
+      "C-x 8 N"       "№"
+      "C-x 8 O"       "Œ-œ"
+      "C-x 8 SPC"     "nb-space"
+      "C-x 8 \""      "¨-ÄËÏÖẞÜÿ"
+      "C-x 8 ^ ^"     "caron"
+      "C-x 8 ^"       "sup-circ-caron"
+      "C-x 8 _ H"     "nb-hyphen"
+      "C-x 8 _ f"     "fig-dash"
+      "C-x 8 _ h"     "hyphen"
+      "C-x 8 _ m"     "em-dash"
+      "C-x 8 _ n"     "en-dash"
+      "C-x 8 _ q"     "horiz-bar"
+      "C-x 8 _ −"     "minus"
+      "C-x 8 _"       "sub-dash-≤≥ªº"
+      "C-x 8 `"       "ÀÈÌÒÙ"
+      "C-x 8 a"       "←-↔-→-æ"
       "C-x 8 e"       "emoji"
-      "C-x C-a"       "gud"
+      "C-x 8 ~"       "≈-ÃÐÑÕÞ-¬"
+      "C-x 8"         "insert-special"
       "C-x C-k C-q"   "kmacro-counters"
       "C-x C-k C-r a" "kmacro-add"
       "C-x C-k C-r"   "kmacro-register"
@@ -1025,14 +1064,15 @@ Unicode.
       "C-x v"         "version-control"
       "C-x w ^"       "window-detach"
       "C-x w"         "window-extras"
-      "C-x w f"       "window-layout-flip"
-      "C-x w r"       "window-layout-rotate"
-      "C-x w o"       "rotate-windows"
       "C-x x"         "buffer-extras"
       "C-x"           "extra-commands"
       "M-g"           "goto-map"
       "M-s h"         "search-highlight"
       "M-s"           "search-map")
+
+    ;; Some packages add a prefix-key upon loading.  If you know of other
+    ;; built-in packages that have this behavior, please let me know, so I
+    ;; can add them.
     (with-eval-after-load 'edebug
       (which-key-add-key-based-replacements
         edebug-global-prefix "edebug")) ; default = "C-x X"
@@ -1042,18 +1082,111 @@ Unicode.
     (with-eval-after-load 'page-ext
       (which-key-add-key-based-replacements
         "C-x C-p" "page-extras"))
-    (with-eval-after-load 'rst
-      (which-key-add-key-based-replacements
-        "C-c C-a"     "rst-adornments"
-        "C-c C-r"     "rst-regions"
-        "C-c C-l"     "rst-lists"
-        "C-c C-t"     "rst-toc"
-        "C-c C-c"     "rst-compilation"))
+
+    ;; Org-mode provides some additional prefix-keys in `org-mode-map'.
     (with-eval-after-load 'org
       (which-key-add-keymap-based-replacements org-mode-map
         "C-c \""      "org-plot"
         "C-c C-v"     "org-babel"
-        "C-c C-x"     "org-extra-commands")))
+        "C-c C-x"     "org-extra-commands"))
+
+    ;; Calendar
+    (with-eval-after-load 'calendar
+      (which-key-add-keymap-based-replacements calendar-mode-map
+        "A"     "appts"
+        "H"     "html"
+        "g"     "goto"
+        "g m"   "mayan"
+        "g m n" "mayan next"
+        "g m p" "mayan prev"
+        "i"     "insert"
+        "i C"   "chinese"
+        "i B"   "bahai"
+        "i i"   "islamic"
+        "i h"   "hebrew"
+        "p"     "print"
+        "t"     "tex"
+        "t f"   "filofax"
+        "t w"   "weekly"))
+
+    ;; Diff-mode
+    (which-key-add-major-mode-key-based-replacements
+      'diff-mode
+      "C-c RET" "diff")
+
+    ;; Dired
+    (which-key-add-major-mode-key-based-replacements
+      'dired-mode
+      "%"     "regexp-do"
+      "*"     "marks"
+      ":"     "epa"
+      "C-t"   "image-dired"
+      "M-s a" "dired-isearch"
+      "M-s f" "dired-isearch-filenames"
+      "r"     "rename-time/tag")
+
+    ;; Gnus
+    (dolist (mode '(gnus-server-mode gnus-group-mode gnus-summary-mode))
+      (which-key-add-major-mode-key-based-replacements
+        mode "J" "Gnus-agent"))
+
+    (which-key-add-major-mode-key-based-replacements
+      'gnus-group-mode
+      ;; When the `gnus-topic-mode` minor-mode is enabled, the built-in
+      ;; descriptions for these prefixes are no longer displayed.  By
+      ;; defining them ourselves, we ensure these prefixes will have a
+      ;; description even if keys from other maps are added to them.
+      "A" "List-map"
+      "G" "Group-map")
+
+    (which-key-add-major-mode-key-based-replacements
+      'gnus-summary-mode
+      "M M"   "Put-mark"
+      "M M !" "Put-ticked"
+      "M M ?" "Put-dormant"
+      "M M d" "Put-read"
+      "M M e" "Put-expirable"
+      "M M u" "Put-unread"
+      "S B" "Broken-reply"
+      "S O" "Digest-forward"
+      "S o" "Forward")
+
+    ;; Ibuffer
+    (which-key-add-major-mode-key-based-replacements
+      'ibuffer-mode
+      "%"   "mark-by"
+      "*"   "marks"
+      "/"   "filtering"
+      "s"   "sort")
+
+    ;; Rst-mode
+    (which-key-add-major-mode-key-based-replacements
+      'rst-mode
+      "C-c C-a"     "adornments"
+      "C-c C-r"     "regions"
+      "C-c C-l"     "lists"
+      "C-c C-t"     "toc"
+      "C-c C-c"     "compilation")
+
+    ;; New prefixes coming in Emacs 31 (as of 6/11/25) 
+    (when (version< "31" emacs-version)
+      (which-key-add-key-based-replacements
+        "C-x p C-x" "projects-extra"
+        "C-x w f"   "window-layout-flip"
+        "C-x w o"   "rotate-windows"
+        "C-x w r"   "window-layout-rotate"))
+
+    ;; New markdown-ts-mode library in Emacs 31
+    (with-eval-after-load 'markdown-ts-mode
+      (which-key-add-keymap-based-replacements markdown-ts-mode-map
+        "C-c C-v"     "move"
+        "C-c C-x"     "markup")
+      (which-key-add-keymap-based-replacements markdown-ts-view-mode-map
+        "C-c C-v"     "move"
+        "C-c C-x"     "markup")
+      (which-key-add-keymap-based-replacements markdown-ts-in-table-mode-map
+        "C-c C-t"     "table"))
+    )
 
   ;; https://gist.github.com/mmarshall540/a12f95ab25b1941244c759b1da24296d
 #+end_src
@@ -1356,10 +1489,12 @@ and populated.
 ** Projects
 
 #+begin_src emacs-lisp :tangle init.el
-  (setq project-kill-buffers-display-buffer-list t
-        project-vc-merge-submodules nil
-        project-compilation-buffer-name-function 'project-prefixed-buffer-name
-        project-mode-line t)
+  (use-package project
+    :config
+    (setq project-kill-buffers-display-buffer-list t
+  	project-vc-merge-submodules nil
+  	project-compilation-buffer-name-function 'project-prefixed-buffer-name
+  	project-mode-line t))
 #+end_src
 
 ** Highlight changes
@@ -2307,7 +2442,9 @@ Auto fill mode may break the indentation.
     (rst-mode . (lambda ()
   		(auto-fill-mode -1)
                   (setq ispell-local-dictionary "english")
-                  (flyspell-mode))))
+                  (flyspell-mode)))
+    (rst-toc-mode .(lambda()
+  		   (hl-line-mode 1))))
 #+end_src
 * File management
 

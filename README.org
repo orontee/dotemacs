@@ -1284,8 +1284,17 @@ provided. They are written for maximal accessible readability.
   (require 'modus-themes)
   (setq modus-themes-variable-pitch-ui t)
 
+  (defcustom my-default-theme 'matthem-dark
+  "Theme loaded at startup."
+  :type `(choice
+          ,@(mapcar (lambda (theme) `(const ,theme))
+                    (custom-available-themes)))
+  :group 'faces)
+
   (add-to-list 'custom-theme-load-path (locate-user-emacs-file "themes/"))
-  (load-theme 'matthem-dark :no-confirm)
+  (add-hook 'after-init-hook
+  	  (lambda ()
+  	    (load-theme my-default-theme :no-confirm)))
 #+end_src
 
 Spacious padding make the UI even more readable.

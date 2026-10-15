@@ -1177,7 +1177,7 @@ Unicode.
       "C-c C-t"     "toc"
       "C-c C-c"     "compilation")
 
-    ;; New prefixes coming in Emacs 31 (as of 6/11/25) 
+    ;; New prefixes coming in Emacs 31 (as of 6/11/25)
     (when (version< "31" emacs-version)
       (which-key-add-key-based-replacements
         "C-x p C-x" "projects-extra"
@@ -1195,7 +1195,11 @@ Unicode.
         "C-c C-x"     "markup")
       (which-key-add-keymap-based-replacements markdown-ts-in-table-mode-map
         "C-c C-t"     "table"))
-    )
+
+    (with-eval-after-load 'outline
+      (which-key-add-key-based-replacements
+        "C-c @"       "outline"
+        "C-c @ /"     "outline-show/hide-by-heading-regexp")))
 
   ;; https://gist.github.com/mmarshall540/a12f95ab25b1941244c759b1da24296d
 #+end_src
@@ -1550,9 +1554,6 @@ XRef is used to navigate between references. In the results buffer
 current line is highlighted and some files are always outlined. 
 
 #+begin_src emacs-lisp :tangle init.el
-  (when (executable-find "ugrep")
-      (setopt xref-search-program 'ugrep))
-
   (setopt xref-history-storage 'xref-window-local-history)
   (add-hook 'xref--xref-buffer-mode-hook
               (lambda ()
@@ -2482,9 +2483,6 @@ Configure grep package.
     :init
     (setopt grep-use-headings t
             grep-highlight-matches 'always)
-    :config
-    (when (executable-find "ugrep")
-        (setq grep-program "ugrep"))
     :hook
     (grep-mode . (lambda ()
     		 (setq-local outline-minor-mode-use-buttons 'insert)

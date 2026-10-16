@@ -2064,6 +2064,14 @@ Update default text to insert into new files.
       :mode ("CMakeLists.txt\\'" "\\.cmake\\'"))
 #+end_src
 
+** Support for YAML
+
+#+begin_src emacs-lisp :tangle init.el
+(use-package yaml-ts-mode
+  :hook
+  (yaml-ts-mode . (lambda ()
+		    (flyspell-mode -1))))
+#+end_src
 
 ** Qt
 
@@ -2284,15 +2292,6 @@ that represent colors.
   		    (lambda ()
   		      (visual-line-mode 1)
   		      (setq fill-column 70))))
-#+end_src
-
-Configure the native "ts" mode:
-
-#+begin_src emacs-lisp :tangle init.el
-  (add-hook 'markdown-ts-mode-hook
-  	  (lambda ()
-  	    (setq fill-column 70)
-  	    (visual-line-mode 1)))
 #+end_src
 
 ** Support for TeX and LaTeX

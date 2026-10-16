@@ -1375,6 +1375,33 @@ Use speedbar in a side window.
     (setopt speedbar-prefer-window t))
 #+end_src
 
+** IA
+
+#+begin_src emacs-lisp :tangle init.el
+  (use-package gptel
+    :ensure t
+    :init
+    (defvar gptel-prefix-map)
+    (define-prefix-command 'gptel-prefix-map)
+    :config
+    (setq gptel-default-mode 'markdown-ts-mode)
+    :bind (("C-c l" . gptel-prefix-map)
+  	 :map gptel-prefix-map
+  	 ("a" . gptel-add)
+  	 ("l" . gptel)
+  	 ("m" . gptel-menu)
+  	 ("r" . gptel-rewrite)
+  	 ("s" . gptel-system-prompt)
+  	 ("t" . gptel-tools)
+  	 :map gptel-mode-map
+  	 ("C-c c" . gptel-abort)
+  	 ("C-c <" . gptel-beginning-of-response)
+  	 ("C-c >" . gptel-end-of-response))
+    :hook
+    (gptel-mode . gptel-highlight-mode)
+    (gptel-mode . visual-line-mode))
+#+end_src
+
 ** Various
 
 Tired of typing =yes= and =no=? Prefer =y= and =n=!

@@ -1822,6 +1822,8 @@ Easy generation of URLs for Git projects hosted on common forges.
 #+begin_src emacs-lisp :tangle init.el
   (use-package git-link
     :ensure nil
+    :vc (:url "https://github.com/sshaw/git-link.git"
+ 	    :rev "v0.11.0")
     :commands (git-link git-link-commit git-link-homepage))
 #+end_src
 

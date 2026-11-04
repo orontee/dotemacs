@@ -253,6 +253,17 @@ Hide title bar when window is maximized.
             #'frame-hide-title-bar-when-maximized)
 #+end_src
 
+After widening, narrowing 🙂 Olivetti highly improve readability but
+it doesn't play well with window splitting, so it's never
+automatically enabled.
+
+#+begin_src emacs-lisp :tangle init.el
+(use-package olivetti
+  :vc (:url "https://github.com/rnkn/olivetti.git" :rev "d2ccae5")
+  :config
+  (setopt olivetti-style 'fancy))
+#+end_src
+
 ** Bookmarks
 
 Lighter bookmark menu: Filenames are hidden and more horizontal space
@@ -1698,6 +1709,28 @@ preceding identifier and embedded capitals to be downcase.
       glasses-uncapitalize-p t)
 #+end_src
 
+** Indentation
+
+#+begin_src emacs-lisp :tangle init.el
+(use-package indent-bars
+  :config
+  (setopt indent-bars-treesit-support t
+	  indent-bars-width-frac 0.1)
+  :hook
+  ((python-ts-mode yaml-ts-mode c-ts-mode) . indent-bars-mode))
+#+end_src
+
+** Prettify
+
+#+begin_src emacs-lisp :tangle init.el
+(use-package fira-code-mode
+  :config
+  (fira-code-mode-set-font)
+  :custom (fira-code-mode-disabled-ligatures '("[]" "#{" "#(" "#_" "#_(" "x"))
+  :hook prog-mode)
+#+end_src
+
+
 ** Spell checking
 
 When writing code source, I like to have comments, documentation and
@@ -2300,7 +2333,17 @@ that represent colors.
 ** Support for MarkDown
 
 #+begin_src emacs-lisp :tangle init.el
+  (use-package edit-indirect
+    :hook
+    (edit-indirect-after-creation .
+  				(lambda ()
+  				  (setq header-line-format
+  					#("Edit, then exit with ‘C-c '’ or abort with ‘C-c C-k’" 22 27
+  					  (font-lock-face help-key-binding face help-key-binding) 44 51
+  					  (font-lock-face help-key-binding face help-key-binding))))))
+
   (use-package markdown-ts-mode
+    :after edit-indirect
     :init
     (define-skeleton markdown-create-document
       "Create a Markdown structured document"
@@ -2311,17 +2354,37 @@ that represent colors.
       "tags: [" _ "]" ?\n"---\n\n# " str ?\n @)
     (add-to-list 'auto-insert-alist
                  (cons (rx (or ".md" ".markdown")) 'markdown-create-document))
+    (defun markdown-ts-edit-code-block ()
+      "Edit current block in an indirect buffer."
+      (interactive)
+      (if-let* ((ov (cl-some
+  		   (lambda (ov)
+                       (when (overlay-get ov 'markdown-ts-code-block) ov))
+  		   (overlays-at (point))))
+  	      (beg (overlay-start ov))
+  	      (end (overlay-end ov))
+  	      (block-mode (or (overlay-get ov 'markdown-ts-code-block-mode)
+  			      markdown-ts-default-code-block-mode))
+  	      (edit-indirect-guess-mode-function
+  	       (lambda (_parent-buffer _beg _end)
+  		 (message "Will enable %s" block-mode)
+  		 (funcall block-mode))))
+  	(edit-indirect-region beg end t)
+        (message "Not in a code block")))
     :mode "\\.md\\'"
     :config
     (setopt markdown-ts-ellipsis "…"
   	  markdown-ts-hide-markup t
   	  markdown-ts-checked-checkbox 'icon
   	  markdown-ts-unchecked-checkbox 'icon)
+    :bind
+    (:map markdown-ts-mode-map
+  	("C-c '" . markdown-ts-edit-code-block))
     :hook
     (markdown-ts-mode .
-  		    (lambda ()
-  		      (visual-line-mode 1)
-  		      (setq fill-column 70))))
+    		    (lambda ()
+    		      (visual-line-mode 1)
+    		      (setq fill-column 70))))
 #+end_src
 
 ** Support for TeX and LaTeX

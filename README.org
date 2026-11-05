@@ -1746,21 +1746,32 @@ string checked for right spelling.
 
 ** Version control
 
-Currently transitionning from core "VC" to Magit.
+Moved from core "VC" to Magit.
 
 #+begin_src emacs-lisp :tangle init.el
   (use-package magit
     :ensure t
+    :after project
     :config
-    (setq magit-define-global-key-bindings 'recommended)
-    (add-hook 'magit-log-mode-hook (lambda () (text-scale-set -1)))
-    (add-hook 'magit-process-mode-hook (lambda () (text-scale-set -1)))
-    (add-hook 'magit-stashes-mode-hook (lambda () (text-scale-set -1)))
-    (add-hook 'magit-status-mode-hook (lambda () (text-scale-set -1)))
-    (add-hook 'magit-refs-mode-hook (lambda () (text-scale-set -1)))
+    (defun project-magit-status ()
+      (interactive)
+      (magit-status (project-root (project-current t))))
+
+    (setopt magit-define-global-key-bindings 'recommended)
+    :init
+    (setopt project-switch-commands
+  	  (cons '(project-magit-status "Magit")
+  		(delete '(project-vc-dir "VC-Dir")
+  			project-switch-commands)))
     :bind
     (:map project-prefix-map
-  	("v" .  magit-status)))
+  	("v" .  project-magit-status))
+    :hook
+    (magit-log-mode . (lambda () (text-scale-set -1)))
+    (magit-process-mode . (lambda () (text-scale-set -1)))
+    (magit-stashes-mode . (lambda () (text-scale-set -1)))
+    (magit-status-mode . (lambda () (text-scale-set -1)))
+    (magit-refs-mode . (lambda () (text-scale-set -1))))
 #+end_src
 
 Follows previous "VC" configuration.
@@ -1826,21 +1837,21 @@ Automatically display window with diff when editing commit messages.
 Shorten the display of the current branch name in the modeline.
 
 #+begin_src emacs-lisp :tangle init.el
-(load-library "vc-hooks")
-(defun vc-git-mode-line-string (file)
-  "Return a string for `vc-mode-line' to put in the mode line for FILE."
-  (let* ((rev (vc-working-revision file 'Git))
-         (disp-rev (or (vc-git--symbolic-ref file)
-                       (substring rev 0 7)))
-         (short-rev (if (<= (length disp-rev) 8)
-                        disp-rev
-                      (concat (substring disp-rev 0 7) "…")))
-         (def-ml (vc-default-mode-line-string 'Git file))
-         (help-echo (get-text-property 0 'help-echo def-ml))
-         (face   (get-text-property 0 'face def-ml)))
-    (propertize short-rev
-                'face face
-                'help-echo (concat help-echo "\nCurrent revision: " rev))))
+  (load-library "vc-hooks")
+  (defun vc-git-mode-line-string (file)
+    "Return a string for `vc-mode-line' to put in the mode line for FILE."
+    (let* ((rev (vc-working-revision file 'Git))
+           (disp-rev (or (vc-git--symbolic-ref file)
+                         (substring rev 0 7)))
+           (short-rev (if (<= (length disp-rev) 8)
+                          disp-rev
+                        (concat (substring disp-rev 0 7) "…")))
+           (def-ml (vc-default-mode-line-string 'Git file))
+           (help-echo (get-text-property 0 'help-echo def-ml))
+           (face   (get-text-property 0 'face def-ml)))
+      (propertize short-rev
+                  'face face
+                  'help-echo (concat help-echo "\nCurrent revision: " rev))))
 #+end_src
 
 When using Git in an shell buffer I prefer not to have a pager

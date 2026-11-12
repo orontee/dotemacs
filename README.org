@@ -2288,11 +2288,12 @@ to the process.
              (flyspell-mode)))
 #+end_src
 
-Insert double angle quotation marks in pairs.
+Insert double angle quotation marks in pairs; To enter the "left
+pointing guillemet" simply press =C-x 8 <= (try =C-x 8 C-h= for the
+list of all such bindings).
 
 #+begin_src emacs-lisp :tangle init.el
-(add-to-list 'electric-pair-text-pairs
-	     '(171 . 187))
+(add-to-list 'electric-pair-pairs '(?« . ?»))
 #+end_src
 
 ** Support for SGML, HTML, CSS
